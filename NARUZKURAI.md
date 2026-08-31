@@ -55,11 +55,11 @@ models:
         User-Agent: Continue/2.0.0
 ```
 
-## Rebuild
+## Rebuild + Install
 
 The repo pins **Node v20.20.1** (`.nvmrc`) — newer majors (e.g. v26) will not
-build. Use `nvm use` (or your version manager) first, then run the build
-script, which mirrors the official CI pipeline:
+build a full `.vsix`. Use `nvm use` (or your version manager) first, then run
+the build script, which mirrors the official CI pipeline:
 
 ```bash
 nvm use                 # activate Node v20
@@ -69,7 +69,16 @@ TARGET=linux-x64 ./build.sh   # or target a specific platform/arch
 
 Outputs:
 - `extensions/vscode/build/` — extension build artifacts
-- `extensions/vscode/*.vsix` — the installable/packable package
+- `extensions/vscode/*.vsix` — the installable package
 
-Then reload the unpacked/installed extension so the rebuilt bundle takes
-effect.
+Install the built extension into VS Code automatically (uses the local `code`
+CLI, no extra toolchain):
+
+```bash
+./install.sh                  # install the newest built .vsix
+BUILD=1 ./install.sh          # build.sh + install in one shot
+./install.sh path/to/x.vsix   # install a specific file
+```
+
+Then reload VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`) to activate
+the rebuilt bundle.
