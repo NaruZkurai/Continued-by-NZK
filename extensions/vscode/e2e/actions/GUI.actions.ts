@@ -1,10 +1,10 @@
 import {
-  InputBox,
-  Key,
-  WebDriver,
-  WebElement,
-  WebView,
-  Workbench,
+    InputBox,
+    Key,
+    WebDriver,
+    WebElement,
+    WebView,
+    Workbench,
 } from "vscode-extension-tester";
 
 import { DEFAULT_TIMEOUT } from "../constants";
@@ -42,7 +42,7 @@ export class GUIActions {
     for (let i = 0; i < iframes.length; i++) {
       const iframe = iframes[i];
       const src = await iframe.getAttribute("src");
-      if (src.includes("extensionId=Continue.continue")) {
+      if (src.includes("extensionId=naruzkurai.continued")) {
         continueIFrame = iframe;
         break;
       }

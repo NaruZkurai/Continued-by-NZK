@@ -1,7 +1,7 @@
 import { IDE } from "core";
 import {
-  AutocompleteCodeSnippet,
-  AutocompleteSnippetType,
+    AutocompleteCodeSnippet,
+    AutocompleteSnippetType,
 } from "core/autocomplete/snippets/types";
 import { isSecurityConcern } from "core/indexing/ignore";
 import { LRUCache } from "lru-cache";
@@ -105,7 +105,7 @@ export class RecentlyVisitedRangesService {
             // Exclude Continue's own output as it makes it super-hard for users to test the autocomplete feature
             // while looking at the prompts in the Continue's output
             !s.filepath.startsWith(
-              "output:extension-output-Continue.continue",
+              "output:extension-output-naruzkurai.continued",
             )),
       )
       .sort((a, b) => b.timestamp - a.timestamp)

@@ -1,5 +1,5 @@
 {
-  "name": "continue",
+  "name": "continued",
   "icon": "media/icon.png",
   "author": "Continue Dev, Inc",
   "version": "1.3.40",
@@ -18,10 +18,10 @@
   "homepage": "https://continue.dev",
   "qna": "https://github.com/continuedev/continue/issues/new/choose",
   "license": "Apache-2.0",
-  "displayName": "Continue - open-source AI code agent",
+  "displayName": "Continued - open-source AI code agent",
   "pricing": "Free",
   "description": "The leading open-source AI code agent",
-  "publisher": "Continue",
+  "publisher": "naruzkurai",
   "engines": {
     "vscode": "^1.70.0",
     "node": ">=20.20.1"
@@ -88,10 +88,10 @@
       "properties": {
         "continue.telemetryEnabled": {
           "type": "boolean",
-          "default": true,
-          "markdownDescription": "Continue collects anonymous usage data, cleaned of PII, to help us improve the product for our users. Read more  at [continue.dev › Telemetry](https://docs.continue.dev/telemetry).",
-          "markdownDeprecationMessage": "This setting is deprecated and will be removed in a later version. Please use the _Telemetry > Allow Anonymous Telemetry_ setting in the extension's User Settings page.",
-          "deprecationMessage": "Please use the _Telemetry > Allow Anonymous Telemetry_ setting in the extension's User Settings page."
+          "default": false,
+          "markdownDescription": "Disabed Telemitry by default, do not re-enable",
+          "markdownDeprecationMessage": "Disabed Telemitry by default, do not re-enable",
+          "deprecationMessage": "Disabed Telemitry by default, do not re-enable"
         },
         "continue.showInlineTip": {
           "type": "boolean",
@@ -497,7 +497,7 @@
     ],
     "submenus": [
       {
-        "id": "continue.continueSubMenu",
+        "id": "naruzkurai.continuedSubMenu",
         "label": "Continue"
       }
     ],
@@ -524,7 +524,7 @@
       ],
       "editor/context": [
         {
-          "submenu": "continue.continueSubMenu",
+          "submenu": "naruzkurai.continuedSubMenu",
           "group": "0_acontinue"
         }
       ],
@@ -535,7 +535,7 @@
           "when": "continue.streamingDiff"
         }
       ],
-      "continue.continueSubMenu": [
+      "naruzkurai.continuedSubMenu": [
         {
           "command": "continue.focusContinueInputWithoutClear",
           "group": "Continue"
@@ -556,34 +556,34 @@
         {
           "command": "continue.newSession",
           "group": "navigation@1",
-          "when": "view == continue.continueGUIView"
+          "when": "view == naruzkurai.continuedGUIView"
         },
         {
           "command": "continue.viewHistory",
           "group": "navigation@2",
-          "when": "view == continue.continueGUIView"
+          "when": "view == naruzkurai.continuedGUIView"
         },
         {
           "command": "continue.openConfigPage",
           "group": "navigation@4",
-          "when": "view == continue.continueGUIView"
+          "when": "view == naruzkurai.continuedGUIView"
         },
         {
           "command": "continue.clearConsole",
           "group": "navigation@1",
-          "when": "view == continue.continueConsoleView"
+          "when": "view == naruzkurai.continuedConsoleView"
         }
       ],
       "editor/title": [
         {
           "command": "continue.newSession",
           "group": "navigation@1",
-          "when": "activeWebviewPanelId == continue.continueGUIView"
+          "when": "activeWebviewPanelId == naruzkurai.continuedGUIView"
         },
         {
           "command": "continue.viewHistory",
           "group": "navigation@2",
-          "when": "activeWebviewPanelId == continue.continueGUIView"
+          "when": "activeWebviewPanelId == naruzkurai.continuedGUIView"
         }
       ],
       "terminal/context": [
@@ -613,7 +613,7 @@
       "continue": [
         {
           "type": "webview",
-          "id": "continue.continueGUIView",
+          "id": "naruzkurai.continuedGUIView",
           "name": "Continue",
           "icon": "media/sidebar-icon.png",
           "visibility": "visible"
@@ -622,7 +622,7 @@
       "continueConsole": [
         {
           "type": "webview",
-          "id": "continue.continueConsoleView",
+          "id": "naruzkurai.continuedConsoleView",
           "name": "Continue Console",
           "icon": "$(window)",
           "visibility": "visible",

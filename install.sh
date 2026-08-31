@@ -19,7 +19,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
 # The installed Continue extension dir (VS Code loads packed extensions here).
-EXT_DIR="${HOME}/.vscode/extensions/continue.continue-2.0.0-linux-x64"
+EXT_DIR="${HOME}/.vscode/extensions/naruzkurai.continued-2.0.0-linux-x64"
 MAIN_BUNDLE="${EXT_DIR}/out/extension.js"
 BUILD_BUNDLE="${ROOT}/extensions/vscode/out/extension.js"
 
