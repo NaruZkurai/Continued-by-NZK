@@ -16,7 +16,7 @@ export interface InputDescriptor {
   options?: string[];
   required?: boolean;
   description?: string;
-  [key: string]: any;
+  [ key: string ]: any;
 }
 
 export interface ProviderInfo {
@@ -35,14 +35,14 @@ export interface ProviderInfo {
   downloadUrl?: string;
 }
 
-const completionParamsInputsConfigs = Object.values(completionParamsInputs);
+const completionParamsInputsConfigs = Object.values( completionParamsInputs );
 
-const openSourceModels = Object.values(models).filter(
-  ({ isOpenSource }) => isOpenSource,
+const openSourceModels = Object.values( models ).filter(
+  ( { isOpenSource } ) => isOpenSource,
 );
 
-export const ollamaStaticModels = Object.values(models).filter(
-  ({ providerOptions }) => providerOptions?.includes("ollama"),
+export const ollamaStaticModels = Object.values( models ).filter(
+  ( { providerOptions } ) => providerOptions?.includes( "ollama" ),
 );
 
 export const apiBaseInput: InputDescriptor = {
@@ -61,7 +61,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     longDescription:
       "Unified Access to Leading AI Models, see [here](https://www.cometapi.com/?utm_source=continue&utm_medium=integration&utm_campaign=cometapi_integration&utm_content=continue_plugin) for more details.",
     icon: "cometapi.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     collectInputFor: [
       {
         inputType: "text",
@@ -120,7 +120,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     longDescription:
       "Use gpt-5.4, gpt-5, or any other OpenAI model. See [here](https://openai.com/product#made-for-developers) to obtain an API key.",
     icon: "openai.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     packages: [
       models.gpt5_4Pro,
       models.gpt5_4,
@@ -159,6 +159,41 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     ],
     apiKeyUrl: "https://platform.openai.com/account/api-keys",
   },
+  naruzkurai: {
+    title: "NaruZkurai",
+    provider: "naruzkurai",
+    description: "NaruZkurAI's OpenAI-compatible custom server",
+    longDescription:
+      "NaruZkurAI (NaruZkurai) — a patched OpenAI-compatible provider for a custom inference server. Custom headers are forwarded on every request and never stripped.",
+    icon: "naruzkurai.png",
+    tags: [ ModelProviderTags.RequiresApiKey ],
+    packages: [
+      {
+        ...models.AUTODETECT,
+        params: {
+          ...models.AUTODETECT.params,
+          title: "NaruZkurai",
+        },
+      },
+    ],
+    collectInputFor: [
+      {
+        inputType: "text",
+        key: "apiKey",
+        label: "API Key",
+        placeholder: "Enter your NaruZkurAI API key",
+        required: true,
+      },
+      {
+        inputType: "text",
+        key: "apiBase",
+        label: "API Base",
+        placeholder: "e.g. http://127.0.0.1:8888/v1",
+        required: false,
+      },
+      ...completionParamsInputsConfigs,
+    ],
+  },
   anthropic: {
     title: "Anthropic",
     provider: "anthropic",
@@ -166,7 +201,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     description:
       "Anthropic builds state-of-the-art models with large context length and high recall",
     icon: "anthropic.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     longDescription:
       "To get started with Anthropic models, you first need to sign up for the open beta [here](https://claude.ai/login) to obtain an API key.",
     collectInputFor: [
@@ -201,7 +236,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
       "OpenRouter provides access to a variety of LLMs including open-source and proprietary models.",
     longDescription: `To get started with OpenRouter, sign up for an account at [openrouter.ai](https://openrouter.ai/) and obtain your API key from the dashboard.`,
     icon: "openrouter.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     refPage: "openrouter",
     apiKeyUrl: "https://openrouter.ai/settings/keys",
     collectInputFor: [
@@ -230,10 +265,10 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     description: "Use the Moonshot API for LLMs",
     longDescription: `[Visit our documentation](https://docs.continue.dev/reference/Model%20Providers/moonshot) for information on obtaining an API key.`,
     icon: "moonshot.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     refPage: "moonshot",
     apiKeyUrl: "https://docs.moonshot.cn/docs/getting-started",
-    packages: [models.kimiK2, models.kimiK25, models.moonshotChat],
+    packages: [ models.kimiK2, models.kimiK25, models.moonshotChat ],
     collectInputFor: [
       {
         inputType: "text",
@@ -252,8 +287,8 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     longDescription:
       "Z.ai (formerly Zhipu AI) provides the GLM family of large language models. Get your API key from the [Z.ai platform](https://z.ai/manage-apikey/apikey-list).",
     icon: "zai.svg",
-    tags: [ModelProviderTags.RequiresApiKey],
-    packages: [models.glm5, models.glm47, models.glm45],
+    tags: [ ModelProviderTags.RequiresApiKey ],
+    packages: [ models.glm5, models.glm47, models.glm45 ],
     collectInputFor: [
       {
         inputType: "text",
@@ -274,7 +309,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
       "Run open-source models on Function Network. Private, Affordable User-Owned AI",
     icon: "function-network.png",
     longDescription: `Function Network is a private, affordable user-owned AI platform that allows you to run open-source models. Experience bleeding-edge Generative AI models with limitless scalability, all powered by our distributed inference network.`,
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiKey: "",
     },
@@ -288,7 +323,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
       },
       ...completionParamsInputsConfigs,
     ],
-    packages: [models.llama31Chat, models.deepseek],
+    packages: [ models.llama31Chat, models.deepseek ],
     apiKeyUrl: "https://function.network/join-waitlist",
   },
   ovhcloud: {
@@ -312,7 +347,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
       ...completionParamsInputsConfigs,
     ],
     icon: "ovhcloud.png",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     packages: [
       models.llama318bChat,
       models.llama3170bChat,
@@ -352,7 +387,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
       ...completionParamsInputsConfigs,
     ],
     icon: "scaleway.png",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     packages: [
       models.llama318bChat,
       models.llama3170bChat,
@@ -370,11 +405,11 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
 
 Select the \`GPT-4o\` model below to complete your provider configuration, but note that this will not affect the specific model you need to select when creating your Azure deployment.`,
     icon: "azure.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     refPage: "azure",
     apiKeyUrl:
       "https://azure.microsoft.com/en-us/products/ai-services/openai-service",
-    packages: [models.gpt4o],
+    packages: [ models.gpt4o ],
     params: {
       apiKey: "",
       deployment: "",
@@ -416,7 +451,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "The Mistral API provides seamless access to their models, including Codestral, Mistral 8x22B, Mistral Large, and more.",
     icon: "mistral.png",
     longDescription: `To get access to the Mistral API, obtain your API key from [here](https://console.mistral.ai/codestral) for Codestral or the [Mistral platform](https://docs.mistral.ai/) for all other models.`,
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiKey: "",
     },
@@ -452,8 +487,8 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     longDescription:
       "Xiaomi Mimo provides OpenAI-compatible API access to their language models. Get your API key from the [Xiaomi Mimo Platform](https://platform.xiaomimimo.com/).",
     icon: "mimo.png",
-    tags: [ModelProviderTags.RequiresApiKey],
-    packages: [models.mimoV2Flash],
+    tags: [ ModelProviderTags.RequiresApiKey ],
+    packages: [ models.mimoV2Flash ],
     collectInputFor: [
       {
         inputType: "text",
@@ -474,7 +509,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     longDescription:
       'To get started with Ollama, follow these steps:\n1. Download from [ollama.ai](https://ollama.ai/download) and open the application\n2. Open a terminal and run `ollama run <MODEL_NAME>`. Example model names are `codellama:7b-instruct` or `llama2:7b-text`. You can find the full list [here](https://ollama.ai/library).\n3. Make sure that the model name used in step 2 is the same as the one in config.json (e.g. `model="codellama:7b-instruct"`)\n4. Once the model has finished downloading, you can start asking questions through Continue.',
     icon: "ollama.png",
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     packages: [
       {
         ...models.AUTODETECT,
@@ -498,7 +533,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     description:
       "Optimized for enterprise generative AI, search and discovery, and advanced retrieval.",
     icon: "cohere.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     longDescription:
       "To use Cohere, visit the [Cohere dashboard](https://dashboard.cohere.com/api-keys) to create an API key.",
     collectInputFor: [
@@ -534,7 +569,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "Groq is the fastest LLM provider by a wide margin, using 'LPUs' to serve open-source models at blazing speed.",
     longDescription:
       "To get started with Groq, obtain an API key from their website [here](https://wow.groq.com/).",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -564,7 +599,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "MiniMax offers high-performance models with 200K+ context windows at competitive pricing.",
     longDescription:
       "To get started with MiniMax, obtain an API key from the [MiniMax Platform](https://platform.minimax.io).",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     collectInputFor: [
       {
         inputType: "text",
@@ -597,7 +632,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "Inception Labs provides Mercury 2, a fast diffusion model with 128k context and tool calling.",
     longDescription:
       "To get started with Inception Labs, obtain an API key from the [Inception Labs platform](https://platform.inceptionlabs.ai/). Mercury 2 is OpenAI-compatible and supports chat, tool calling, and structured outputs.",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     collectInputFor: [
       {
         inputType: "text",
@@ -608,7 +643,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       },
       ...completionParamsInputsConfigs,
     ],
-    packages: [models.mercury2],
+    packages: [ models.mercury2 ],
     apiKeyUrl: "https://platform.inceptionlabs.ai/",
   },
   deepseek: {
@@ -619,7 +654,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "DeepSeek provides cheap inference of its DeepSeek Coder v2 and other impressive open-source models.",
     longDescription:
       "To get started with DeepSeek, obtain an API key from their website [here](https://platform.deepseek.com/api_keys).",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -644,7 +679,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "Use the TogetherAI API for extremely fast streaming of open-source models",
     icon: "together.png",
     longDescription: `Together is a hosted service that provides extremely fast streaming of open-source language models. To get started with Together:\n1. Obtain an API key from [here](https://together.ai)\n2. Paste below\n3. Select a model preset`,
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiKey: "",
     },
@@ -662,10 +697,10 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       models.llama31Chat,
       models.codeLlamaInstruct,
       models.mistralOs,
-    ].map((p) => {
+    ].map( ( p ) => {
       p.params.contextLength = 4096;
       return p;
-    }),
+    } ),
     apiKeyUrl: "https://api.together.xyz/settings/api-keys",
   },
   ncompass: {
@@ -676,7 +711,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "Use the nCompass API for extremely fast streaming of open-source models",
     icon: "ncompass.png",
     longDescription: `nCompass is an extremely fast inference engine for open-source language models. To get started, obtain an API key from [their console](https://app.ncompass.tech/api-settings).`,
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiKey: "",
     },
@@ -694,10 +729,10 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       models.llama318bChat,
       models.llama3370bChat,
       models.Qwen25Coder32b,
-    ].map((p) => {
+    ].map( ( p ) => {
       p.params.contextLength = 4096;
       return p;
-    }),
+    } ),
     apiKeyUrl: "https://app.ncompass.tech/api-settings",
   },
   novita: {
@@ -708,7 +743,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "Use Novita AI API for extremely fast streaming of open-source models",
     icon: "novita.png",
     longDescription: `[Novita AI](https://novita.ai?utm_source=github_continuedev&utm_medium=github_readme&utm_campaign=github_link) offers an affordable, reliable, and simple inference platform with scalable [LLM APIs](https://novita.ai/docs/model-api/reference/introduction.html), empowering developers to build AI applications. To get started with Novita AI:\n1. Obtain an API key from [here](https://novita.ai/settings/key-management?utm_source=github_continuedev&utm_medium=github_readme&utm_campaign=github_link)\n2. Paste below\n3. Select a model preset`,
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiKey: "",
     },
@@ -727,10 +762,10 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       models.mistralChat,
       models.deepseekR1Chat,
       models.deepseekV3Chat,
-    ].map((p) => {
+    ].map( ( p ) => {
       p.params.contextLength = 4096;
       return p;
-    }),
+    } ),
     apiKeyUrl:
       "https://novita.ai/settings/key-management?utm_source=github_continuedev&utm_medium=github_readme&utm_campaign=github_link",
   },
@@ -742,7 +777,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "Try out Google's state-of-the-art Gemini model from their API.",
     longDescription: `To get started with Google Gemini API, obtain your API key from [here](https://ai.google.dev/tutorials/workspace_auth_quickstart) and paste it below.`,
     icon: "gemini.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     collectInputFor: [
       {
         inputType: "text",
@@ -770,7 +805,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       "xAI is a company working on building artificial intelligence to accelerate human scientific discovery",
     longDescription:
       "To get started with xAI, obtain an API key from their [console](https://console.x.ai/).",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -803,7 +838,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     longDescription:
       "Lemonade provides optimized local LLM inference with support for AMD NPU, GPU, and CPU acceleration. Visit [lemonade-server.ai](https://lemonade-server.ai/) for installation and setup instructions. Once the Lemonade server is running, you can begin using Continue with your local models.",
     icon: "lemonade.png",
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     params: {
       apiBase: "http://localhost:8000/api/v1/",
     },
@@ -835,7 +870,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     longDescription:
       "LMStudio provides a professional and well-designed GUI for exploring, configuring, and serving LLMs. It is available on both Mac and Windows. To get started:\n1. Download from [lmstudio.ai](https://lmstudio.ai/) and open the application\n2. Search for and download the desired model from the home screen of LMStudio.\n3. In the left-bar, click the '<->' icon to open the Local Inference Server and press 'Start Server'.\n4. Once your model is loaded and the server has started, you can begin using Continue.",
     icon: "lmstudio.png",
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     params: {
       apiBase: "http://localhost:1234/v1/",
     },
@@ -849,7 +884,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       },
       ...openSourceModels,
     ],
-    collectInputFor: [...completionParamsInputsConfigs],
+    collectInputFor: [ ...completionParamsInputsConfigs ],
     downloadUrl: "https://lmstudio.ai/",
   },
   llamafile: {
@@ -859,9 +894,9 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     description:
       "llamafiles are a self-contained binary to run an open-source LLM",
     longDescription: `To get started with llamafiles, find and download a binary on their [GitHub repo](https://github.com/Mozilla-Ocho/llamafile?tab=readme-ov-file#quickstart). Then run it with the following command:\n\n\`\`\`shell\nchmod +x ./llamafile\n./llamafile\n\`\`\``,
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     packages: openSourceModels,
-    collectInputFor: [...completionParamsInputsConfigs],
+    collectInputFor: [ ...completionParamsInputsConfigs ],
     downloadUrl:
       "https://github.com/Mozilla-Ocho/llamafile?tab=readme-ov-file#quickstart",
   },
@@ -885,7 +920,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
       ...completionParamsInputsConfigs,
     ],
     icon: "replicate.png",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     packages: [
       models.llama3Chat,
       models.codeLlamaInstruct,
@@ -914,9 +949,9 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
 
 After it's up and running, you can start using Continue.`,
     icon: "llamacpp.png",
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     packages: openSourceModels,
-    collectInputFor: [...completionParamsInputsConfigs],
+    collectInputFor: [ ...completionParamsInputsConfigs ],
     downloadUrl: "https://github.com/ggerganov/llama.cpp",
   },
   "openai-aiohttp": {
@@ -941,7 +976,7 @@ After it's up and running, you can start using Continue.`,
       ...completionParamsInputsConfigs,
     ],
     icon: "openai.png",
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     packages: [
       {
         ...models.AUTODETECT,
@@ -1004,7 +1039,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     apiKeyUrl:
       "https://dataplatform.cloud.ibm.com/registration/stepone?context=wx",
     icon: "WatsonX.png",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     packages: [
       models.granite3Instruct8b,
       models.granite3Instruct2b,
@@ -1024,7 +1059,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     description: "Use SambaNova Cloud for fast inference performance",
     icon: "sambanova.png",
     longDescription: `The SambaNova Cloud is a cloud platform for running large open source AI models with the world record performance and zero data retention. You can sign up [here](http://cloud.sambanova.ai?utm_source=continue&utm_medium=external&utm_campaign=cloud_signup)`,
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiKey: "",
     },
@@ -1059,7 +1094,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     description:
       "Cerebras Inference is a custom silicon for fast inference of LLM models.",
     longDescription: "Get your API key [here](https://cloud.cerebras.ai/).",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -1089,7 +1124,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     longDescription:
       "Use the supported Vertex AI models - see [here](https://cloud.google.com/docs/authentication/provide-credentials-adc) to authenticate",
     icon: "vertexai.png",
-    packages: [models.mistralLarge],
+    packages: [ models.mistralLarge ],
     collectInputFor: [
       {
         inputType: "project",
@@ -1116,7 +1151,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     description:
       "The Ask Sage API provides seamless access to LLMs including OpenAI, Anthropic, Meta, Mistral, and more.",
     longDescription: `To get access to the Ask Sage API, obtain your API key from the [Ask Sage platform](https://chat.asksage.ai/) for all other models.`,
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     params: {
       apiKey: "",
       apiBase: "https://api.asksage.ai/server/",
@@ -1202,7 +1237,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
       ...completionParamsInputsConfigs,
     ],
     icon: "nebius.png",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     packages: [
       models.deepseekR1Chat,
       models.deepseekV3Chat,
@@ -1232,7 +1267,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     description: "SiliconFlow provides cheap open-source models.",
     longDescription:
       "To get started with SiliconFlow, obtain an API key from their website [here](https://cloud.siliconflow.cn/account/ak).",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -1257,7 +1292,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
       "Tensorix is an OpenAI-compatible API gateway with access to DeepSeek, Llama, Qwen, GLM, and more.",
     longDescription:
       "To get started with Tensorix, create an account and get an API key at [app.tensorix.ai](https://app.tensorix.ai).",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -1267,7 +1302,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
         required: true,
       },
     ],
-    packages: [{ ...models.AUTODETECT }],
+    packages: [ { ...models.AUTODETECT } ],
     apiKeyUrl: "https://app.tensorix.ai",
   },
   venice: {
@@ -1275,7 +1310,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     provider: "venice",
     icon: "venice.png",
     description: "Venice.",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     collectInputFor: [
       {
         inputType: "text",
@@ -1285,7 +1320,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
         required: true,
       },
     ],
-    packages: [{ ...models.AUTODETECT }],
+    packages: [ { ...models.AUTODETECT } ],
     apiKeyUrl: "https://venice.ai/chat",
   },
   tars: {
@@ -1293,7 +1328,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     provider: "tars",
     icon: "TetrateAgentRouterService.png",
     description: "TARS API for fast inference with various models",
-    tags: [ModelProviderTags.RequiresApiKey],
+    tags: [ ModelProviderTags.RequiresApiKey ],
     collectInputFor: [
       {
         inputType: "text",
@@ -1335,7 +1370,7 @@ To get started:
 
 Fund your wallet with USDC on Solana or Base. ClawRouter uses x402 micropayments for seamless pay-per-use.`,
     icon: "clawrouter.png",
-    tags: [ModelProviderTags.Local, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     packages: [
       models.clawrouterAuto,
       models.clawrouterFree,
@@ -1367,7 +1402,7 @@ Fund your wallet with USDC on Solana or Base. ClawRouter uses x402 micropayments
     longDescription:
       "Nous Research offers Hermes models including Hermes 3 and Hermes 4 with strong instruction following and reasoning. Get an API key at [portal.nousresearch.com](https://portal.nousresearch.com).",
     icon: "nous.png",
-    tags: [ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource],
+    tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
     params: {
       apiBase: "https://inference-api.nousresearch.com/v1",
     },

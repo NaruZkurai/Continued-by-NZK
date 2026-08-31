@@ -45,6 +45,7 @@ import Msty from "./Msty";
 import NCompass from "./NCompass";
 import Nebius from "./Nebius";
 import Nous from "./Nous";
+import NaruZkurai from "./NaruZkurai";
 import Novita from "./Novita";
 import Nvidia from "./Nvidia";
 import Ollama from "./Ollama";
@@ -109,6 +110,7 @@ export const LLMClasses = [
   Msty,
   Azure,
   WatsonX,
+  NaruZkurai,
   OpenRouter,
   ClawRouter,
   Nvidia,
@@ -134,18 +136,18 @@ export const LLMClasses = [
   zAI,
 ];
 
-export async function llmFromDescription(
+export async function llmFromDescription (
   desc: JSONModelDescription,
-  readFile: (filepath: string) => Promise<string>,
-  getUriFromPath: (path: string) => Promise<string | undefined>,
+  readFile: ( filepath: string ) => Promise<string>,
+  getUriFromPath: ( path: string ) => Promise<string | undefined>,
   uniqueId: string,
   ideSettings: IdeSettings,
   llmLogger: ILLMLogger,
   completionOptions?: BaseCompletionOptions,
 ): Promise<BaseLLM | undefined> {
-  const cls = LLMClasses.find((llm) => llm.providerName === desc.provider);
+  const cls = LLMClasses.find( ( llm ) => llm.providerName === desc.provider );
 
-  if (!cls) {
+  if ( !cls ) {
     return undefined;
   }
 
@@ -155,7 +157,7 @@ export async function llmFromDescription(
   };
 
   let baseChatSystemMessage: string | undefined = undefined;
-  if (desc.systemMessage !== undefined) {
+  if ( desc.systemMessage !== undefined ) {
     // baseChatSystemMessage = DEFAULT_CHAT_SYSTEM_MESSAGE;
     // baseChatSystemMessage += "\n\n";
     baseChatSystemMessage = await renderTemplatedString(
@@ -172,7 +174,7 @@ export async function llmFromDescription(
     ...desc,
     completionOptions: {
       ...finalCompletionOptions,
-      model: (desc.model || cls.defaultOptions?.model) ?? "codellama-7b",
+      model: ( desc.model || cls.defaultOptions?.model ) ?? "codellama-7b",
       maxTokens:
         finalCompletionOptions.maxTokens ??
         cls.defaultOptions?.completionOptions?.maxTokens,
@@ -184,18 +186,18 @@ export async function llmFromDescription(
     uniqueId,
   };
 
-  return new cls(options);
+  return new cls( options );
 }
 
-export function llmFromProviderAndOptions(
+export function llmFromProviderAndOptions (
   providerName: string,
   llmOptions: LLMOptions,
 ): ILLM {
-  const cls = LLMClasses.find((llm) => llm.providerName === providerName);
+  const cls = LLMClasses.find( ( llm ) => llm.providerName === providerName );
 
-  if (!cls) {
-    throw new Error(`Unknown LLM provider type "${providerName}"`);
+  if ( !cls ) {
+    throw new Error( `Unknown LLM provider type "${ providerName }"` );
   }
 
-  return new cls(llmOptions);
+  return new cls( llmOptions );
 }

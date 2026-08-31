@@ -16,6 +16,7 @@ import { LlamastackApi } from "./apis/LlamaStack.js";
 import { MiniMaxApi } from "./apis/MiniMax.js";
 import { MockApi } from "./apis/Mock.js";
 import { MoonshotApi } from "./apis/Moonshot.js";
+import { NaruZkuraiApi } from "./apis/NaruZkurai.js";
 import { OpenAIApi } from "./apis/OpenAI.js";
 import { OpenRouterApi } from "./apis/OpenRouter.js";
 import { ClawRouterApi } from "./apis/ClawRouter.js";
@@ -95,6 +96,8 @@ export function constructLlmApi(config: LLMConfig): BaseLlmApi | undefined {
   }
 
   switch (config.provider) {
+    case "naruzkurai":
+      return new NaruZkuraiApi(config);
     case "openai":
       return new OpenAIApi(config);
     case "azure":
