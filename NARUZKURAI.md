@@ -57,12 +57,19 @@ models:
 
 ## Rebuild
 
-Install deps and build the VSCode extension:
+The repo pins **Node v20.20.1** (`.nvmrc`) — newer majors (e.g. v26) will not
+build. Use `nvm use` (or your version manager) first, then run the build
+script, which mirrors the official CI pipeline:
 
 ```bash
-npm install
-npm run package:vscode   # or the build command used for the vsix
+nvm use                 # activate Node v20
+./build.sh              # builds the .vsix for the current platform
+TARGET=linux-x64 ./build.sh   # or target a specific platform/arch
 ```
+
+Outputs:
+- `extensions/vscode/build/` — extension build artifacts
+- `extensions/vscode/*.vsix` — the installable/packable package
 
 Then reload the unpacked/installed extension so the rebuilt bundle takes
 effect.
