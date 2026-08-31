@@ -7,10 +7,10 @@ import styled from "styled-components";
 import { visit } from "unist-util-visit";
 import { v4 as uuidv4 } from "uuid";
 import {
-  defaultBorderRadius,
-  vscBackground,
-  vscEditorBackground,
-  vscForeground,
+    defaultBorderRadius,
+    vscBackground,
+    vscEditorBackground,
+    vscForeground,
 } from "..";
 import useUpdatingRef from "../../hooks/useUpdatingRef";
 import { useAppSelector } from "../../redux/hooks";
@@ -371,12 +371,47 @@ const StyledMarkdownPreview = memo(function StyledMarkdownPreview(
     },
   });
 
+  // Debounce the markdown re-parse during streaming. `props.source` grows with
+  // every streamed token, and re-running the whole remark -> rehype ->
+  // highlight pipeline on the full accumulated text per token is O(n^2) and
+  // OOMs the webview on long outputs. Coalescing updates while streaming keeps
+  // the UI responsive; we always flush the latest source when the stream ends.
+  const isStreaming = useAppSelector((state) => state.session.isStreaming);
+  const pendingSourceRef = useRef<number | null>(null);
+  const latestSourceRef = useRef<string | null>(null);
+
   useEffect(() => {
+    latestSourceRef.current = props.source ?? "";
+
+    if (isStreaming) {
+      // Defer; a trailing timer parses the newest source for us.
+      if (pendingSourceRef.current === null) {
+        pendingSourceRef.current = window.setTimeout(() => {
+          pendingSourceRef.current = null;
+          if (latestSourceRef.current !== null) {
+            setMarkdownSource(
+              fixDoubleDollarNewLineLatex(
+                patchNestedMarkdown(latestSourceRef.current),
+              ),
+            );
+          }
+        }, 100);
+      }
+      return;
+    }
+
+    // Not streaming: parse immediately with the latest source.
+    if (pendingSourceRef.current !== null) {
+      window.clearTimeout(pendingSourceRef.current);
+      pendingSourceRef.current = null;
+    }
+    const source = latestSourceRef.current ?? "";
     setMarkdownSource(
       // some patches to source markdown are applied here:
-      fixDoubleDollarNewLineLatex(patchNestedMarkdown(props.source ?? "")),
+      fixDoubleDollarNewLineLatex(patchNestedMarkdown(source)),
     );
-  }, [props.source, allSymbols]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.source, allSymbols, isStreaming]);
 
   const uiConfig = useAppSelector(selectUIConfig);
   const codeWrapState = uiConfig?.codeWrap ? "pre-wrap" : "pre";
