@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Usage } from "../..";
 
-import { calculateRequestCost, CostBreakdown } from "./calculateRequestCost";
+import { calculateRequestCost } from "./calculateRequestCost";
 
 interface TestCase {
   provider: string;
@@ -119,9 +119,9 @@ describe("calculateRequestCost", () => {
       description: "Claude Opus 4.5 with cache writes",
     },
 
-    // OpenAI GPT-4
+    // NaruZkurAI GPT-4
     {
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-4",
       promptTokens: 1000,
       completionTokens: 500,
@@ -129,7 +129,7 @@ describe("calculateRequestCost", () => {
       description: "GPT-4 basic usage",
     },
     {
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-4-turbo",
       promptTokens: 1000,
       completionTokens: 500,
@@ -137,7 +137,7 @@ describe("calculateRequestCost", () => {
       description: "GPT-4 Turbo",
     },
     {
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-4o",
       promptTokens: 1000,
       completionTokens: 500,
@@ -145,7 +145,7 @@ describe("calculateRequestCost", () => {
       description: "GPT-4o",
     },
     {
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-4o-mini",
       promptTokens: 1000,
       completionTokens: 500,
@@ -153,9 +153,9 @@ describe("calculateRequestCost", () => {
       description: "GPT-4o-mini",
     },
 
-    // OpenAI GPT-3.5
+    // NaruZkurAI GPT-3.5
     {
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-3.5-turbo-0125",
       promptTokens: 1000,
       completionTokens: 500,

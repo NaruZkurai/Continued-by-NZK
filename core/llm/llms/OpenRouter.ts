@@ -1,13 +1,13 @@
-import { ChatCompletionCreateParams } from "openai/resources/index";
+import { ChatCompletionCreateParams } from "naruzkurai/resources/index";
 
-import { OPENROUTER_HEADERS } from "@continuedev/openai-adapters";
+import { OPENROUTER_HEADERS } from "@continuedev/naruzkurai-adapters";
 
 import { LLMOptions } from "../../index.js";
 import { osModelsEditPrompt } from "../templates/edit.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class OpenRouter extends OpenAI {
+class OpenRouter extends NaruZkurAI {
   static providerName = "openrouter";
   protected supportsReasoningField = true;
   protected supportsReasoningDetailsField = true;

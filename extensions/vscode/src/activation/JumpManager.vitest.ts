@@ -157,7 +157,7 @@ const createMockNextEditOutcome = (
     experimental_enableStaticContextualization: false,
     // Base properties
     elapsed: 1500,
-    modelProvider: "openai",
+    modelProvider: "naruzkurai",
     modelName: "gpt-4",
     completionOptions: {
       temperature: 0.7,

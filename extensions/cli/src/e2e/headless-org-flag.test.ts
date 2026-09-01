@@ -14,11 +14,11 @@ schema: v1
 models:
   - name: test-model
     model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key`;
 
   const testEnv = {
-    OPENAI_API_KEY: "test-key",
+    NARUZKURAI_API_KEY: "test-key",
     CONTINUE_API_KEY: "test-api-key",
   };
 

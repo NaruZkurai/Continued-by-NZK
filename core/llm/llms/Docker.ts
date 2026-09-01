@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import { spawn } from "child_process";
 import { LLMOptions, ModelInstaller } from "../../index.js";
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 /**
  * Docker Model Runner provider
@@ -9,12 +9,12 @@ import OpenAI from "./OpenAI.js";
  * Integrates with Docker Desktop's Model Runner feature (currently in beta)
  * that allows running local AI models through Docker.
  *
- * Docker Model Runner provides an OpenAI-compatible API endpoint, making it
- * easy to integrate with existing OpenAI-compatible code.
+ * Docker Model Runner provides an NaruZkurAI-compatible API endpoint, making it
+ * easy to integrate with existing NaruZkurAI-compatible code.
  *
  * More information at: https://docs.docker.com/desktop/features/model-runner/
  */
-class Docker extends OpenAI implements ModelInstaller {
+class Docker extends NaruZkurAI implements ModelInstaller {
   static providerName = "docker";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "http://localhost:12434/engines/v1/",

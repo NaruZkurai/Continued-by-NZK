@@ -1,8 +1,8 @@
 import { LLMOptions } from "../..";
 
-import OpenAI from "./OpenAI";
+import NaruZkurAI from "./NaruZkurAI";
 
-class Kindo extends OpenAI {
+class Kindo extends NaruZkurAI {
   static providerName = "kindo";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://llm.kindo.ai/v1/",

@@ -8,7 +8,7 @@ import { LLMClasses } from "./llms";
 import { LLMLogger } from "./logger";
 
 class DummyLLM extends BaseLLM {
-  static providerName = "openai";
+  static providerName = "naruzkurai";
   static defaultOptions: Partial<LLMOptions> = {
     model: "dummy-model",
     contextLength: 200_000,

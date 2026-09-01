@@ -74,7 +74,7 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "history/share": [{ id: string; outputDir?: string }, void];
   "history/clear": [undefined, void];
   "devdata/log": [DevDataLogEvent, void];
-  "config/addOpenAiKey": [string, void];
+  "config/addNaruZkurAIKey": [string, void];
   "config/addModel": [
     {
       model: SerializedContinueConfig["models"][number];

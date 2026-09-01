@@ -3,7 +3,7 @@ import {
   BaseLlmApi,
   constructLlmApi,
   LLMConfig,
-} from "@continuedev/openai-adapters";
+} from "@continuedev/naruzkurai-adapters";
 import {
   Configuration,
   DefaultApi,

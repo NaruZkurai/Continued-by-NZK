@@ -10,7 +10,7 @@ describe("mergeUnrolledAssistants", () => {
       {
         name: "gpt-4",
         model: "gpt-4",
-        provider: "openai",
+        provider: "naruzkurai",
       },
     ],
     context: [
@@ -72,7 +72,7 @@ describe("mergeUnrolledAssistants", () => {
       {
         name: "gpt-3.5-turbo",
         model: "gpt-3.5-turbo",
-        provider: "openai",
+        provider: "naruzkurai",
       },
     ],
     context: [
@@ -186,7 +186,7 @@ describe("mergeUnrolledAssistants", () => {
         {
           name: "gpt-4", // Duplicate name
           model: "gpt-4",
-          provider: "openai",
+          provider: "naruzkurai",
         },
         {
           name: "claude-3",
@@ -469,7 +469,7 @@ describe("mergeUnrolledAssistants", () => {
         {
           name: "gpt-4",
           model: "gpt-4",
-          provider: "openai",
+          provider: "naruzkurai",
         },
       ],
     };
@@ -534,7 +534,7 @@ describe("mergeUnrolledAssistants", () => {
         {
           name: "gpt-4",
           model: "gpt-4",
-          provider: "openai",
+          provider: "naruzkurai",
         },
       ],
       rules: [],

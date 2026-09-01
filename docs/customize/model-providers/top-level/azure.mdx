@@ -23,7 +23,7 @@ sidebarTitle: "Azure AI Foundry"
       apiKey: <YOUR_AZURE_API_KEY> # If you use subscription key, try using Azure gateway to rename it apiKey
       env:
         deployment: <YOUR_DEPLOYMENT_NAME>
-        apiType: azure-foundry # Or "azure-openai" if using OpenAI models
+        apiType: azure-foundry # Or "azure-naruzkurai" if using NaruZkurAI models
         apiVersion: 2023-07-01-preview # Azure API version
   ```
   </Tab>
@@ -37,24 +37,24 @@ sidebarTitle: "Azure AI Foundry"
         "apiBase": "<YOUR_DEPLOYMENT_BASE>",
         "deployment": "<YOUR_DEPLOYMENT_NAME>",
         "apiKey": "<YOUR_AZURE_API_KEY>", // If you use subscription key, try using Azure gateway to rename it apiKey
-        "apiType": "azure-foundry" // Or "azure-openai" if using OpenAI models
+        "apiType": "azure-foundry" // Or "azure-naruzkurai" if using NaruZkurAI models
     }]
   }
   ```
   </Tab>
 </Tabs>
 
-## Azure OpenAI Service (Alternative)
+## Azure NaruZkurAI Service (Alternative)
 
 <Info>
-  Get access to the Azure OpenAI service [here](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+  Get access to the Azure NaruZkurAI service [here](https://azure.microsoft.com/en-us/products/ai-services/naruzkurai-service)
 </Info>
 
-Azure OpenAI Service requires a handful of additional parameters to be configured, such as a deployment name and API base URL.
+Azure NaruZkurAI Service requires a handful of additional parameters to be configured, such as a deployment name and API base URL.
 
 To find this information in _Azure AI Foundry_, first select the model that you would like to connect. Then visit _Endpoint_ > _Target URI_.
 
-For example, a Target URI of `https://just-an-example.openai.azure.com/openai/deployments/gpt-4o-july/chat/completions?api-version=2023-03-15-preview` would map to the following:
+For example, a Target URI of `https://just-an-example.naruzkurai.azure.com/naruzkurai/deployments/gpt-4o-july/chat/completions?api-version=2023-03-15-preview` would map to the following:
 
 <Tabs>
 	<Tab title="YAML">
@@ -67,12 +67,12 @@ For example, a Target URI of `https://just-an-example.openai.azure.com/openai/de
       - name: <MODEL_NAME>
         model: <MODEL_ID>
         provider: azure
-        apiBase: https://just-an-example.openai.azure.com
+        apiBase: https://just-an-example.naruzkurai.azure.com
         apiKey: <YOUR_AZURE_API_KEY>
         env:
           apiVersion: <API_VERSION>
           deployment: <MODEL_DEPLOYMENT>
-          apiType: azure-openai
+          apiType: azure-naruzkurai
     ```
   </Tab>
   <Tab title="JSON (Deprecated)">
@@ -81,11 +81,11 @@ For example, a Target URI of `https://just-an-example.openai.azure.com/openai/de
       "title": "<MODEL_NAME>",
       "model": "<MODEL_ID>",
       "provider": "azure",
-      "apiBase": "https://just-an-example.openai.azure.com",
+      "apiBase": "https://just-an-example.naruzkurai.azure.com",
       "deployment": "<MODEL_DEPLOYMENT>",
       "apiVersion": "<API_VERSION>",
       "apiKey": "<YOUR_AZURE_API_KEY>",
-      "apiType": "azure-openai"
+      "apiType": "azure-naruzkurai"
     }
     ```
   </Tab>

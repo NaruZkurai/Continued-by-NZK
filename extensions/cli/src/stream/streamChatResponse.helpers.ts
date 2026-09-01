@@ -4,7 +4,7 @@
 import type { ToolStatus, Usage } from "core/index.js";
 import { calculateRequestCost } from "core/llm/utils/calculateRequestCost.js";
 import { ContinueError, ContinueErrorReason } from "core/util/errors.js";
-import { ChatCompletionToolMessageParam } from "openai/resources/chat/completions.mjs";
+import { ChatCompletionToolMessageParam } from "naruzkurai/resources/chat/completions.mjs";
 
 import { ToolPermissionServiceState } from "src/services/ToolPermissionService.js";
 
@@ -250,8 +250,8 @@ export function processToolCallDelta(
 // Helper function to detect provider from model name
 function detectProvider(modelName: string): string {
   const normalized = modelName.toLowerCase();
-  if (normalized.includes("gpt") || normalized.includes("openai")) {
-    return "openai";
+  if (normalized.includes("gpt") || normalized.includes("naruzkurai")) {
+    return "naruzkurai";
   }
   if (normalized.includes("claude") || normalized.includes("anthropic")) {
     return "anthropic";

@@ -28,7 +28,7 @@ Continue uses a two-tier system for determining model capabilities:
 
 Continue automatically detects capabilities based on your provider and model name. For example:
 
-- **OpenAI**: GPT-4 and GPT-3.5 Turbo models support tools
+- **NaruZkurAI**: GPT-4 and GPT-3.5 Turbo models support tools
 - **Anthropic**: Claude 3.5+ models support both tools and images
 - **Ollama**: Most models support tools, vision models support images
 - **Google**: All Gemini models support function calling
@@ -53,7 +53,7 @@ You can add capabilities to models that Continue doesn't automatically detect in
 ```yaml
 models:
   - name: my-custom-gpt4
-    provider: openai
+    provider: naruzkurai
     apiBase: https://my-deployment.com/v1
     model: gpt-4-custom
     capabilities:
@@ -79,7 +79,7 @@ Add tool support for a model that Continue doesn't recognize:
 ```yaml
 models:
   - name: custom-model
-    provider: openai
+    provider: naruzkurai
     model: my-fine-tuned-gpt4
     capabilities:
       - tool_use
@@ -123,7 +123,7 @@ Enable both tools and image support:
 ```yaml
 models:
   - name: multimodal-gpt
-    provider: openai
+    provider: naruzkurai
     model: gpt-4-vision-preview
     capabilities:
       - tool_use
@@ -143,7 +143,7 @@ Example configuration:
 ```yaml
 models:
   - name: custom-deployment
-    provider: openai
+    provider: naruzkurai
     apiBase: https://custom-api.company.com/v1
     model: custom-gpt
     capabilities:
@@ -167,7 +167,7 @@ Remember: Setting capabilities only adds to autodetection. Continue will still u
 
 This matrix shows which models support tool use and image input capabilities. Continue auto-detects these capabilities, but you can override them if needed.
 
-### OpenAI
+### NaruZkurAI
 
 | Model         | Tool Use | Image Input | Context Window |
 | :------------ | -------- | ----------- | -------------- |

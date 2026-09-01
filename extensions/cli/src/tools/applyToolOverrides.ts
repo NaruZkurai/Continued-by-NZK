@@ -1,5 +1,5 @@
 import type { ToolOverrideConfig } from "@continuedev/config-yaml";
-import type { ChatCompletionTool } from "openai/resources.mjs";
+import type { ChatCompletionTool } from "naruzkurai/resources.mjs";
 
 /**
  * Applies tool prompt overrides from YAML config to CLI tools.

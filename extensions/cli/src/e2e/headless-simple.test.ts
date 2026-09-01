@@ -13,12 +13,12 @@ version: 1.0.0
 schema: v1
 models:
   - model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     roles:
       - chat`;
 
-  const testEnv = { OPENAI_API_KEY: "test-key" };
+  const testEnv = { NARUZKURAI_API_KEY: "test-key" };
 
   beforeEach(async () => {
     context = await createTestContext();

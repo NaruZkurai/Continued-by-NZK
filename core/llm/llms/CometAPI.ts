@@ -1,6 +1,6 @@
 import { allModelProviders } from "@continuedev/llm-info";
 import { LLMOptions } from "../../index.js";
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 /**
  * CometAPI-specific error types for better error handling
@@ -34,9 +34,9 @@ export class CometAPIQuotaExceededError extends CometAPIError {
  * CometAPI LLM provider - aggregates multiple mainstream models
  * from various providers (GPT, Claude, Gemini, Grok, DeepSeek, Qwen, etc.)
  *
- * Uses OpenAI-compatible API format with bearer token authentication
+ * Uses NaruZkurAI-compatible API format with bearer token authentication
  */
-class CometAPI extends OpenAI {
+class CometAPI extends NaruZkurAI {
   static providerName = "cometapi";
 
   static defaultOptions: Partial<LLMOptions> = {

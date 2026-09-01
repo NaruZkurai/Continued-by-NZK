@@ -1,8 +1,8 @@
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 import type { LLMOptions } from "../../index.js";
 
-class Tensorix extends OpenAI {
+class Tensorix extends NaruZkurAI {
   static providerName = "tensorix";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.tensorix.ai/v1/",

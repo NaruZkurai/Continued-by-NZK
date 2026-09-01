@@ -1,11 +1,11 @@
 import { ChatMessage, LLMOptions } from "../../index.js";
 import { codestralEditPrompt } from "../templates/edit/codestral.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 type MistralApiKeyType = "mistral" | "codestral";
 
-class Mistral extends OpenAI {
+class Mistral extends NaruZkurAI {
   static providerName = "mistral";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.mistral.ai/v1/",
@@ -53,7 +53,7 @@ class Mistral extends OpenAI {
               break;
           }
 
-          this.openaiAdapter = this.createOpenAiAdapter();
+          this.naruzkuraiAdapter = this.createNaruZkurAIAdapter();
         })
         .catch((err: any) => {});
     }

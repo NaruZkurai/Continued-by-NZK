@@ -41,9 +41,9 @@ describe("ModelService - Direct Testing", () => {
         },
         {
           name: "GPT-4",
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
-          apiKey: "test-openai-key",
+          apiKey: "test-naruzkurai-key",
           roles: ["chat"],
         },
       ],
@@ -71,7 +71,7 @@ describe("ModelService - Direct Testing", () => {
     // Verify the model info
     const modelInfo = modelService.getModelInfo();
     expect(modelInfo?.name).toBe("GPT-4");
-    expect(modelInfo?.provider).toBe("openai");
+    expect(modelInfo?.provider).toBe("naruzkurai");
   });
 
   it("should successfully switch model after proper initialization", async () => {
@@ -82,14 +82,14 @@ describe("ModelService - Direct Testing", () => {
       models: [
         {
           name: "GPT-4",
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           apiKey: "test-key-1",
           roles: ["chat"],
         },
         {
           name: "GPT-3.5",
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-3.5-turbo",
           apiKey: "test-key-2",
           roles: ["chat"],
@@ -129,7 +129,7 @@ describe("ModelService - Direct Testing", () => {
       models: [
         {
           name: "GPT-4",
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           apiKey: "test-key",
         },
@@ -159,14 +159,14 @@ describe("ModelService - Direct Testing", () => {
       models: [
         {
           name: "GPT-4",
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           apiKey: "test-key-1",
           roles: ["chat"],
         },
         {
           name: "GPT-3.5",
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-3.5-turbo",
           apiKey: "test-key-2",
           roles: ["chat"],
@@ -196,12 +196,12 @@ describe("ModelService - Direct Testing", () => {
     // Get model info to verify success message data
     const modelInfo = modelService.getModelInfo();
     expect(modelInfo).toEqual({
-      provider: "openai",
+      provider: "naruzkurai",
       name: "GPT-3.5",
     });
 
     // This is what the success message would use
     const successMessage = `Switched to model: ${modelInfo?.provider}/${modelInfo?.name}`;
-    expect(successMessage).toBe("Switched to model: openai/GPT-3.5");
+    expect(successMessage).toBe("Switched to model: naruzkurai/GPT-3.5");
   });
 });

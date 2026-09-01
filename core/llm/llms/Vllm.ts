@@ -1,6 +1,6 @@
 import { Chunk, LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 // vLLM-specific rerank response types
 interface VllmRerankItem {
@@ -20,7 +20,7 @@ interface VllmRerankResponse {
   results: VllmRerankItem[];
 }
 
-class Vllm extends OpenAI {
+class Vllm extends NaruZkurAI {
   static providerName = "vllm";
   private _userExplicitContextLength: boolean;
   private _userExplicitModel: boolean;
@@ -42,8 +42,8 @@ class Vllm extends OpenAI {
   }
 
   async rerank(query: string, chunks: Chunk[]): Promise<number[]> {
-    if (this.useOpenAIAdapterFor.includes("rerank") && this.openaiAdapter) {
-      const results = (await this.openaiAdapter.rerank({
+    if (this.useNaruZkurAIAdapterFor.includes("rerank") && this.naruzkuraiAdapter) {
+      const results = (await this.naruzkuraiAdapter.rerank({
         model: this.model,
         query,
         documents: chunks.map((chunk) => chunk.content),
@@ -60,7 +60,7 @@ class Vllm extends OpenAI {
       );
     }
 
-    throw new Error("vLLM rerank requires OpenAI adapter");
+    throw new Error("vLLM rerank requires NaruZkurAI adapter");
   }
 
   private _setupCompletionOptions() {

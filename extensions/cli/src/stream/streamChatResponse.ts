@@ -1,12 +1,12 @@
 import { ModelConfig } from "@continuedev/config-yaml";
-import { BaseLlmApi } from "@continuedev/openai-adapters";
+import { BaseLlmApi } from "@continuedev/naruzkurai-adapters";
 import type { ChatHistoryItem } from "core/index.js";
 import { convertFromUnifiedHistoryWithSystemMessage } from "core/util/messageConversion.js";
 import * as dotenv from "dotenv";
 import type {
-  ChatCompletionMessageParam,
-  ChatCompletionTool,
-} from "openai/resources.mjs";
+    ChatCompletionMessageParam,
+    ChatCompletionTool,
+} from "naruzkurai/resources.mjs";
 
 import { pruneLastMessage } from "../compaction.js";
 import { services } from "../services/index.js";
@@ -14,28 +14,28 @@ import { telemetryService } from "../telemetry/telemetryService.js";
 import { applyChatCompletionToolOverrides } from "../tools/applyToolOverrides.js";
 import { ToolCall } from "../tools/index.js";
 import {
-  chatCompletionStreamWithBackoff,
-  isContextLengthError,
-  withExponentialBackoff,
+    chatCompletionStreamWithBackoff,
+    isContextLengthError,
+    withExponentialBackoff,
 } from "../util/exponentialBackoff.js";
 import { logger } from "../util/logger.js";
 import { validateContextLength } from "../util/tokenizer.js";
 
 import { getRequestTools, handleToolCalls } from "./handleToolCalls.js";
 import {
-  handleNormalAutoCompaction,
-  handlePostToolValidation,
-  handlePreApiCompaction,
+    handleNormalAutoCompaction,
+    handlePostToolValidation,
+    handlePreApiCompaction,
 } from "./streamChatResponse.compactionHelpers.js";
 import {
-  processChunkContent,
-  processToolCallDelta,
-  recordStreamTelemetry,
-  trackFirstTokenTime,
+    processChunkContent,
+    processToolCallDelta,
+    recordStreamTelemetry,
+    trackFirstTokenTime,
 } from "./streamChatResponse.helpers.js";
 import {
-  getDefaultCompletionOptions,
-  StreamCallbacks,
+    getDefaultCompletionOptions,
+    StreamCallbacks,
 } from "./streamChatResponse.types.js";
 
 dotenv.config();
@@ -249,8 +249,8 @@ export async function processStreamingResponse(
     throw new Error(`Context length validation failed: ${validation.error}`);
   }
 
-  // Create OpenAI format history with validated system message
-  const openaiChatHistory = convertFromUnifiedHistoryWithSystemMessage(
+  // Create NaruZkurAI format history with validated system message
+  const naruzkuraiChatHistory = convertFromUnifiedHistoryWithSystemMessage(
     chatHistory,
     systemMessage,
   ) as ChatCompletionMessageParam[];
@@ -266,7 +266,7 @@ export async function processStreamingResponse(
       llmApi,
       {
         model: model.model,
-        messages: openaiChatHistory,
+        messages: naruzkuraiChatHistory,
         stream: true,
         tools,
         ...getDefaultCompletionOptions(model.defaultCompletionOptions),

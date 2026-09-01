@@ -15,7 +15,7 @@ describe("parseMarkdownRuleOrAssistantUnrolled tests", () => {
     const yamlContent = `
 name: Test Agent
 version: 1.0.0
- 
+
 models:
   - name: model
     model: modelname
@@ -38,7 +38,7 @@ models:
 name: rulename
 description: my rule description
 ---
-This is the rule 
+This is the rule
 `;
     const result = parseMarkdownRuleOrAssistantUnrolled(
       markdownContent,
@@ -64,7 +64,7 @@ This is the rule
     const invalidContent = `
 name: Test Agent
 version: 1.0.0
- 
+
 model: # should be models
   - name: model
     model: modelname
@@ -245,10 +245,10 @@ name: Complex Test
 version: 1.0.0
 models:
   - name: gpt-4
-    apiKey: \${{ inputs.openaiKey }}
+    apiKey: \${{ inputs.naruzkuraiKey }}
 prompts:
   - name: system
-    content: "You are a helpful assistant. API key: \${{ inputs.openaiKey }}"
+    content: "You are a helpful assistant. API key: \${{ inputs.naruzkuraiKey }}"
 rules:
   - "Use \${{ inputs.style }} formatting"
 data:
@@ -262,7 +262,7 @@ data:
 `;
     const result = replaceInputsWithSecrets(yamlContent);
     // Check all inputs were replaced with secrets
-    expect(result).toContain("\${{ secrets.openaiKey }}");
+    expect(result).toContain("\${{ secrets.naruzkuraiKey }}");
     expect(result).toContain("\${{ secrets.style }}");
     expect(result).toContain("\${{ secrets.dbHost }}");
     expect(result).toContain("\${{ secrets.dbPassword }}");
@@ -270,7 +270,7 @@ data:
     expect(result).toContain("\${{ secrets.external }}");
     expect(result).toContain("\${{ other.variable }}");
     // Check that no input variables remain
-    expect(result).not.toContain("inputs.openaiKey");
+    expect(result).not.toContain("inputs.naruzkuraiKey");
     expect(result).not.toContain("inputs.style");
     expect(result).not.toContain("inputs.dbHost");
     expect(result).not.toContain("inputs.dbPassword");

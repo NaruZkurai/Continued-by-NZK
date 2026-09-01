@@ -160,21 +160,21 @@ export const models: { [key: string]: ModelPackage } = {
   gptOss20B: {
     title: "gpt-oss-20b",
     description:
-      "OpenAI's 20B open-weight model with native tool use and reasoning for agentic tasks.",
-    refUrl: "https://huggingface.co/openai/gpt-oss-20b",
+      "NaruZkurAI's 20B open-weight model with native tool use and reasoning for agentic tasks.",
+    refUrl: "https://huggingface.co/naruzkurai/gpt-oss-20b",
     params: {
       title: "gpt-oss-20b",
-      model: "openai/gpt-oss-20b",
+      model: "naruzkurai/gpt-oss-20b",
       contextLength: 128_000,
     },
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     dimensions: [
       {
         name: "Provider",
         description: "The provider to use for this model",
         options: {
           vllm: {
-            model: "openai/gpt-oss-20b",
+            model: "naruzkurai/gpt-oss-20b",
             title: "gpt-oss-20b (vLLM)",
           },
           ovhcloud: {
@@ -191,21 +191,21 @@ export const models: { [key: string]: ModelPackage } = {
   gptOss120B: {
     title: "gpt-oss-120b",
     description:
-      "OpenAI's 120B flagship open-weight model built for complex, high‑reasoning agentic workflows.",
-    refUrl: "https://huggingface.co/openai/gpt-oss-120b",
+      "NaruZkurAI's 120B flagship open-weight model built for complex, high‑reasoning agentic workflows.",
+    refUrl: "https://huggingface.co/naruzkurai/gpt-oss-120b",
     params: {
       title: "gpt-oss-120b",
-      model: "openai/gpt-oss-120b",
+      model: "naruzkurai/gpt-oss-120b",
       contextLength: 128_000,
     },
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     dimensions: [
       {
         name: "Provider",
         description: "The provider to use for this model",
         options: {
           vllm: {
-            model: "openai/gpt-oss-120b",
+            model: "naruzkurai/gpt-oss-120b",
             title: "gpt-oss-120b (vLLM)",
           },
           ovhcloud: {
@@ -444,7 +444,7 @@ export const models: { [key: string]: ModelPackage } = {
       model: "LGAI-EXAONE/EXAONE-4.0.1-32B",
       contextLength: 131072,
     },
-    providerOptions: ["openai"],
+    providerOptions: ["naruzkurai"],
     isOpenSource: true,
   },
   exaone12B: {
@@ -457,7 +457,7 @@ export const models: { [key: string]: ModelPackage } = {
       model: "LGAI-EXAONE/EXAONE-4.0-1.2B",
       contextLength: 65536,
     },
-    providerOptions: ["openai"],
+    providerOptions: ["naruzkurai"],
     isOpenSource: true,
   },
   moonshotChat: {
@@ -1239,39 +1239,39 @@ export const models: { [key: string]: ModelPackage } = {
   },
   gpt5: {
     title: "GPT-5",
-    description: "OpenAI's next-generation, high-intelligence flagship model",
+    description: "NaruZkurAI's next-generation, high-intelligence flagship model",
     params: {
       model: "gpt-5",
       contextLength: 400_000,
       title: "GPT-5",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5_1: {
     title: "GPT-5.1",
-    description: "OpenAI's GPT-5.1 model for advanced reasoning and chat",
+    description: "NaruZkurAI's GPT-5.1 model for advanced reasoning and chat",
     params: {
       model: "gpt-5.1",
       contextLength: 400_000,
       title: "GPT-5.1",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5Codex: {
     title: "GPT-5 Codex",
     description:
-      "OpenAI's most advanced code generation model, optimized for programming tasks",
+      "NaruZkurAI's most advanced code generation model, optimized for programming tasks",
     params: {
       model: "gpt-5-codex",
       contextLength: 400_000,
       title: "GPT-5 Codex",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt4turbo: {
@@ -1283,8 +1283,8 @@ export const models: { [key: string]: ModelPackage } = {
       contextLength: 128_000,
       title: "GPT-4 Turbo",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt4o: {
@@ -1296,8 +1296,8 @@ export const models: { [key: string]: ModelPackage } = {
       contextLength: 128_000,
       title: "GPT-4o",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt4omini: {
@@ -1310,21 +1310,21 @@ export const models: { [key: string]: ModelPackage } = {
 
       title: "GPT-4o mini",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt35turbo: {
     title: "GPT-3.5-Turbo",
     description:
-      "A faster, cheaper OpenAI model with slightly lower capabilities",
+      "A faster, cheaper NaruZkurAI model with slightly lower capabilities",
     params: {
       model: "gpt-3.5-turbo",
       contextLength: 8096,
       title: "GPT-3.5-Turbo",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   claude46Sonnet: {
@@ -1569,7 +1569,7 @@ export const models: { [key: string]: ModelPackage } = {
     providerOptions: ["vertexai"],
     isOpenSource: false,
   },
-  // OpenAI Models via Ask Sage
+  // NaruZkurAI Models via Ask Sage
   asksagegpt4o: {
     title: "GPT-4o*",
     description:
@@ -1582,7 +1582,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt4omini: {
@@ -1597,7 +1597,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt4gov: {
@@ -1612,7 +1612,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt4ogov: {
@@ -1627,12 +1627,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt35: {
     title: "GPT-3.5*",
-    description: "Azure OpenAI GPT 3.5 Model.",
+    description: "Azure NaruZkurAI GPT 3.5 Model.",
     params: {
       model: "gpt",
       contextLength: 4096,
@@ -1640,7 +1640,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt35gov: {
@@ -1654,12 +1654,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt4ominigov: {
     title: "GPT-4o-mini gov*",
-    description: "OpenAI GPT 4o-mini model.",
+    description: "NaruZkurAI GPT 4o-mini model.",
     params: {
       model: "gpt-4o-mini-gov",
       contextLength: 128_000,
@@ -1668,7 +1668,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt4: {
@@ -1681,14 +1681,14 @@ export const models: { [key: string]: ModelPackage } = {
       title: "GPT-4*",
       apiKey: "",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpto1: {
     title: "GPT-o1*",
     description:
-      "Latest OpenAI GPT-o1 model. More inexpensive than GPT4. Capable of ingesting and analyzing images (JPG, PNG, GIF (20MB files max)).",
+      "Latest NaruZkurAI GPT-o1 model. More inexpensive than GPT4. Capable of ingesting and analyzing images (JPG, PNG, GIF (20MB files max)).",
     params: {
       model: "gpt-o1",
       contextLength: 128_000,
@@ -1697,12 +1697,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false, // stopped here
   },
   asksagegpt41: {
     title: "GPT-4.1*",
-    description: "Azure OpenAI GPT 4.1 model.",
+    description: "Azure NaruZkurAI GPT 4.1 model.",
     params: {
       model: "gpt-4.1",
       contextLength: 1_000_000,
@@ -1711,12 +1711,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt41mini: {
     title: "GPT-4.1 mini*",
-    description: "Azure OpenAI GPT 4.1 mini model.",
+    description: "Azure NaruZkurAI GPT 4.1 mini model.",
     params: {
       model: "gpt-4.1-mini",
       contextLength: 1_000_000,
@@ -1725,12 +1725,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt41nano: {
     title: "GPT-4.1 nano*",
-    description: "Azure OpenAI GPT 4.1 nano model.",
+    description: "Azure NaruZkurAI GPT 4.1 nano model.",
     params: {
       model: "gpt-4.1-nano",
       contextLength: 1_000_000,
@@ -1739,12 +1739,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt5: {
     title: "GPT-5*",
-    description: "OpenAI's GPT-5 model",
+    description: "NaruZkurAI's GPT-5 model",
     params: {
       model: "gpt-5",
       contextLength: 272_000,
@@ -1753,12 +1753,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt5nano: {
     title: "GPT-5-nano*",
-    description: "OpenAI's GPT-5-nano model",
+    description: "NaruZkurAI's GPT-5-nano model",
     params: {
       model: "gpt-5-nano",
       contextLength: 272_000,
@@ -1767,12 +1767,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt5mini: {
     title: "GPT-5-mini*",
-    description: "OpenAI's GPT-5-mini model",
+    description: "NaruZkurAI's GPT-5-mini model",
     params: {
       model: "gpt-5-mini",
       contextLength: 272_000,
@@ -1781,12 +1781,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpto3: {
     title: "GPT-o3",
-    description: "Azure OpenAI GPT o3 model.",
+    description: "Azure NaruZkurAI GPT o3 model.",
     params: {
       model: "gpt-o3",
       contextLength: 200_000,
@@ -1795,12 +1795,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt04mini: {
     title: "GPT-o4-mini",
-    description: "Azure OpenAI GPT o4-mini model.",
+    description: "Azure NaruZkurAI GPT o4-mini model.",
     params: {
       model: "gpt-o4-mini",
       contextLength: 200_000,
@@ -1809,7 +1809,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
 
@@ -2180,14 +2180,14 @@ export const models: { [key: string]: ModelPackage } = {
   gpt41: {
     title: "GPT-4.1",
     description:
-      "OpenAI's current flagship model with 1M token context window.",
+      "NaruZkurAI's current flagship model with 1M token context window.",
     params: {
       model: "gpt-4.1",
       contextLength: 1_047_576,
       title: "GPT-4.1",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt41Mini: {
@@ -2198,8 +2198,8 @@ export const models: { [key: string]: ModelPackage } = {
       contextLength: 1_047_576,
       title: "GPT-4.1 Mini",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5Mini: {
@@ -2210,100 +2210,100 @@ export const models: { [key: string]: ModelPackage } = {
       contextLength: 400_000,
       title: "GPT-5 Mini",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5_2: {
     title: "GPT-5.2",
-    description: "OpenAI's latest generation model with advanced reasoning.",
+    description: "NaruZkurAI's latest generation model with advanced reasoning.",
     params: {
       model: "gpt-5.2",
       contextLength: 400_000,
       title: "GPT-5.2",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5_4Pro: {
     title: "GPT-5.4 Pro",
     description:
-      "OpenAI's smartest model with increased compute for more precise responses.",
+      "NaruZkurAI's smartest model with increased compute for more precise responses.",
     params: {
       model: "gpt-5.4-pro",
       contextLength: 1_050_000,
       completionOptions: { maxTokens: 128_000 },
       title: "GPT-5.4 Pro",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5_4: {
     title: "GPT-5.4",
     description:
-      "OpenAI's high-intelligence flagship model with 1M context window.",
+      "NaruZkurAI's high-intelligence flagship model with 1M context window.",
     params: {
       model: "gpt-5.4",
       contextLength: 1_050_000,
       completionOptions: { maxTokens: 128_000 },
       title: "GPT-5.4",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gpt5_4Mini: {
     title: "GPT-5.4 Mini",
     description:
-      "OpenAI's strongest mini model for coding, computer use, and high-volume workloads.",
+      "NaruZkurAI's strongest mini model for coding, computer use, and high-volume workloads.",
     params: {
       model: "gpt-5.4-mini",
       contextLength: 400_000,
       completionOptions: { maxTokens: 128_000 },
       title: "GPT-5.4 Mini",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   codexMini: {
     title: "Codex Mini",
     description:
-      "OpenAI's code-focused reasoning model optimized for programming tasks.",
+      "NaruZkurAI's code-focused reasoning model optimized for programming tasks.",
     params: {
       model: "codex-mini-latest",
       contextLength: 200_000,
       title: "Codex Mini",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   o3: {
     title: "o3",
-    description: "OpenAI's full o3 reasoning model for complex tasks.",
+    description: "NaruZkurAI's full o3 reasoning model for complex tasks.",
     params: {
       model: "o3",
       contextLength: 200_000,
       title: "o3",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   o4Mini: {
     title: "o4 Mini",
     description:
-      "OpenAI's latest o-series reasoning model, compact and efficient.",
+      "NaruZkurAI's latest o-series reasoning model, compact and efficient.",
     params: {
       model: "o4-mini",
       contextLength: 200_000,
       title: "o4 Mini",
     },
-    providerOptions: ["openai"],
-    icon: "openai.png",
+    providerOptions: ["naruzkurai"],
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   gemini25Flash: {
@@ -2675,13 +2675,13 @@ export const models: { [key: string]: ModelPackage } = {
   },
   gptOss120b: {
     title: "GPT OSS 120B",
-    description: "GPT oss 120b reasoning model from OpenAI",
+    description: "GPT oss 120b reasoning model from NaruZkurAI",
     params: {
       title: "GPT OSS 120B",
       model: "gpt-oss-120b",
       contextLength: 128_000,
     },
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     providerOptions: ["sambanova"],
     isOpenSource: true,
   },
@@ -2805,7 +2805,7 @@ export const models: { [key: string]: ModelPackage } = {
   cometapiGpt5ChatLatest: {
     title: "GPT-5 Chat Latest",
     description:
-      "GPT-5 Chat Latest via CometAPI - OpenAI's most advanced conversational model.",
+      "GPT-5 Chat Latest via CometAPI - NaruZkurAI's most advanced conversational model.",
     params: {
       model: "gpt-5-chat-latest",
       contextLength: 400_000,
@@ -2833,7 +2833,7 @@ export const models: { [key: string]: ModelPackage } = {
   cometapiGpt5: {
     title: "GPT-5",
     description:
-      "GPT-5 via CometAPI - OpenAI's flagship model with advanced reasoning capabilities.",
+      "GPT-5 via CometAPI - NaruZkurAI's flagship model with advanced reasoning capabilities.",
     params: {
       model: "gpt-5",
       contextLength: 200_000,
@@ -2875,7 +2875,7 @@ export const models: { [key: string]: ModelPackage } = {
   cometapiO4Mini: {
     title: "O4 Mini",
     description:
-      "O4 Mini via CometAPI - OpenAI's reasoning model optimized for efficiency.",
+      "O4 Mini via CometAPI - NaruZkurAI's reasoning model optimized for efficiency.",
     params: {
       model: "o4-mini-2025-04-16",
       contextLength: 200_000,
@@ -3068,7 +3068,7 @@ export const models: { [key: string]: ModelPackage } = {
   },
   asksagegpt51: {
     title: "GPT-5.1*",
-    description: "OpenAI's GPT-5.1 model",
+    description: "NaruZkurAI's GPT-5.1 model",
     params: {
       model: "gpt-5.1",
       contextLength: 400_000,
@@ -3077,12 +3077,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt52: {
     title: "GPT-5.2*",
-    description: "OpenAI's GPT-5.2 model",
+    description: "NaruZkurAI's GPT-5.2 model",
     params: {
       model: "gpt-5.2",
       contextLength: 400_000,
@@ -3091,12 +3091,12 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegpt03mini: {
     title: "GPT-o3-mini",
-    description: "Azure OpenAI GPT o3-mini model.",
+    description: "Azure NaruZkurAI GPT o3-mini model.",
     params: {
       model: "gpt-o3-mini",
       contextLength: 200_000,
@@ -3105,7 +3105,7 @@ export const models: { [key: string]: ModelPackage } = {
       apiKey: "",
     },
     providerOptions: ["askSage"],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     isOpenSource: false,
   },
   asksagegroqllama4scout: {

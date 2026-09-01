@@ -53,7 +53,7 @@ NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
 export NODE_OPTIONS
 
 # -----------------------------------------------------------------------------
-# 2. Install workspace packages (openai-adapters, config-types, fetch, ...)
+# 2. Install workspace packages (naruzkurai-adapters, config-types, fetch, ...)
 # -----------------------------------------------------------------------------
 log "building workspace packages ..."
 node ./scripts/build-packages.js

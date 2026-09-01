@@ -144,17 +144,17 @@ runTest("Local packages are bundled", () => {
     throw new Error("@continuedev/config-yaml not properly bundled");
   }
 
-  // Check for code from @continuedev/openai-adapters
+  // Check for code from @continuedev/naruzkurai-adapters
   // Since the bundle is minified, check for strings that would be present
   // even after minification (e.g., error messages, property names)
   if (
     !bundleContent.includes("anthropic") &&
     !bundleContent.includes("gemini") &&
-    !bundleContent.includes("openai") &&
+    !bundleContent.includes("naruzkurai") &&
     !bundleContent.includes("azure") &&
     !bundleContent.includes("bedrock")
   ) {
-    throw new Error("@continuedev/openai-adapters not properly bundled");
+    throw new Error("@continuedev/naruzkurai-adapters not properly bundled");
   }
 });
 

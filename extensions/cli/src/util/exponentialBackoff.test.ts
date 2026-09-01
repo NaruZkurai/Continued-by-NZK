@@ -27,7 +27,7 @@ function isRetryableError(error: any): boolean {
     return status === 429 || status === 502 || status === 503 || status === 504;
   }
 
-  // OpenAI specific errors
+  // NaruZkurAI specific errors
   if (error.type === "server_error" || error.type === "rate_limit_exceeded") {
     return true;
   }

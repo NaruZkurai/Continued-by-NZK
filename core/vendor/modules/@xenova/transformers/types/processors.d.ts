@@ -701,7 +701,7 @@ export class OwlViTProcessor extends Processor {}
  *
  * **Example:** Load a processor using `from_pretrained`.
  * ```javascript
- * let processor = await AutoProcessor.from_pretrained('openai/whisper-tiny.en');
+ * let processor = await AutoProcessor.from_pretrained('naruzkurai/whisper-tiny.en');
  * ```
  *
  * **Example:** Run an image through a processor.

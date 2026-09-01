@@ -120,12 +120,12 @@ describe("AgentFileService", () => {
   const mockAssistant = {
     models: [
       {
-        provider: "openai",
+        provider: "naruzkurai",
         name: "gpt-3.5-turbo",
         roles: ["chat"],
       },
       {
-        provider: "openai",
+        provider: "naruzkurai",
         name: "gpt-4",
         roles: ["chat"],
       },
@@ -157,7 +157,7 @@ describe("AgentFileService", () => {
     mockLoadPackageFromHub.mockResolvedValue(mockAgentFile);
     mockLoadModelFromHub.mockResolvedValue({
       name: "gpt-4-agent",
-      provider: "openai",
+      provider: "naruzkurai",
     });
     // Default file system mocks
     mockPathResolve.mockImplementation((p: string) => `/resolved/${p}`);
@@ -226,7 +226,7 @@ describe("AgentFileService", () => {
       const state = agentFileService.getState();
       expect(state.agentFileModel).toEqual({
         name: "gpt-4-agent",
-        provider: "openai",
+        provider: "naruzkurai",
       });
     });
   });
@@ -442,7 +442,7 @@ describe("AgentFileService", () => {
       expect(Array.isArray(state.parsedTools?.mcpServers)).toBe(true);
       expect(state.agentFileModel).toEqual({
         name: "gpt-4-agent",
-        provider: "openai",
+        provider: "naruzkurai",
       });
     });
 

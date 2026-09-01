@@ -16,6 +16,8 @@ function convertModel(
     model: m.model,
     apiKey: m.apiKey,
     apiBase: m.apiBase,
+    apiURL: m.apiURL,
+    ApiHttpOrHttps: m.ApiHttpOrHttps,
     roles,
     requestOptions: m.requestOptions,
     defaultCompletionOptions: m.completionOptions,

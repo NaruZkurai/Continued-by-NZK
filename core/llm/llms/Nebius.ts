@@ -1,8 +1,8 @@
 import { LLMOptions } from "../..";
 
-import OpenAI from "./OpenAI";
+import NaruZkurAI from "./NaruZkurAI";
 
-class Nebius extends OpenAI {
+class Nebius extends NaruZkurAI {
   static providerName = "nebius";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.studio.nebius.ai/v1/",

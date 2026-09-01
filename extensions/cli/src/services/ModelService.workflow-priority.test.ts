@@ -40,7 +40,7 @@ describe("ModelService agent file model prioritization", () => {
 
     mockModels = [
       { provider: "anthropic", name: "claude-3-sonnet" } as ModelConfig,
-      { provider: "openai", name: "gpt-4" } as ModelConfig,
+      { provider: "naruzkurai", name: "gpt-4" } as ModelConfig,
       { provider: "anthropic", name: "claude-3-haiku" } as ModelConfig,
     ];
 
@@ -65,7 +65,7 @@ describe("ModelService agent file model prioritization", () => {
       agentFileModel: {
         name: "gpt-4",
         model: "gpt-4",
-        provider: "openai",
+        provider: "naruzkurai",
       },
       parsedRules: null,
       parsedTools: null,
@@ -90,7 +90,7 @@ describe("ModelService agent file model prioritization", () => {
     expect(result.model).toEqual(
       expect.objectContaining({
         name: "gpt-4",
-        provider: "openai",
+        provider: "naruzkurai",
       }),
     );
 
@@ -232,7 +232,7 @@ describe("ModelService agent file model prioritization", () => {
       agentFileModel: {
         name: "gpt-4",
         model: "gpt-4",
-        provider: "openai",
+        provider: "naruzkurai",
       },
       parsedRules: null,
       parsedTools: null,
@@ -261,7 +261,7 @@ describe("ModelService agent file model prioritization", () => {
     expect(result.model).toEqual(
       expect.objectContaining({
         name: "gpt-4",
-        provider: "openai",
+        provider: "naruzkurai",
       }),
     );
 

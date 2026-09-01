@@ -55,7 +55,7 @@ if [ -n "${VSIX:-}" ]; then
 fi
 
 # -----------------------------------------------------------------------------
-# 1. Build the workspace packages (openai-adapters, config-types, fetch, ...)
+# 1. Build the workspace packages (naruzkurai-adapters, config-types, fetch, ...)
 # -----------------------------------------------------------------------------
 if [ "$MODE" != "--bundle-only" ]; then
   log "building workspace packages ..."
@@ -102,6 +102,35 @@ fi
 ok "bundle contains naruzkurai provider ($(grep -c "naruzkurai" "$BUILD_BUNDLE") hits)."
 
 # ---------------------------------------------------------------------------
+# 5b. Bump the extension version before packaging so every install gets a
+#     unique, increasing version (helps sidestep stale/cached installs).
+#
+#     Version format: 2.0.2-<yyyymmddhhmmss> (a semver PRERELEASE build,
+#     e.g. 2.0.2-20260831153045). VS Code requires valid semver;
+#     "2.0.2.20260831153045" (a 4th dot-segment) is NOT valid and vsce will
+#     refuse to package it, so the timestamp lives in the prerelease slot.
+#     A timestamped build is unique and monotonic without any persisted
+#     counter state.
+# ---------------------------------------------------------------------------
+VERSION_BASE="2.0.2"
+VSCODE_PKG="${VSCODE_DIR}/package.json"
+
+next_version() {
+  printf '%s-%s\n' "$VERSION_BASE" "$(date +%Y%m%d%H%M%S)"
+}
+
+log "bumping extension version ..."
+NEW_VERSION="$(next_version)"
+node -e "
+  const fs = require('fs');
+  const p = '${VSCODE_PKG}';
+  const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+  j.version = '${NEW_VERSION}';
+  fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
+"
+ok "version bumped to ${NEW_VERSION}"
+
+# ---------------------------------------------------------------------------
 # 6. Package a .vsix (vsce runs vscode:prepublish -> esbuild; that is fine).
 # ---------------------------------------------------------------------------
 log "packaging .vsix ..."
@@ -112,10 +141,58 @@ rm -f "$VSIX_OUT"
 [ -f "$VSIX_OUT" ] || die "packaging produced no .vsix at ${VSIX_OUT}"
 
 # ---------------------------------------------------------------------------
-# 7. Install via the VS Code CLI (registers under the current publisher/name).
+# 7. Remove any pre-existing Continue / continued extensions first.
+#
+#    Multiple copies of the extension (e.g. a leftover `continue.continue`
+#    plus `naruzkurai.continued`, or stale versioned dirs) all register the
+#    same `continue.*` command IDs, which makes VS Code throw
+#    "command 'continue.focusContinueInput' already registered". Deleting
+#    every on-disk copy up front guarantees a single clean install.
+# ---------------------------------------------------------------------------
+remove_existing_continue_extensions() {
+  local ext_dir ids removed
+  ext_dir="$HOME/.vscode/extensions"
+
+  log "removing existing continue/continued extensions ..."
+
+  # 7a. Uninstall via the VS Code CLI (updates extensions.json state).
+  for id in "continue.continue" "naruzkurai.continued" "naruzkurai.contiunued"; do
+    if code --list-extensions 2>/dev/null | grep -q "^${id}\$"; then
+      code --uninstall-extension "$id" >/dev/null 2>&1 \
+        && log "  uninstalled ${id}" \
+        || log "  (${id} reported uninstalled)"
+    fi
+  done
+
+  # 7b. Hard-delete any on-disk continue/continued extension folders
+  #     (covers stale left-overs that the CLI no longer tracks, e.g.
+  #     ".stale-*" copies and old `continue.continue-*` dirs). We only delete
+  #     under $HOME/.vscode/extensions, so nothing outside user extensions is
+  #     touched.
+  removed=0
+  while IFS= read -r d; do
+    [ -n "$d" ] || continue
+    name="$(basename "$d")"
+    case "$name" in
+      continue.continue-*|naruzkurai.continued-*|continue.contiunued-*|naruzkurai.contiunued-*|.stale-continue.*|.stale-naruzkurai.*)
+        rm -rf "$d" && log "  deleted ${d}" && removed=1
+        ;;
+    esac
+  done < <(find "$ext_dir" -maxdepth 1 \( -iname "*continue*" -o -iname "*contiunue*" -o -iname "*naruzkurai*" \) 2>/dev/null)
+
+  if [ "$removed" -eq 0 ]; then
+    log "  none found"
+  fi
+}
+
+remove_existing_continue_extensions
+
+# ---------------------------------------------------------------------------
+# 8. Install via the VS Code CLI (registers under the current publisher/name).
 # ---------------------------------------------------------------------------
 log "installing ${VSIX_OUT} ..."
 code --install-extension "$VSIX_OUT" --force
 
 ok "installed. Reload VS Code (Ctrl+Shift+P -> \"Developer: Reload Window\")."
 echo "  verify: code --list-extensions --show-versions | grep continue"
+pkill vscode

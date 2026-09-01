@@ -1,7 +1,7 @@
 import Fireworks from "./Fireworks.js";
-import { createOpenAISubclassTests } from "./test-utils/openai-test-utils.js";
+import { createNaruZkurAISubclassTests } from "./test-utils/naruzkurai-test-utils.js";
 
-createOpenAISubclassTests(Fireworks, {
+createNaruZkurAISubclassTests(Fireworks, {
   providerName: "fireworks",
   defaultApiBase: "https://api.fireworks.ai/inference/v1/",
   modelConversions: {

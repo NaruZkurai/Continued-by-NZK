@@ -1,9 +1,9 @@
-import { ChatCompletionCreateParams } from "openai/resources/index";
+import { ChatCompletionCreateParams } from "naruzkurai/resources/index";
 import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class NCompass extends OpenAI {
+class NCompass extends NaruZkurAI {
   static providerName = "ncompass";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.ncompass.tech/v1/",

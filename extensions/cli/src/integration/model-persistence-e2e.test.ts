@@ -35,7 +35,7 @@ describe("Model Persistence End-to-End", () => {
       version: "1.0.0",
       models: [
         {
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           name: "GPT-4",
           apiKey: "test-key",
@@ -114,7 +114,7 @@ describe("Model Persistence End-to-End", () => {
       ...mockAssistant,
       models: [
         {
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           // No name field, just model
           apiKey: "test-key",

@@ -49,17 +49,17 @@ config.json
   "models": [
     {
       "title": "GPT-4",
-      "provider": "openai",
+      "provider": "naruzkurai",
       "model": "gpt-4",
-      "apiKey": "<YOUR_OPENAI_API_KEY>",
+      "apiKey": "<YOUR_NARUZKURAI_API_KEY>",
       "completionOptions": { "temperature": 0.5, "maxTokens": 2000 }
     },
     { "title": "Ollama", "provider": "ollama", "model": "AUTODETECT" },
     {
       "title": "My Open AI Compatible Model",
-      "provider": "openai",
+      "provider": "naruzkurai",
       "apiBase": "http://3.3.3.3/v1",
-      "model": "my-openai-compatible-model",
+      "model": "my-naruzkurai-compatible-model",
       "requestOptions": { "headers": { "X-Auth-Token": "<API_KEY>" } }
     }
   ],
@@ -69,9 +69,9 @@ config.json
     "model": "starcoder2:3b"
   },
   "embeddingsProvider": {
-    "provider": "openai",
+    "provider": "naruzkurai",
     "model": "text-embedding-ada-002",
-    "apiKey": "<YOUR_OPENAI_API_KEY>",
+    "apiKey": "<YOUR_NARUZKURAI_API_KEY>",
     "maxEmbeddingChunkSize": 256,
     "maxEmbeddingBatchSize": 5
   },
@@ -89,9 +89,9 @@ config.yaml
 ```yaml
 models:
   - name: GPT-4
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
-    apiKey: <YOUR_OPENAI_API_KEY>
+    apiKey: <YOUR_NARUZKURAI_API_KEY>
     defaultCompletionOptions:
       temperature: 0.5
       maxTokens: 2000
@@ -110,9 +110,9 @@ models:
     roles:
       - autocomplete
   - name: My Ada Embedder
-    provider: openai
+    provider: naruzkurai
     model: text-embedding-ada-002
-    apiKey: <YOUR_OPENAI_API_KEY>
+    apiKey: <YOUR_NARUZKURAI_API_KEY>
     roles:
       - embed
     embedOptions:
@@ -124,8 +124,8 @@ models:
     roles:
       - chat
   - name: My Open AI Compatible Model
-    provider: openai
-    model: my-openai-compatible-model
+    provider: naruzkurai
+    model: my-naruzkurai-compatible-model
     apiBase: http://3.3.3.3/v1
     requestOptions:
       headers:

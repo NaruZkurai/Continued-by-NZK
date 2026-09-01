@@ -16,9 +16,9 @@ export const PROVIDER_TOOL_SUPPORT: Record<string, (model: string) => boolean> =
       if (lower.match(/^gpt-[4-9]/) || lower.match(/^o[1-9]/)) return true;
       return false;
     },
-    openai: (model) => {
+    naruzkurai: (model) => {
       const lower = model.toLowerCase();
-      // https://platform.openai.com/docs/guides/function-calling#models-supporting-function-calling
+      // https://platform.naruzkurai.com/docs/guides/function-calling#models-supporting-function-calling
       if (
         lower.match(/^gpt-[4-9]/) ||
         lower.match(/^o[1-9]/) ||
@@ -27,7 +27,7 @@ export const PROVIDER_TOOL_SUPPORT: Record<string, (model: string) => boolean> =
         return true;
       }
 
-      // LGAI EXAONE models expose an OpenAI-compatible API with tool
+      // LGAI EXAONE models expose an NaruZkurAI-compatible API with tool
       // calling support when served via frameworks like vLLM
       if (lower.includes("exaone")) {
         return true;
@@ -308,8 +308,8 @@ export const PROVIDER_TOOL_SUPPORT: Record<string, (model: string) => boolean> =
       }
 
       const supportedPrefixes = [
-        "openai/gpt-",
-        "openai/codex",
+        "naruzkurai/gpt-",
+        "naruzkurai/codex",
         "anthropic/claude",
         "microsoft/phi-3",
         "google/gemini-flash-1.5",
@@ -348,8 +348,8 @@ export const PROVIDER_TOOL_SUPPORT: Record<string, (model: string) => boolean> =
         }
       }
 
-      // OpenAI o-series (o1, o3, o4, ...)
-      if (baseModel.match(/^openai\/o[1-9]/)) {
+      // NaruZkurAI o-series (o1, o3, o4, ...)
+      if (baseModel.match(/^naruzkurai\/o[1-9]/)) {
         return true;
       }
 
@@ -452,7 +452,7 @@ export const PROVIDER_TOOL_SUPPORT: Record<string, (model: string) => boolean> =
       }
 
       // Prefix match models
-      const prefixMatches = ["qwen/qwen3", "openai/gpt-oss"];
+      const prefixMatches = ["qwen/qwen3", "naruzkurai/gpt-oss"];
 
       for (const prefix of prefixMatches) {
         if (lower.startsWith(prefix)) {

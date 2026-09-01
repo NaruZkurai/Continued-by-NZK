@@ -1,7 +1,7 @@
 import { LLMOptions } from "../../index.js";
 import { osModelsEditPrompt } from "../templates/edit.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 // Get Continue version from package.json at build time
 const CONTINUE_VERSION = process.env.npm_package_version || "unknown";
@@ -16,12 +16,12 @@ const CONTINUE_VERSION = process.env.npm_package_version || "unknown";
  * Features:
  * - 15-dimension prompt complexity scoring
  * - Automatic model selection (cheap → capable based on task)
- * - OpenAI-compatible API at localhost:1337
+ * - NaruZkurAI-compatible API at localhost:1337
  * - Support for multiple routing tiers (auto, free, eco)
  *
  * @see https://github.com/BlockRunAI/ClawRouter
  */
-class ClawRouter extends OpenAI {
+class ClawRouter extends NaruZkurAI {
   static providerName = "clawrouter";
 
   // ClawRouter can route to models that support reasoning fields

@@ -73,7 +73,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
       ...completionParamsInputsConfigs,
     ],
     packages: [
-      // GPT, OpenAI family
+      // GPT, NaruZkurAI family
       models.cometapiGpt5ChatLatest,
       models.cometapiGpt5Mini,
       models.cometapiGpt5,
@@ -113,13 +113,13 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     ],
     apiKeyUrl: "https://api.cometapi.com/console/token",
   },
-  openai: {
-    title: "OpenAI",
-    provider: "openai",
-    description: "Use gpt-5.4, gpt-5, or any other OpenAI model",
+  naruzkurAI: {
+    title: "NaruZkurAI",
+    provider: "naruzkurai",
+    description: "Use gpt-5.4, gpt-5, or any other NaruZkurAI model",
     longDescription:
-      "Use gpt-5.4, gpt-5, or any other OpenAI model. See [here](https://openai.com/product#made-for-developers) to obtain an API key.",
-    icon: "openai.png",
+      "Use gpt-5.4, gpt-5, or any other NaruZkurAI model. See [here](https://naruzkurai.com/product#made-for-developers) to obtain an API key.",
+    icon: "naruzkurai.png",
     tags: [ ModelProviderTags.RequiresApiKey ],
     packages: [
       models.gpt5_4Pro,
@@ -143,7 +143,7 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
         ...models.AUTODETECT,
         params: {
           ...models.AUTODETECT.params,
-          title: "OpenAI",
+          title: "NaruZkurAI",
         },
       },
     ],
@@ -152,19 +152,19 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
         inputType: "text",
         key: "apiKey",
         label: "API Key",
-        placeholder: "Enter your OpenAI API key",
+        placeholder: "Enter your NaruZkurAI API key",
         required: true,
       },
       ...completionParamsInputsConfigs,
     ],
-    apiKeyUrl: "https://platform.openai.com/account/api-keys",
+    apiKeyUrl: "https://platform.naruzkurai.com/account/api-keys",
   },
   naruzkurai: {
     title: "NaruZkurai",
     provider: "naruzkurai",
-    description: "NaruZkurAI's OpenAI-compatible custom server",
+    description: "NaruZkurAI's NaruZkurAI-compatible custom server",
     longDescription:
-      "NaruZkurAI (NaruZkurai) — a patched OpenAI-compatible provider for a custom inference server. Custom headers are forwarded on every request and never stripped.",
+      "NaruZkurAI (NaruZkurai) — a patched NaruZkurAI-compatible provider for a custom inference server. Custom headers are forwarded on every request and never stripped.",
     icon: "naruzkurai.png",
     tags: [ ModelProviderTags.RequiresApiKey ],
     packages: [
@@ -397,10 +397,10 @@ export const providers: Partial<Record<string, ProviderInfo>> = {
     apiKeyUrl: "https://console.scaleway.com/iam/api-keys",
   },
   azure: {
-    title: "Azure OpenAI",
+    title: "Azure NaruZkurAI",
     provider: "azure",
     description:
-      "Azure OpenAI Service offers industry-leading coding and language AI models that you can fine-tune to your specific needs for a variety of use cases.",
+      "Azure NaruZkurAI Service offers industry-leading coding and language AI models that you can fine-tune to your specific needs for a variety of use cases.",
     longDescription: `[Visit our documentation](https://docs.continue.dev/reference/Model%20Providers/azure) for information on obtaining an API key.
 
 Select the \`GPT-4o\` model below to complete your provider configuration, but note that this will not affect the specific model you need to select when creating your Azure deployment.`,
@@ -408,7 +408,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     tags: [ ModelProviderTags.RequiresApiKey ],
     refPage: "azure",
     apiKeyUrl:
-      "https://azure.microsoft.com/en-us/products/ai-services/openai-service",
+      "https://azure.microsoft.com/en-us/products/ai-services/naruzkurai-service",
     packages: [ models.gpt4o ],
     params: {
       apiKey: "",
@@ -422,7 +422,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
         inputType: "text",
         key: "apiKey",
         label: "API Key",
-        placeholder: "Enter your Azure OpenAI API key",
+        placeholder: "Enter your Azure NaruZkurAI API key",
         required: true,
       },
       {
@@ -485,7 +485,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     provider: "mimo",
     description: "Use Xiaomi's Mimo models for fast and efficient AI responses",
     longDescription:
-      "Xiaomi Mimo provides OpenAI-compatible API access to their language models. Get your API key from the [Xiaomi Mimo Platform](https://platform.xiaomimimo.com/).",
+      "Xiaomi Mimo provides NaruZkurAI-compatible API access to their language models. Get your API key from the [Xiaomi Mimo Platform](https://platform.xiaomimimo.com/).",
     icon: "mimo.png",
     tags: [ ModelProviderTags.RequiresApiKey ],
     packages: [ models.mimoV2Flash ],
@@ -631,7 +631,7 @@ Select the \`GPT-4o\` model below to complete your provider configuration, but n
     description:
       "Inception Labs provides Mercury 2, a fast diffusion model with 128k context and tool calling.",
     longDescription:
-      "To get started with Inception Labs, obtain an API key from the [Inception Labs platform](https://platform.inceptionlabs.ai/). Mercury 2 is OpenAI-compatible and supports chat, tool calling, and structured outputs.",
+      "To get started with Inception Labs, obtain an API key from the [Inception Labs platform](https://platform.inceptionlabs.ai/). Mercury 2 is NaruZkurAI-compatible and supports chat, tool calling, and structured outputs.",
     tags: [ ModelProviderTags.RequiresApiKey ],
     collectInputFor: [
       {
@@ -954,17 +954,17 @@ After it's up and running, you can start using Continue.`,
     collectInputFor: [ ...completionParamsInputsConfigs ],
     downloadUrl: "https://github.com/ggerganov/llama.cpp",
   },
-  "openai-aiohttp": {
-    title: "Other OpenAI-compatible API",
-    provider: "openai",
+  "naruzkurai-aiohttp": {
+    title: "Other NaruZkurAI-compatible API",
+    provider: "naruzkurai",
     description:
-      "If you are using any other OpenAI-compatible API, for example text-gen-webui, FastChat, LocalAI, or llama-cpp-python, you can simply enter your server URL",
-    longDescription: `If you are using any other OpenAI-compatible API, you can simply enter your server URL. If you still need to set up your model server, you can follow a guide below:
+      "If you are using any other NaruZkurAI-compatible API, for example text-gen-webui, FastChat, LocalAI, or llama-cpp-python, you can simply enter your server URL",
+    longDescription: `If you are using any other NaruZkurAI-compatible API, you can simply enter your server URL. If you still need to set up your model server, you can follow a guide below:
 
-- [text-gen-webui](https://github.com/oobabooga/text-generation-webui/tree/main/extensions/openai#setup--installation)
+- [text-gen-webui](https://github.com/oobabooga/text-generation-webui/tree/main/extensions/naruzkurai#setup--installation)
 - [LocalAI](https://localai.io/basics/getting_started/)
 - [llama-cpp-python](https://github.com/continuedev/ggml-server-example)
-- [FastChat](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md)`,
+- [FastChat](https://github.com/lm-sys/FastChat/blob/main/docs/naruzkurai_api.md)`,
     params: {
       apiBase: "",
     },
@@ -975,14 +975,14 @@ After it's up and running, you can start using Continue.`,
       },
       ...completionParamsInputsConfigs,
     ],
-    icon: "openai.png",
+    icon: "naruzkurai.png",
     tags: [ ModelProviderTags.Local, ModelProviderTags.OpenSource ],
     packages: [
       {
         ...models.AUTODETECT,
         params: {
           ...models.AUTODETECT.params,
-          title: "OpenAI",
+          title: "NaruZkurAI",
         },
       },
       ...openSourceModels,
@@ -1149,7 +1149,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     provider: "askSage",
     icon: "ask-sage.png",
     description:
-      "The Ask Sage API provides seamless access to LLMs including OpenAI, Anthropic, Meta, Mistral, and more.",
+      "The Ask Sage API provides seamless access to LLMs including NaruZkurAI, Anthropic, Meta, Mistral, and more.",
     longDescription: `To get access to the Ask Sage API, obtain your API key from the [Ask Sage platform](https://chat.asksage.ai/) for all other models.`,
     tags: [ ModelProviderTags.RequiresApiKey ],
     params: {
@@ -1289,7 +1289,7 @@ To get started, [register](https://dataplatform.cloud.ibm.com/registration/stepo
     title: "Tensorix",
     provider: "tensorix",
     description:
-      "Tensorix is an OpenAI-compatible API gateway with access to DeepSeek, Llama, Qwen, GLM, and more.",
+      "Tensorix is an NaruZkurAI-compatible API gateway with access to DeepSeek, Llama, Qwen, GLM, and more.",
     longDescription:
       "To get started with Tensorix, create an account and get an API key at [app.tensorix.ai](https://app.tensorix.ai).",
     tags: [ ModelProviderTags.RequiresApiKey, ModelProviderTags.OpenSource ],
@@ -1398,7 +1398,7 @@ Fund your wallet with USDC on Solana or Base. ClawRouter uses x402 micropayments
     provider: "nous",
     refPage: "nous",
     description:
-      "Nous Research provides Hermes models via an OpenAI-compatible API with advanced reasoning capabilities.",
+      "Nous Research provides Hermes models via an NaruZkurAI-compatible API with advanced reasoning capabilities.",
     longDescription:
       "Nous Research offers Hermes models including Hermes 3 and Hermes 4 with strong instruction following and reasoning. Get an API key at [portal.nousresearch.com](https://portal.nousresearch.com).",
     icon: "nous.png",

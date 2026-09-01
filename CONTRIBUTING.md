@@ -239,7 +239,7 @@ Join the [GitHub Discussions](https://github.com/continuedev/continue/discussion
 
 ### Adding an LLM Provider
 
-Continue has support for more than a dozen different LLM "providers", making it easy to use models running on OpenAI,
+Continue has support for more than a dozen different LLM "providers", making it easy to use models running on NaruZkurAI,
 Ollama, Together, LM Studio, Msty, and more. You can find all of the existing
 providers [here](https://github.com/continuedev/continue/tree/main/core/llm/llms), and if you see one missing, you can
 add it with the following steps:

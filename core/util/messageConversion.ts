@@ -1,20 +1,20 @@
 /**
  * Message conversion utilities for transitioning to unified ChatHistoryItem type.
  *
- * This module provides conversion functions between the OpenAI ChatCompletionMessageParam
+ * This module provides conversion functions between the NaruZkurAI ChatCompletionMessageParam
  * format and the unified ChatHistoryItem format from the core package.
  */
 
-import type { ChatCompletionMessageParam } from "openai/resources.mjs";
+import type { ChatCompletionMessageParam } from "naruzkurai/resources.mjs";
 import type {
-  AssistantChatMessage,
-  ChatHistoryItem,
-  ChatMessage,
-  ContextItemWithId,
-  MessageContent,
-  ToolCall,
-  ToolCallState,
-  ToolStatus,
+    AssistantChatMessage,
+    ChatHistoryItem,
+    ChatMessage,
+    ContextItemWithId,
+    MessageContent,
+    ToolCall,
+    ToolCallState,
+    ToolStatus,
 } from "../index.js";
 
 /**
@@ -121,7 +121,7 @@ export function convertFromUnifiedMessage(
       };
 
     case "thinking":
-      // Thinking messages don't have a direct equivalent in OpenAI format
+      // Thinking messages don't have a direct equivalent in NaruZkurAI format
       // Convert to assistant message with content
       return {
         role: "assistant",
@@ -134,7 +134,7 @@ export function convertFromUnifiedMessage(
 }
 
 /**
- * Convert OpenAI message content to unified MessageContent format
+ * Convert NaruZkurAI message content to unified MessageContent format
  */
 function convertMessageContent(
   content: string | null | Array<any>,
@@ -168,7 +168,7 @@ function convertMessageContent(
 }
 
 /**
- * Convert unified MessageContent to OpenAI format
+ * Convert unified MessageContent to NaruZkurAI format
  */
 function convertFromMessageContent(
   content: MessageContent,

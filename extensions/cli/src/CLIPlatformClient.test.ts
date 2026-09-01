@@ -145,12 +145,12 @@ describe("CLIPlatformClient", () => {
 
     it("keeps API results with secretLocation but no value (models_add_on)", async () => {
       const fqsn: FQSN = {
-        packageSlugs: [{ ownerSlug: "openai", packageSlug: "gpt-4" }],
-        secretName: "OPENAI_API_KEY",
+        packageSlugs: [{ ownerSlug: "naruzkurai", packageSlug: "gpt-4" }],
+        secretName: "NARUZKURAI_API_KEY",
       };
 
       // Ensure no local env secret exists
-      vi.stubEnv("OPENAI_API_KEY", undefined as unknown as string);
+      vi.stubEnv("NARUZKURAI_API_KEY", undefined as unknown as string);
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       // API returns a models_add_on result
@@ -159,8 +159,8 @@ describe("CLIPlatformClient", () => {
         fqsn,
         secretLocation: {
           secretType: SecretType.ModelsAddOn,
-          blockSlug: { ownerSlug: "openai", packageSlug: "gpt-4" },
-          secretName: "OPENAI_API_KEY",
+          blockSlug: { ownerSlug: "naruzkurai", packageSlug: "gpt-4" },
+          secretName: "NARUZKURAI_API_KEY",
         },
       };
       mockApiClient.syncSecrets.mockResolvedValue([apiResult]);
@@ -183,14 +183,14 @@ describe("CLIPlatformClient", () => {
         secretName: "ANTHROPIC_API_KEY",
       };
       const fqsn2: FQSN = {
-        packageSlugs: [{ ownerSlug: "openai", packageSlug: "gpt-4" }],
-        secretName: "OPENAI_API_KEY",
+        packageSlugs: [{ ownerSlug: "naruzkurai", packageSlug: "gpt-4" }],
+        secretName: "NARUZKURAI_API_KEY",
       };
 
       // First secret is in local env
       vi.stubEnv("ANTHROPIC_API_KEY", "local-anthropic-key");
       // Ensure second secret is not in local env
-      vi.stubEnv("OPENAI_API_KEY", undefined as unknown as string);
+      vi.stubEnv("NARUZKURAI_API_KEY", undefined as unknown as string);
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       // API returns models_add_on for the second secret
@@ -199,8 +199,8 @@ describe("CLIPlatformClient", () => {
         fqsn: fqsn2,
         secretLocation: {
           secretType: SecretType.ModelsAddOn,
-          blockSlug: { ownerSlug: "openai", packageSlug: "gpt-4" },
-          secretName: "OPENAI_API_KEY",
+          blockSlug: { ownerSlug: "naruzkurai", packageSlug: "gpt-4" },
+          secretName: "NARUZKURAI_API_KEY",
         },
       };
       mockApiClient.syncSecrets.mockResolvedValue([apiResult]);
@@ -341,11 +341,11 @@ describe("CLIPlatformClient", () => {
       // File-based FQSN with empty package slugs
       const fqsn: FQSN = {
         packageSlugs: [{ ownerSlug: "", packageSlug: "" }],
-        secretName: "OPENAI_API_KEY",
+        secretName: "NARUZKURAI_API_KEY",
       };
 
       // Ensure no local env secret exists
-      vi.stubEnv("OPENAI_API_KEY", undefined as unknown as string);
+      vi.stubEnv("NARUZKURAI_API_KEY", undefined as unknown as string);
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       // API returns models_add_on (the server can still resolve this)
@@ -355,7 +355,7 @@ describe("CLIPlatformClient", () => {
         secretLocation: {
           secretType: SecretType.ModelsAddOn,
           blockSlug: { ownerSlug: "", packageSlug: "" },
-          secretName: "OPENAI_API_KEY",
+          secretName: "NARUZKURAI_API_KEY",
         },
       };
       mockApiClient.syncSecrets.mockResolvedValue([apiResult]);

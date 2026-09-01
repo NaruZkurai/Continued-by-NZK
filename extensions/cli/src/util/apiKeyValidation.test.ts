@@ -17,7 +17,7 @@ describe("isValidAnthropicApiKey", () => {
     expect(isValidAnthropicApiKey("")).toBe(false);
     expect(isValidAnthropicApiKey("sk-ant-")).toBe(false);
     expect(isValidAnthropicApiKey("TEST-")).toBe(false);
-    expect(isValidAnthropicApiKey("TEST-openai-1234567890")).toBe(false);
+    expect(isValidAnthropicApiKey("TEST-naruzkurai-1234567890")).toBe(false);
     expect(isValidAnthropicApiKey("invalid-key")).toBe(false);
     expect(isValidAnthropicApiKey("1234567890")).toBe(false);
   });
@@ -42,7 +42,7 @@ describe("getApiKeyValidationError", () => {
     expect(getApiKeyValidationError("TEST-")).toBe(
       'API key must start with "sk-ant-"',
     );
-    expect(getApiKeyValidationError("TEST-openai-1234")).toBe(
+    expect(getApiKeyValidationError("TEST-naruzkurai-1234")).toBe(
       'API key must start with "sk-ant-"',
     );
     expect(getApiKeyValidationError("sk-ant-")).toBe("API key is too short");

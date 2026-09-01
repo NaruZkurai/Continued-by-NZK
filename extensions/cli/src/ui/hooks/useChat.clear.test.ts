@@ -1,5 +1,5 @@
 import { convertToUnifiedHistory } from "core/util/messageConversion.js";
-import { ChatCompletionMessageParam } from "openai/resources.mjs";
+import { ChatCompletionMessageParam } from "naruzkurai/resources.mjs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { startNewSession } from "../../session.js";

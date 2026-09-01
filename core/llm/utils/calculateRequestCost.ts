@@ -148,7 +148,7 @@ function calculateAnthropicCost(
   };
 }
 
-function calculateOpenAICost(
+function calculateNaruZkurAICost(
   model: string,
   usage: Usage,
 ): CostBreakdown | null {
@@ -230,8 +230,8 @@ export function calculateRequestCost(
   switch (provider.toLowerCase()) {
     case "anthropic":
       return calculateAnthropicCost(model, usage);
-    case "openai":
-      return calculateOpenAICost(model, usage);
+    case "naruzkurai":
+      return calculateNaruZkurAICost(model, usage);
     default:
       return null;
   }

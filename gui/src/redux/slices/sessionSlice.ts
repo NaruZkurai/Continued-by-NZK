@@ -1,35 +1,35 @@
 import {
-  ActionReducerMapBuilder,
-  AsyncThunk,
-  PayloadAction,
-  createSelector,
-  createSlice,
+    ActionReducerMapBuilder,
+    AsyncThunk,
+    PayloadAction,
+    createSelector,
+    createSlice,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/react";
 import {
-  ApplyState,
-  AssistantChatMessage,
-  BaseSessionMetadata,
-  ChatHistoryItem,
-  ChatMessage,
-  ContextItem,
-  ContextItemWithId,
-  FileSymbolMap,
-  McpUiState,
-  MessageModes,
-  PromptLog,
-  RuleMetadata,
-  Session,
-  ThinkingChatMessage,
-  Tool,
-  ToolCallDelta,
-  ToolCallState,
+    ApplyState,
+    AssistantChatMessage,
+    BaseSessionMetadata,
+    ChatHistoryItem,
+    ChatMessage,
+    ContextItem,
+    ContextItemWithId,
+    FileSymbolMap,
+    McpUiState,
+    MessageModes,
+    PromptLog,
+    RuleMetadata,
+    Session,
+    ThinkingChatMessage,
+    Tool,
+    ToolCallDelta,
+    ToolCallState,
 } from "core";
-import { mergeReasoningDetails } from "core/llm/openaiTypeConverters";
+import { mergeReasoningDetails } from "core/llm/naruzkuraiTypeConverters";
 import { NEW_SESSION_TITLE } from "core/util/constants";
 import {
-  renderChatMessage,
-  renderContextItems,
+    renderChatMessage,
+    renderContextItems,
 } from "core/util/messageContent";
 import { findUriInDirs, getUriPathBasename } from "core/util/uri";
 import { findLastIndex } from "lodash";
@@ -105,7 +105,7 @@ export function handleToolCallsInMessage(
 /**
  * Applies a single tool call delta to the tool call states array.
  *
- * This function handles the core logic for OpenAI-style tool call streaming where:
+ * This function handles the core logic for NaruZkurAI-style tool call streaming where:
  * - Initial tool calls come with full details (ID, name, arguments)
  * - Subsequent argument fragments come without IDs and need to update the most recent tool call
  * - Multiple parallel tool calls can be streamed simultaneously
@@ -128,7 +128,7 @@ function applyToolCallDelta(
       (state) => state.toolCallId === toolCallDelta.id,
     );
   } else {
-    // No ID in delta (common in OpenAI streaming fragments)
+    // No ID in delta (common in NaruZkurAI streaming fragments)
     // Strategy: Update the most recently added tool call that's still being generated
     // This handles the pattern: initial tool call with ID, then fragments without ID
     existingStateIndex = toolCallStates.length - 1;
@@ -544,7 +544,7 @@ export const sessionSlice = createSlice({
             ? renderChatMessage(message)
             : "";
 
-          // OpenAI-compatible models in agent mode sometimes send
+          // NaruZkurAI-compatible models in agent mode sometimes send
           // all of their data in one message, so we handle that case early.
           if (messageContent && message.role !== "tool") {
             const thinkMatches = messageContent.match(
@@ -658,7 +658,7 @@ export const sessionSlice = createSlice({
             message.metadata?.responsesOutputItemId
           ) {
             lastMessage.metadata = lastMessage.metadata || {};
-            // Accumulate fc_ IDs for parallel tool calls (OpenAI Responses API)
+            // Accumulate fc_ IDs for parallel tool calls (NaruZkurAI Responses API)
             if (!lastMessage.metadata.responsesOutputItemIds) {
               lastMessage.metadata.responsesOutputItemIds = [];
             }

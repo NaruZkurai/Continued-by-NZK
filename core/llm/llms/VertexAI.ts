@@ -5,7 +5,7 @@ import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 import { renderChatMessage, stripImages } from "../../util/messageContent.js";
 import { BaseLLM } from "../index.js";
 
-import { LlmApiRequestType } from "../openaiTypeConverters.js";
+import { LlmApiRequestType } from "../naruzkuraiTypeConverters.js";
 import Anthropic from "./Anthropic.js";
 import Gemini from "./Gemini.js";
 
@@ -24,7 +24,7 @@ class VertexAI extends BaseLLM {
 
   private clientPromise: Promise<AuthClient | void>;
 
-  protected useOpenAIAdapterFor: (LlmApiRequestType | "*")[] = [
+  protected useNaruZkurAIAdapterFor: (LlmApiRequestType | "*")[] = [
     "chat",
     "embed",
     "list",
@@ -34,7 +34,7 @@ class VertexAI extends BaseLLM {
   ];
 
   /*
-      Vertex Supports 3 different URL formats 
+      Vertex Supports 3 different URL formats
       1. Standard VertexAI: e.g. https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent
       2. Tuned model:       e.g. https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:streamGenerateContent
       3. Express mode:      e.g. https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:streamGenerateContent?key={API_KEY} // see https://cloud.google.com/vertex-ai/generative-ai/docs/start/express-mode/overview
@@ -52,7 +52,7 @@ class VertexAI extends BaseLLM {
       {service-endpoint}/v1/{model}:streamGenerateContent
       So "model" includes the project, location, publisher, etc
 
-      Express mode has limited support 
+      Express mode has limited support
       and CRITICALLY is only available to NEW users who had NOT used cloud services before.
       However it is pretty common as gemini becomes more popular.
       Only Gemini models are supported for now

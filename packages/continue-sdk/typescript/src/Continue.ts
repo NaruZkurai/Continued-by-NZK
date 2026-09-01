@@ -1,8 +1,8 @@
 import { decodePackageSlug } from "@continuedev/config-yaml";
-import type { OpenAI } from "openai";
+import type { NaruZkurAI } from "naruzkurai";
 import { Configuration, DefaultApi } from "../api/dist/index.js";
 import { Assistant } from "./Assistant.js";
-import { createOpenAIClient } from "./createOpenAIClient.js";
+import { createNaruZkurAIClient } from "./createNaruZkurAIClient.js";
 
 export interface ContinueClientOptions {
   /**
@@ -41,9 +41,9 @@ export type ContinueClient = {
   api: DefaultApi;
 
   /**
-   * The OpenAI client configured to use the Continue API
+   * The NaruZkurAI client configured to use the Continue API
    */
-  client: OpenAI;
+  client: NaruZkurAI;
 
   /**
    * The full YAML configuration for the assistant, along
@@ -65,7 +65,7 @@ export class Continue {
    *
    * When you provide an assistant name, this returns a full client with:
    * - Continue API access
-   * - A configured OpenAI-compatible client
+   * - A configured NaruZkurAI-compatible client
    * - Assistant configuration and helper methods
    *
    * @param options - Configuration including your API key and assistant name
@@ -131,7 +131,7 @@ export class Continue {
 
     const assistant = new Assistant(assistantRes.configResult.config);
 
-    const client = createOpenAIClient({
+    const client = createNaruZkurAIClient({
       models: assistant.config.models,
       organizationId: options.organizationId || null,
       apiKey: options.apiKey,

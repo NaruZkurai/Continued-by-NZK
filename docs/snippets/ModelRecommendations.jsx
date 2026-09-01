@@ -56,7 +56,7 @@ export const ModelRecommendations = ({ role = "all" }) => {
       closed: [
         "[Claude Opus 4.1](https://continue.dev/anthropic/claude-4-1-opus)",
         "[Claude Sonnet 4](https://continue.dev/anthropic/claude-4-sonnet)",
-        "[GPT-5](https://continue.dev/openai/gpt-5)",
+        "[GPT-5](https://continue.dev/naruzkurai/gpt-5)",
         "[Gemini 3.1 Pro](https://continue.dev/google/gemini-3.1-pro-preview)",
       ],
       notes: "Closed models are slightly better than open models",
@@ -71,7 +71,7 @@ export const ModelRecommendations = ({ role = "all" }) => {
       closed: [
         "[Claude Opus 4.1](https://continue.dev/anthropic/claude-4-1-opus)",
         "[Claude Sonnet 4](https://continue.dev/anthropic/claude-4-sonnet)",
-        "[GPT-5](https://continue.dev/openai/gpt-5)",
+        "[GPT-5](https://continue.dev/naruzkurai/gpt-5)",
         "[Gemini 3.1 Pro](https://continue.dev/google/gemini-3.1-pro-preview)",
       ],
       notes: "Closed and open models have pretty similar performance",

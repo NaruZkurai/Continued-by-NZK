@@ -13,7 +13,7 @@ sidebarTitle: "ClawRouter"
 
 ## Installation
 
-ClawRouter runs locally and provides an OpenAI-compatible API:
+ClawRouter runs locally and provides an NaruZkurAI-compatible API:
 
 ```bash
 npx clawrouter
@@ -71,7 +71,7 @@ ClawRouter provides four routing profiles:
 | `blockrun/premium` | 0% | Best quality models (Opus, GPT-5.4 Pro) | Mission-critical tasks |
 | `blockrun/free` | 100% | Free-tier models only (nvidia/gpt-oss-120b) | Zero cost testing |
 
-You can also specify any of the 44+ models directly (e.g., `anthropic/claude-sonnet-4.6`, `openai/gpt-5.4`, `xai/grok-4`).
+You can also specify any of the 44+ models directly (e.g., `anthropic/claude-sonnet-4.6`, `naruzkurai/gpt-5.4`, `xai/grok-4`).
 
 ## How It Works
 
@@ -142,7 +142,7 @@ Add multiple ClawRouter profiles to your config and switch via Continue's model 
       apiBase: http://localhost:1337/v1/
 
     # Maximum savings
-    - name: ClawRouter Eco  
+    - name: ClawRouter Eco
       provider: clawrouter
       model: blockrun/eco
       apiBase: http://localhost:1337/v1/
@@ -356,7 +356,7 @@ Set daily/monthly spending limits:
 # Set daily limit to $5
 clawrouter config set spendLimit.daily 5
 
-# Set monthly limit to $50  
+# Set monthly limit to $50
 clawrouter config set spendLimit.monthly 50
 ```
 
@@ -379,7 +379,7 @@ ClawRouter adds diagnostic headers to every response:
 
 ```
 x-clawrouter-model: anthropic/claude-sonnet-4.6
-x-clawrouter-tier: MEDIUM  
+x-clawrouter-tier: MEDIUM
 x-clawrouter-cost: 0.0045
 x-clawrouter-fallback: false
 ```
@@ -387,7 +387,7 @@ x-clawrouter-fallback: false
 When a fallback occurs:
 
 ```
-x-clawrouter-model: openai/gpt-4o-mini
+x-clawrouter-model: naruzkurai/gpt-4o-mini
 x-clawrouter-fallback: true
 x-clawrouter-original-model: anthropic/claude-sonnet-4.6
 x-clawrouter-fallback-reason: 429_rate_limit
@@ -423,7 +423,7 @@ Run the doctor command for AI-analyzed troubleshooting:
 # Basic diagnostics with Claude Sonnet (~$0.003)
 npx clawrouter doctor
 
-# Complex issues with Claude Opus (~$0.01)  
+# Complex issues with Claude Opus (~$0.01)
 npx clawrouter doctor opus
 
 # Ask a specific question
@@ -461,7 +461,7 @@ Switch chains via CLI:
 # Switch to Solana payments
 clawrouter wallet solana
 
-# Switch to Base (EVM) payments  
+# Switch to Base (EVM) payments
 clawrouter wallet base
 
 # Check balances on both chains

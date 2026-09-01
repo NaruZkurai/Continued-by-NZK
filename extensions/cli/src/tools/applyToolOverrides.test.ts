@@ -1,4 +1,4 @@
-import type { ChatCompletionTool } from "openai/resources.mjs";
+import type { ChatCompletionTool } from "naruzkurai/resources.mjs";
 import { describe, expect, it } from "vitest";
 
 import { applyChatCompletionToolOverrides } from "./applyToolOverrides.js";

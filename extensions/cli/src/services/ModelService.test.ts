@@ -26,7 +26,7 @@ describe("ModelService", () => {
       version: "1.0.0",
       models: [
         {
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           name: "GPT-4",
           apiKey: "test-key",
@@ -40,7 +40,7 @@ describe("ModelService", () => {
           roles: ["chat"],
         } as ModelConfig,
         {
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-3.5",
           name: "GPT-3.5",
           apiKey: "test-key",
@@ -176,7 +176,7 @@ describe("ModelService", () => {
 
       expect(models).toHaveLength(2);
       expect(models[0]).toEqual({
-        provider: "openai",
+        provider: "naruzkurai",
         name: "GPT-4",
         index: 0,
       });
@@ -261,7 +261,7 @@ describe("ModelService", () => {
       ]);
       await service.initialize(mockAssistant, mockAuthConfig);
 
-      expect(service.getModelIndexByName("GPT-4", "openai")).toBe(0);
+      expect(service.getModelIndexByName("GPT-4", "naruzkurai")).toBe(0);
       expect(service.getModelIndexByName("GPT-4", "anthropic")).toBe(-1);
     });
   });
@@ -275,7 +275,7 @@ describe("ModelService", () => {
       await service.initialize(mockAssistant, mockAuthConfig);
 
       expect(service.getModelInfo()).toEqual({
-        provider: "openai",
+        provider: "naruzkurai",
         name: "GPT-4",
       });
     });

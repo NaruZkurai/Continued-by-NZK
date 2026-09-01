@@ -1,27 +1,27 @@
 import { isModelCapable } from "./modelCapability.js";
 
 describe("isModelCapable", () => {
-  describe("OpenAI models", () => {
+  describe("NaruZkurAI models", () => {
     test("should consider GPT-4 models as capable", () => {
-      expect(isModelCapable("openai", "gpt-4")).toBe(true);
-      expect(isModelCapable("openai", "gpt-4-turbo")).toBe(true);
-      expect(isModelCapable("openai", "gpt-4-0613")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-4")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-4-turbo")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-4-0613")).toBe(true);
     });
 
     test("should consider GPT-3.5-turbo as capable", () => {
-      expect(isModelCapable("openai", "gpt-3.5-turbo")).toBe(true);
-      expect(isModelCapable("openai", "gpt-3.5-turbo-16k")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-3.5-turbo")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-3.5-turbo-16k")).toBe(true);
     });
 
     test("should consider O-series models as capable", () => {
-      expect(isModelCapable("openai", "o1-preview")).toBe(true);
-      expect(isModelCapable("openai", "o1-mini")).toBe(true);
-      expect(isModelCapable("openai", "o3")).toBe(true);
+      expect(isModelCapable("naruzkurai", "o1-preview")).toBe(true);
+      expect(isModelCapable("naruzkurai", "o1-mini")).toBe(true);
+      expect(isModelCapable("naruzkurai", "o3")).toBe(true);
     });
 
     test("should consider older GPT-3 models as capable", () => {
-      expect(isModelCapable("openai", "gpt-3-davinci")).toBe(true);
-      expect(isModelCapable("openai", "gpt-3-curie")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-3-davinci")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-3-curie")).toBe(true);
     });
   });
 
@@ -72,8 +72,8 @@ describe("isModelCapable", () => {
 
   describe("Meta/Llama models", () => {
     test("should consider Llama models as capable", () => {
-      expect(isModelCapable("openai", "Llama 3.3 70B")).toBe(true);
-      expect(isModelCapable("openai", "Llama 3.3 Nemotron 49B")).toBe(true);
+      expect(isModelCapable("naruzkurai", "Llama 3.3 70B")).toBe(true);
+      expect(isModelCapable("naruzkurai", "Llama 3.3 Nemotron 49B")).toBe(true);
       expect(
         isModelCapable(
           "nvidia",
@@ -134,8 +134,8 @@ describe("isModelCapable", () => {
 
   describe("Case insensitivity", () => {
     test("should handle different cases correctly", () => {
-      expect(isModelCapable("OPENAI", "GPT-4")).toBe(true);
-      expect(isModelCapable("OpenAI", "Gpt-4-Turbo")).toBe(true);
+      expect(isModelCapable("NARUZKURAI", "GPT-4")).toBe(true);
+      expect(isModelCapable("NaruZkurAI", "Gpt-4-Turbo")).toBe(true);
       expect(isModelCapable("anthropic", "CLAUDE-3-OPUS")).toBe(true);
     });
   });
@@ -159,7 +159,7 @@ describe("isModelCapable", () => {
 
     test("should consider models capable when both name and model match", () => {
       // Case where both match
-      expect(isModelCapable("openai", "gpt-4", "gpt-4-turbo")).toBe(true);
+      expect(isModelCapable("naruzkurai", "gpt-4", "gpt-4-turbo")).toBe(true);
       expect(isModelCapable("anthropic", "claude-3", "claude-3-opus")).toBe(
         true,
       );

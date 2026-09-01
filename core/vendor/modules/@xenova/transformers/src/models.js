@@ -3202,7 +3202,7 @@ export class WhisperForConditionalGeneration extends WhisperPreTrainedModel {
 
 //////////////////////////////////////////////////
 /**
- * Vision Encoder-Decoder model based on OpenAI's GPT architecture for image captioning and other vision tasks
+ * Vision Encoder-Decoder model based on NaruZkurAI's GPT architecture for image captioning and other vision tasks
  */
 export class VisionEncoderDecoderModel extends PreTrainedModel {
   main_input_name = "pixel_values";
@@ -5884,7 +5884,7 @@ export class AutoModelForSeq2SeqLM extends PretrainedMixin {
  * The chosen model class is determined by the type specified in the model config.
  *
  * @example
- * let model = await AutoModelForSpeechSeq2Seq.from_pretrained('openai/whisper-tiny.en');
+ * let model = await AutoModelForSpeechSeq2Seq.from_pretrained('naruzkurai/whisper-tiny.en');
  */
 export class AutoModelForSpeechSeq2Seq extends PretrainedMixin {
   static MODEL_CLASS_MAPPINGS = [MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING_NAMES];

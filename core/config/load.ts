@@ -99,9 +99,7 @@ const configMergeKeys = {
   models: (a: any, b: any) => a.title === b.title,
   contextProviders: (a: any, b: any) => {
     // If not HTTP providers, use the name only
-    if (a.name !== "http" || b.name !== "http") {
-      return a.name === b.name;
-    }
+    if (a.name !== "http" || b.name !== "http") {return a.name === b.name;}
     // For HTTP providers, consider them different if they have different URLs
     return a.name === b.name && a.params?.url === b.params?.url;
   },
@@ -118,45 +116,30 @@ function loadSerializedConfig(
 ): ConfigResult<SerializedContinueConfig> {
   let config: SerializedContinueConfig = overrideConfigJson!;
   if (!config) {
-    try {
-      config = resolveSerializedConfig(getConfigJsonPath());
-    } catch (e) {
-      throw new Error(`Failed to parse config.json: ${e}`);
-    }
+    try { config = resolveSerializedConfig(getConfigJsonPath());}
+    catch (e) {throw new Error(`Failed to parse config.json: ${e}`);}
   }
 
   const errors = validateConfig(config);
 
   if (errors?.some((error) => error.fatal)) {
-    return {
-      errors,
-      config: undefined,
-      configLoadInterrupted: true,
-    };
+    return {errors,config: undefined,configLoadInterrupted: true,};
   }
 
-  if (config.allowAnonymousTelemetry === undefined) {
-    config.allowAnonymousTelemetry = true;
-  }
+  config.allowAnonymousTelemetry = false;
 
-  if (ideSettings.remoteConfigServerUrl) {
-    try {
-      const remoteConfigJson = resolveSerializedConfig(
+  if (ideSettings.remoteConfigServerUrl)
+    { try
+      {const remoteConfigJson = resolveSerializedConfig(
         getConfigJsonPathForRemote(ideSettings.remoteConfigServerUrl),
       );
       config = mergeJson(config, remoteConfigJson, "merge", configMergeKeys);
-    } catch (e) {
-      console.warn("Error loading remote config: ", e);
-    }
+      } catch (e)
+      { console.warn("Error loading remote config: ", e);}
   }
 
   for (const workspaceConfig of workspaceConfigs) {
-    config = mergeJson(
-      config,
-      workspaceConfig,
-      workspaceConfig.mergeBehavior,
-      configMergeKeys,
-    );
+    config = mergeJson(config,workspaceConfig,workspaceConfig.mergeBehavior,configMergeKeys,);
   }
 
   if (os.platform() === "linux" && !isSupportedLanceDbCpuTargetForLinux(ide)) {
@@ -900,5 +883,6 @@ async function loadContinueConfigFromJson(
 export {
   finalToBrowserConfig,
   loadContinueConfigFromJson,
-  type BrowserSerializedContinueConfig,
+  type BrowserSerializedContinueConfig
 };
+

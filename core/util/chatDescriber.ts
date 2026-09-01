@@ -71,8 +71,8 @@ export class ChatDescriber {
         content: ChatDescriber.prompt + message,
       };
 
-      // Convert to OpenAI format - use a simple fallback to avoid import issues
-      const openaiMessages = convertFromUnifiedHistory([
+      // Convert to NaruZkurAI format - use a simple fallback to avoid import issues
+      const naruzkuraiMessages = convertFromUnifiedHistory([
         {
           message: chatMessage,
           contextItems: [],
@@ -82,7 +82,7 @@ export class ChatDescriber {
       // Set up completion options for non-streaming
       const completionOptions = {
         model: modelConfig.model,
-        messages: openaiMessages,
+        messages: naruzkuraiMessages,
         max_tokens: ChatDescriber.maxTokens,
         stream: false as const,
       };

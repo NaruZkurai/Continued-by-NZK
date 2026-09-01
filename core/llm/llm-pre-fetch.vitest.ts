@@ -1,16 +1,16 @@
 import { fetchwithRequestOptions } from "@continuedev/fetch";
-import * as openAiAdapters from "@continuedev/openai-adapters";
+import * as naruzKuraiAdapters from "@continuedev/naruzkurai-adapters";
 import * as dotenv from "dotenv";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ChatMessage, ILLM } from "..";
 import Anthropic from "./llms/Anthropic";
 import Gemini from "./llms/Gemini";
-import OpenAI from "./llms/OpenAI";
+import NaruZkurAI from "./llms/NaruZkurAI";
 
 dotenv.config();
 
 vi.mock("@continuedev/fetch");
-vi.mock("@continuedev/openai-adapters");
+vi.mock("@continuedev/naruzkurai-adapters");
 
 async function dudLLMCall(llm: ILLM, messages: ChatMessage[]) {
   try {
@@ -59,11 +59,11 @@ describe("LLM Pre-fetch", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Mock getAnthropicHeaders to return fake headers
-    vi.mocked(openAiAdapters.getAnthropicHeaders).mockReturnValue({
+    vi.mocked(naruzKuraiAdapters.getAnthropicHeaders).mockReturnValue({
       fake: "headers",
     });
     // Log to verify the mock is properly set up
-    console.log("Mock setup:", openAiAdapters);
+    console.log("Mock setup:", naruzKuraiAdapters);
   });
 
   test("Invalid tool call args are ignored", async () => {
@@ -97,10 +97,10 @@ describe("LLM Pre-fetch", () => {
       expect.any(Object),
     );
 
-    // OPENAI DOES NOT NEED TO CLEAR INVALID TOOL CALL ARGS BECAUSE IT STORES THEM IN STRINGS
+    // NARUZKURAI DOES NOT NEED TO CLEAR INVALID TOOL CALL ARGS BECAUSE IT STORES THEM IN STRINGS
     vi.clearAllMocks();
-    const openai = new OpenAI({ model: "gpt-something", apiKey: "invalid" });
-    await dudLLMCall(openai, messagesWithInvalidToolCallArgs);
+    const naruzkurai = new NaruZkurAI({ model: "gpt-something", apiKey: "invalid" });
+    await dudLLMCall(naruzkurai, messagesWithInvalidToolCallArgs);
     expect(fetchwithRequestOptions).toHaveBeenCalledWith(
       expect.any(URL),
       {

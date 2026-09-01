@@ -1,8 +1,8 @@
 import { ModelConfig } from "@continuedev/config-yaml";
-import { BaseLlmApi } from "@continuedev/openai-adapters";
+import { BaseLlmApi } from "@continuedev/naruzkurai-adapters";
 import type { ChatHistoryItem } from "core/index.js";
 import { encode } from "gpt-tokenizer";
-import { ChatCompletionTool } from "openai/resources.mjs";
+import { ChatCompletionTool } from "naruzkurai/resources.mjs";
 
 import { streamChatResponse } from "./stream/streamChatResponse.js";
 import { StreamCallbacks } from "./stream/streamChatResponse.types.js";

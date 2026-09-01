@@ -6,7 +6,7 @@ import Anthropic from "./llms/Anthropic";
 import Azure from "./llms/Azure";
 import Gemini from "./llms/Gemini";
 import Mistral from "./llms/Mistral";
-import OpenAI from "./llms/OpenAI";
+import NaruZkurAI from "./llms/NaruZkurAI";
 
 import { BaseLLM } from ".";
 
@@ -218,15 +218,15 @@ describe("LLM", () => {
     }),
     { skip: false, testToolCall: true },
   );
-  testLLM(new OpenAI({ apiKey: process.env.OPENAI_API_KEY, model: "gpt-4o" }), {
+  testLLM(new NaruZkurAI({ apiKey: process.env.NARUZKURAI_API_KEY, model: "gpt-4o" }), {
     skip: false,
     testToolCall: true,
   });
   testLLM(
-    new OpenAI({ apiKey: process.env.OPENAI_API_KEY, model: "o3-mini" }),
+    new NaruZkurAI({ apiKey: process.env.NARUZKURAI_API_KEY, model: "o3-mini" }),
     { skip: false, timeout: 60000 },
   );
-  testLLM(new OpenAI({ apiKey: process.env.OPENAI_API_KEY, model: "o1" }), {
+  testLLM(new NaruZkurAI({ apiKey: process.env.NARUZKURAI_API_KEY, model: "o1" }), {
     skip: false,
     timeout: 60000,
   });
@@ -246,12 +246,12 @@ describe("LLM", () => {
   );
   testLLM(
     new Azure({
-      apiKey: process.env.AZURE_OPENAI_API_KEY,
+      apiKey: process.env.AZURE_NARUZKURAI_API_KEY,
       model: "gpt-4o",
       apiVersion: "2024-05-01-preview",
-      apiBase: "https://continue-azure-openai-instance.openai.azure.com",
-      deployment: "azure-openai-deployment",
-      apiType: "azure-openai",
+      apiBase: "https://continue-azure-naruzkurai-instance.naruzkurai.azure.com",
+      deployment: "azure-naruzkurai-deployment",
+      apiType: "azure-naruzkurai",
     }),
     { testFim: false, skip: true, timeout: 20000 }, // Skipped - timing out in CI
   );

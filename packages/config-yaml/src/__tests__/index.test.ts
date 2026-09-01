@@ -17,7 +17,7 @@ import {
 // Test e2e flows from raw yaml -> unroll -> client render -> resolve secrets on proxy
 describe("E2E Scenarios", () => {
   const userSecrets: Record<string, string> = {
-    OPENAI_API_KEY: "sk-123",
+    NARUZKURAI_API_KEY: "sk-123",
   };
 
   const orgSecrets: Record<string, string> = {
@@ -142,8 +142,8 @@ describe("E2E Scenarios", () => {
     // Test that packages were correctly unrolled and params replaced
     expect(config?.models?.length).toBe(4);
 
-    const openAiModel = config?.models?.[0]!;
-    expect(openAiModel.apiKey).toBe("sk-123");
+    const naruzKuraiModel = config?.models?.[0]!;
+    expect(naruzKuraiModel.apiKey).toBe("sk-123");
 
     const geminiModel = config?.models?.[1]!;
     expect(geminiModel.provider).toBe("gemini");

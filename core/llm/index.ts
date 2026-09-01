@@ -2,34 +2,34 @@ import { ModelRole } from "@continuedev/config-yaml";
 import { fetchwithRequestOptions } from "@continuedev/fetch";
 import { findLlmInfo } from "@continuedev/llm-info";
 import {
-  BaseLlmApi,
-  ChatCompletionCreateParams,
-  constructLlmApi,
-} from "@continuedev/openai-adapters";
+    BaseLlmApi,
+    ChatCompletionCreateParams,
+    constructLlmApi,
+} from "@continuedev/naruzkurai-adapters";
 import Handlebars from "handlebars";
 
 import { DevDataSqliteDb } from "../data/devdataSqlite.js";
 import { DataLogger } from "../data/log.js";
 import {
-  CacheBehavior,
-  ChatMessage,
-  Chunk,
-  CompletionOptions,
-  ILLM,
-  ILLMInteractionLog,
-  ILLMLogger,
-  LLMFullCompletionOptions,
-  LLMOptions,
-  MessageOption,
-  ModelCapability,
-  ModelInstaller,
-  PromptLog,
-  PromptTemplate,
-  RequestOptions,
-  TabAutocompleteOptions,
-  TemplateType,
-  ToolOverride,
-  Usage,
+    CacheBehavior,
+    ChatMessage,
+    Chunk,
+    CompletionOptions,
+    ILLM,
+    ILLMInteractionLog,
+    ILLMLogger,
+    LLMFullCompletionOptions,
+    LLMOptions,
+    MessageOption,
+    ModelCapability,
+    ModelInstaller,
+    PromptLog,
+    PromptTemplate,
+    RequestOptions,
+    TabAutocompleteOptions,
+    TemplateType,
+    ToolOverride,
+    Usage,
 } from "../index.js";
 import { isAbortError } from "../util/isAbortError.js";
 import { isLemonadeInstalled } from "../util/lemonadeHelper.js";
@@ -39,34 +39,34 @@ import { renderChatMessage } from "../util/messageContent.js";
 import { isOllamaInstalled } from "../util/ollamaHelper.js";
 import { withExponentialBackoff } from "../util/withExponentialBackoff.js";
 
+import { applyToolOverrides } from "../tools/applyToolOverrides.js";
 import {
-  autodetectPromptTemplates,
-  autodetectTemplateFunction,
-  autodetectTemplateType,
-  modelSupportsImages,
+    autodetectPromptTemplates,
+    autodetectTemplateFunction,
+    autodetectTemplateType,
+    modelSupportsImages,
 } from "./autodetect.js";
 import {
-  DEFAULT_ARGS,
-  DEFAULT_CONTEXT_LENGTH,
-  DEFAULT_MAX_BATCH_SIZE,
-  DEFAULT_MAX_CHUNK_SIZE,
-  DEFAULT_MAX_TOKENS,
-  LLMConfigurationStatuses,
+    DEFAULT_ARGS,
+    DEFAULT_CONTEXT_LENGTH,
+    DEFAULT_MAX_BATCH_SIZE,
+    DEFAULT_MAX_CHUNK_SIZE,
+    DEFAULT_MAX_TOKENS,
+    LLMConfigurationStatuses,
 } from "./constants.js";
 import {
-  compileChatMessages,
-  countTokens,
-  pruneRawPromptFromTop,
+    compileChatMessages,
+    countTokens,
+    pruneRawPromptFromTop,
 } from "./countTokens.js";
 import {
-  fromChatCompletionChunk,
-  fromChatResponse,
-  LlmApiRequestType,
-  toChatBody,
-  toCompleteBody,
-  toFimBody,
-} from "./openaiTypeConverters.js";
-import { applyToolOverrides } from "../tools/applyToolOverrides.js";
+    fromChatCompletionChunk,
+    fromChatResponse,
+    LlmApiRequestType,
+    toChatBody,
+    toCompleteBody,
+    toFimBody,
+} from "./naruzkuraiTypeConverters.js";
 
 export class LLMError extends Error {
   constructor(
@@ -119,7 +119,7 @@ export abstract class BaseLLM implements ILLM {
   }
 
   supportsCompletions(): boolean {
-    if (["openai", "azure"].includes(this.providerName)) {
+    if (["naruzkurai", "azure"].includes(this.providerName)) {
       if (
         this.apiBase?.includes("api.groq.com") ||
         this.apiBase?.includes("api.mistral.ai") ||
@@ -201,7 +201,7 @@ export abstract class BaseLLM implements ILLM {
 
   private _llmOptions: LLMOptions;
 
-  protected openaiAdapter?: BaseLlmApi;
+  protected naruzkuraiAdapter?: BaseLlmApi;
 
   constructor(_options: LLMOptions) {
     this._llmOptions = _options;
@@ -288,7 +288,7 @@ export abstract class BaseLLM implements ILLM {
     this.accessKeyId = options.accessKeyId;
     this.secretAccessKey = options.secretAccessKey;
 
-    this.openaiAdapter = this.createOpenAiAdapter();
+    this.naruzkuraiAdapter = this.createNaruZkurAIAdapter();
 
     this.maxEmbeddingBatchSize =
       options.maxEmbeddingBatchSize ?? DEFAULT_MAX_BATCH_SIZE;
@@ -310,11 +310,14 @@ export abstract class BaseLLM implements ILLM {
     return LLMConfigurationStatuses.VALID;
   }
 
-  protected createOpenAiAdapter() {
+  protected createNaruZkurAIAdapter() {
     return constructLlmApi({
       provider: this.providerName as any,
       apiKey: this.apiKey ?? "",
       apiBase: this.apiBase,
+      apiURL: this._llmOptions.apiURL ?? this.apiBase,
+      ApiHttpOrHttps: this._llmOptions.ApiHttpOrHttps,
+      quant: this._llmOptions.quant,
       requestOptions: this.requestOptions,
       env: this._llmOptions.env,
       useResponsesApi: this._llmOptions.useResponsesApi,
@@ -423,9 +426,9 @@ export abstract class BaseLLM implements ILLM {
         text =
           "This may mean that you forgot to add '/v1' to the end of your 'apiBase' in config.json.";
       }
-    } else if (resp.status === 404 && resp.url.includes("api.openai.com")) {
+    } else if (resp.status === 404 && resp.url.includes("api.naruzkurai.com")) {
       text =
-        "You may need to add pre-paid credits before using the OpenAI API.";
+        "You may need to add pre-paid credits before using the NaruZkurAI API.";
     } else if (
       resp.status === 401 &&
       (resp.url.includes("api.mistral.ai") ||
@@ -575,12 +578,12 @@ export abstract class BaseLLM implements ILLM {
     throw new Error("Not implemented");
   }
 
-  protected useOpenAIAdapterFor: (LlmApiRequestType | "*")[] = [];
+  protected useNaruZkurAIAdapterFor: (LlmApiRequestType | "*")[] = [];
 
-  private shouldUseOpenAIAdapter(requestType: LlmApiRequestType) {
+  private shouldUseNaruZkurAIAdapter(requestType: LlmApiRequestType) {
     return (
-      this.useOpenAIAdapterFor.includes(requestType) ||
-      this.useOpenAIAdapterFor.includes("*")
+      this.useNaruZkurAIAdapterFor.includes(requestType) ||
+      this.useNaruZkurAIAdapterFor.includes("*")
     );
   }
 
@@ -614,8 +617,8 @@ export abstract class BaseLLM implements ILLM {
 
     let completion = "";
     try {
-      if (this.shouldUseOpenAIAdapter("streamFim") && this.openaiAdapter) {
-        const stream = this.openaiAdapter.fimStream(
+      if (this.shouldUseNaruZkurAIAdapter("streamFim") && this.naruzkuraiAdapter) {
+        const stream = this.naruzkuraiAdapter.fimStream(
           toFimBody(prefix, suffix, completionOptions),
           signal,
         );
@@ -666,7 +669,7 @@ export abstract class BaseLLM implements ILLM {
         context: "llm_stream_fim",
         model: completionOptions.model,
         provider: this.providerName,
-        useOpenAIAdapter: this.shouldUseOpenAIAdapter("streamFim"),
+        useNaruZkurAIAdapter: this.shouldUseNaruZkurAIAdapter("streamFim"),
       });
 
       status = this._logEnd(
@@ -738,10 +741,10 @@ export abstract class BaseLLM implements ILLM {
 
     let completion = "";
     try {
-      if (this.shouldUseOpenAIAdapter("streamComplete") && this.openaiAdapter) {
+      if (this.shouldUseNaruZkurAIAdapter("streamComplete") && this.naruzkuraiAdapter) {
         if (completionOptions.stream === false) {
           // Stream false
-          const response = await this.openaiAdapter.completionNonStream(
+          const response = await this.naruzkuraiAdapter.completionNonStream(
             { ...toCompleteBody(prompt, completionOptions), stream: false },
             signal,
           );
@@ -750,7 +753,7 @@ export abstract class BaseLLM implements ILLM {
           yield completion;
         } else {
           // Stream true
-          for await (const chunk of this.openaiAdapter.completionStream(
+          for await (const chunk of this.naruzkuraiAdapter.completionStream(
             {
               ...toCompleteBody(prompt, completionOptions),
               stream: true,
@@ -796,7 +799,7 @@ export abstract class BaseLLM implements ILLM {
         context: "llm_stream_complete",
         model: completionOptions.model,
         provider: this.providerName,
-        useOpenAIAdapter: this.shouldUseOpenAIAdapter("streamComplete"),
+        useNaruZkurAIAdapter: this.shouldUseNaruZkurAIAdapter("streamComplete"),
         streamEnabled: completionOptions.stream !== false,
       });
 
@@ -872,8 +875,8 @@ export abstract class BaseLLM implements ILLM {
     let completion: string = "";
 
     try {
-      if (this.shouldUseOpenAIAdapter("complete") && this.openaiAdapter) {
-        const result = await this.openaiAdapter.completionNonStream(
+      if (this.shouldUseNaruZkurAIAdapter("complete") && this.naruzkuraiAdapter) {
+        const result = await this.naruzkuraiAdapter.completionNonStream(
           {
             ...toCompleteBody(prompt, completionOptions),
             stream: false,
@@ -904,7 +907,7 @@ export abstract class BaseLLM implements ILLM {
         context: "llm_complete",
         model: completionOptions.model,
         provider: this.providerName,
-        useOpenAIAdapter: this.shouldUseOpenAIAdapter("complete"),
+        useNaruZkurAIAdapter: this.shouldUseNaruZkurAIAdapter("complete"),
       });
 
       status = this._logEnd(
@@ -975,7 +978,7 @@ export abstract class BaseLLM implements ILLM {
     // As of 01/14/25 streaming is currently not available with o1
     // See these threads:
     // - https://github.com/continuedev/continue/issues/3698
-    // - https://community.openai.com/t/streaming-support-for-o1-o1-2024-12-17-resulting-in-400-unsupported-value/1085043
+    // - https://community.naruzkurai.com/t/streaming-support-for-o1-o1-2024-12-17-resulting-in-400-unsupported-value/1085043
     if (completionOptions.model === "o1") {
       completionOptions.stream = false;
     }
@@ -1020,21 +1023,21 @@ export abstract class BaseLLM implements ILLM {
     };
   }
 
-  private canUseOpenAIResponses(options: CompletionOptions): boolean {
+  private canUseNaruZkurAIResponses(options: CompletionOptions): boolean {
     return (
-      this.providerName === "openai" &&
+      this.providerName === "naruzkurai" &&
       this._llmOptions.useResponsesApi !== false &&
       typeof (this as any)._streamResponses === "function" &&
       (this as any).isOSeriesOrGpt5PlusModel(options.model)
     );
   }
 
-  private async *openAIAdapterStream(
+  private async *naruzKuraiAdapterStream(
     body: ChatCompletionCreateParams,
     signal: AbortSignal,
     onCitations: (c: string[]) => void,
   ): AsyncGenerator<ChatMessage> {
-    const stream = this.openaiAdapter!.chatCompletionStream(
+    const stream = this.naruzkuraiAdapter!.chatCompletionStream(
       { ...body, stream: true },
       signal,
     );
@@ -1052,11 +1055,11 @@ export abstract class BaseLLM implements ILLM {
     }
   }
 
-  private async *openAIAdapterNonStream(
+  private async *naruzKuraiAdapterNonStream(
     body: ChatCompletionCreateParams,
     signal: AbortSignal,
   ): AsyncGenerator<ChatMessage> {
-    const response = await this.openaiAdapter!.chatCompletionNonStream(
+    const response = await this.naruzkuraiAdapter!.chatCompletionNonStream(
       { ...body, stream: false },
       signal,
     );
@@ -1186,7 +1189,7 @@ export abstract class BaseLLM implements ILLM {
           yield { role: "assistant", content: chunk };
         }
       } else {
-        if (this.shouldUseOpenAIAdapter("streamChat") && this.openaiAdapter) {
+        if (this.shouldUseNaruZkurAIAdapter("streamChat") && this.naruzkuraiAdapter) {
           let body = toChatBody(messages, completionOptions, {
             includeReasoningField: this.supportsReasoningField,
             includeReasoningDetailsField: this.supportsReasoningDetailsField,
@@ -1209,7 +1212,7 @@ export abstract class BaseLLM implements ILLM {
             }
           }
 
-          const canUseResponses = this.canUseOpenAIResponses(completionOptions);
+          const canUseResponses = this.canUseNaruZkurAIResponses(completionOptions);
           const useStream = completionOptions.stream !== false;
 
           let iterable: AsyncIterable<ChatMessage>;
@@ -1219,12 +1222,12 @@ export abstract class BaseLLM implements ILLM {
               : this.responsesNonStream(messages, signal, completionOptions);
           } else {
             iterable = useStream
-              ? this.openAIAdapterStream(body, signal, (c) => {
+              ? this.naruzKuraiAdapterStream(body, signal, (c) => {
                   if (!citations) {
                     citations = c;
                   }
                 })
-              : this.openAIAdapterNonStream(body, signal);
+              : this.naruzKuraiAdapterNonStream(body, signal);
           }
 
           for await (const chunk of iterable) {
@@ -1289,7 +1292,7 @@ export abstract class BaseLLM implements ILLM {
         context: "llm_stream_chat",
         model: completionOptions.model,
         provider: this.providerName,
-        useOpenAIAdapter: this.shouldUseOpenAIAdapter("streamChat"),
+        useNaruZkurAIAdapter: this.shouldUseNaruZkurAIAdapter("streamChat"),
         streamEnabled: completionOptions.stream !== false,
         templateMessages: !!this.templateMessages,
       });
@@ -1357,8 +1360,8 @@ export abstract class BaseLLM implements ILLM {
 
           const embeddings = await withExponentialBackoff<number[][]>(
             async () => {
-              if (this.shouldUseOpenAIAdapter("embed") && this.openaiAdapter) {
-                const result = await this.openaiAdapter.embed({
+              if (this.shouldUseNaruZkurAIAdapter("embed") && this.naruzkuraiAdapter) {
+                const result = await this.naruzkuraiAdapter.embed({
                   model: this.model,
                   input: batch,
                 });
@@ -1376,14 +1379,14 @@ export abstract class BaseLLM implements ILLM {
   }
 
   async rerank(query: string, chunks: Chunk[]): Promise<number[]> {
-    if (this.shouldUseOpenAIAdapter("rerank") && this.openaiAdapter) {
-      const results = await this.openaiAdapter.rerank({
+    if (this.shouldUseNaruZkurAIAdapter("rerank") && this.naruzkuraiAdapter) {
+      const results = await this.naruzkuraiAdapter.rerank({
         model: this.model,
         query,
         documents: chunks.map((chunk) => chunk.content),
       });
 
-      // Standard OpenAI format
+      // Standard NaruZkurAI format
       if (results.data && Array.isArray(results.data)) {
         return results.data
           .sort((a, b) => a.index - b.index)

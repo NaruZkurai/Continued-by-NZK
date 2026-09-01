@@ -1,8 +1,8 @@
 import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class MiniMax extends OpenAI {
+class MiniMax extends NaruZkurAI {
   static providerName = "minimax";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.minimax.io/v1/",

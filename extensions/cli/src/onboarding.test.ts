@@ -50,7 +50,7 @@ describe("onboarding config flag handling", () => {
 name: "Test Config"
 models:
   - name: "GPT-4"
-    provider: "openai"
+    provider: "naruzkurai"
     invalid_yaml_syntax: [unclosed array
 `,
     );

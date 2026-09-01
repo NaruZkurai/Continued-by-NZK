@@ -9,7 +9,7 @@ set -e
 if [ -f .nvmrc ]; then
     required_node_version=$(cat .nvmrc)
     current_node_version=$(node -v)
-    
+
     # Remove 'v' prefix from versions for comparison
     required_version=${required_node_version#v}
     current_version=${current_node_version#v}
@@ -17,7 +17,7 @@ if [ -f .nvmrc ]; then
     if [ "$required_version" != "$current_version" ]; then
         echo "⚠️  Warning: Your Node.js version ($current_node_version) does not match the required version ($required_node_version)"
         echo "Please consider switching to the correct version using: nvm use"
-        
+
         if [ -t 0 ]; then
             read -p "Press Enter to continue with installation anyway..."
         else
@@ -30,7 +30,7 @@ fi
 echo "Installing root-level dependencies..."
 npm install
 
-echo "Building packages (fetch, openai-adapters, config-yaml)..."
+echo "Building packages (fetch, naruzkurai-adapters, config-yaml)..."
 node ./scripts/build-packages.js
 
 echo "Installing Core extension dependencies..."

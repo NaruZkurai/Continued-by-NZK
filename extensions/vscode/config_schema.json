@@ -186,7 +186,7 @@
           "title": "Provider",
           "description": "The provider of the model. This is used to determine the type of model, and how to interact with it.",
           "enum": [
-            "openai",
+            "naruzkurai",
             "anthropic",
             "anthropic-vertexai",
             "cohere",
@@ -239,7 +239,7 @@
             "tars"
           ],
           "markdownEnumDescriptions": [
-            "### OpenAI\nUse gpt-4, gpt-3.5-turbo, or any other OpenAI model. See [here](https://openai.com/product#made-for-developers) to obtain an API key.\n\n> [Reference](https://docs.continue.dev/reference/Model%20Providers/openai)",
+            "### NaruZkurAI\nUse gpt-4, gpt-3.5-turbo, or any other NaruZkurAI model. See [here](https://naruzkurai.com/product#made-for-developers) to obtain an API key.\n\n> [Reference](https://docs.continue.dev/reference/Model%20Providers/naruzkurai)",
             "### Anthropic\nTo get started with Anthropic models, you first need to sign up for the open beta [here](https://claude.ai/login) to obtain an API key.\n> [Reference](https://docs.continue.dev/reference/Model%20Providers/anthropicllm)",
             "### Anthropic Vertex AI\nTo get started you need to enable the [Vertex AI API](https://console.cloud.google.com/marketplace/product/google/aiplatform.googleapis.com) and set up the [Google Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc).",
             "### Cohere\nTo use Cohere, visit the [Cohere dashboard](https://dashboard.cohere.com/api-keys) to create an API key.\n\n> [Reference](https://docs.continue.dev/reference/Model%20Providers/cohere)",
@@ -265,7 +265,7 @@
             "### Ncompass\nnCompass is an extremely fast inference engine for open-source language models. To get started, obtain an API key from [their console](https://app.ncompass.tech/api-settings).",
             "### Cloudflare Workers AI\n\n[Reference](https://developers.cloudflare.com/workers-ai/)",
             "### Deepseek\n Deepseek's API provides the best pricing for their state-of-the-art Deepseek Coder models. To get started, obtain an API key from [their console](https://platform.deepseek.com/api_keys)",
-            "### Azure OpenAI\n Azure OpenAI lets you securely run OpenAI's models on Azure. To get started, follow the steps [here](https://docs.continue.dev/reference/Model%20Providers/azure)",
+            "### Azure NaruZkurAI\n Azure NaruZkurAI lets you securely run NaruZkurAI's models on Azure. To get started, follow the steps [here](https://docs.continue.dev/reference/Model%20Providers/azure)",
             "### Msty\nMsty is the simplest way to get started with online or local LLMs on all desktop platforms - Windows, Mac, and Linux. No fussing around, one-click and you are up and running. To get started, follow these steps:\n1. Download from [Msty.app](https://msty.app/), open the application, and click 'Setup Local AI'.\n2. Go to the Local AI Module page and download a model of your choice.\n3. Once the model has finished downloading, you can start asking questions through Continue.\n> [Reference](https://continue.dev/docs/reference/Model%20Providers/Msty)",
             "### IBM watsonx\nwatsonx, developed by IBM, offers a variety of pre-trained AI foundation models that can be used for natural language processing (NLP), computer vision, and speech recognition tasks.",
             "### OpenRouter\nOpenRouter offers a single API to access almost any language model. To get started, obtain an API key from [their console](https://openrouter.ai/settings/keys).",
@@ -281,15 +281,15 @@
             "### Secure AI management software that helps enterprises adopt and manage AI across their workforce. To get started, obtain an API key from [the Kindo console](https://app.kindo.ai/settings/api), and see the [website](https://app.kindo.ai//)",
             "### Moonshot\nTo get started with Moonshot AI, obtain your API key from [Moonshot AI](https://platform.moonshot.cn/). Moonshot AI provides high-quality large language models with competitive pricing.\n> [Reference](https://platform.moonshot.cn/docs/api)",
             "### SiliconFlow\nTo get started with SiliconFlow, obtain your API key from [SiliconCloud](https://cloud.siliconflow.cn/account/ak). SiliconCloud provides cost-effective GenAI services based on excellent open source basic models.\n> [Models](https://siliconflow.cn/zh-cn/models)",
-            "### Tensorix\nTensorix is an OpenAI-compatible API gateway with access to DeepSeek, Llama, Qwen, GLM, and other models. Pay-as-you-go with no subscription required.\nTo get started, create an account and get an API key at [app.tensorix.ai](https://app.tensorix.ai).\n> [Models](https://tensorix.ai/models)",
+            "### Tensorix\nTensorix is an NaruZkurAI-compatible API gateway with access to DeepSeek, Llama, Qwen, GLM, and other models. Pay-as-you-go with no subscription required.\nTo get started, create an account and get an API key at [app.tensorix.ai](https://app.tensorix.ai).\n> [Models](https://tensorix.ai/models)",
             "### Function Network offers private, affordable user-owned AI\nTo get started with Function Network, obtain your API key from [Function Network](https://www.function.network/join-waitlist). Function Network provides a variety of models for chat, completion, and embeddings.",
             "### Scaleway\n Generative APIs are serverless endpoints for the most popular AI models.\nHosted in European data centers and priced competitively per million tokens used, models served by Scaleway are ideal for users requiring low latency, full data privacy, and 100% compliance with EU AI Act. To get access to the Scaleway Generative APIs, read the [Quickstart guide](https://www.scaleway.com/en/docs/ai-data/generative-apis/quickstart/) and get a [valid API key](https://www.scaleway.com/en/docs/identity-and-access-management/iam/how-to/create-api-keys/).",
             "### Relace\n Relace provides a fast apply model. To get started, obtain an API key from [here](https://app.relace.ai/settings/api-keys).",
             "### Morph\nMorph provides a fast apply model. To get started, obtain an API key from [here](https://morphllm.com/dashboard).",
             "### OVHcloud AI Endpoints is a serverless inference API that provides access to a curated selection of models (e.g., Llama, Mistral, Qwen, Deepseek). It is designed with security and data privacy in mind and is compliant with GDPR. To get started, create an API key on the OVHcloud [AI Endpoints website](https://endpoints.ai.cloud.ovh.net/). For more information, including pricing, visit the OVHcloud [AI Endpoints product page](https://www.ovhcloud.com/en/public-cloud/ai-endpoints/).",
-            "### Venice\n Venice.AI is a privacy-focused generative AI platform, allowing users to interact with open-source LLMs without storing any private user data.\nHosted models support the OpenAI API standard, providing seamless integration for users seeking privacy and flexibility.\nTo get started with the Venice API, either purchase a pro account, stake $VVV for daily inference allotments, or fund your account with USD.\nVisit the [API settings page](https://venice.ai/settings/api) or learn more at the [Venice API documentation](https://venice.ai/api).",
+            "### Venice\n Venice.AI is a privacy-focused generative AI platform, allowing users to interact with open-source LLMs without storing any private user data.\nHosted models support the NaruZkurAI API standard, providing seamless integration for users seeking privacy and flexibility.\nTo get started with the Venice API, either purchase a pro account, stake $VVV for daily inference allotments, or fund your account with USD.\nVisit the [API settings page](https://venice.ai/settings/api) or learn more at the [Venice API documentation](https://venice.ai/api).",
             "### Inception\n Inception Labs offer a new generation of diffusion-based LLMs.\nVisit the [API settings page](https://platform.inceptionlabs.ai/) or learn more at the [Inception docs](https://platform.inceptionlabs.ai/docs).",
-            "### TARS\nTARS is an OpenAI-compatible proxy router. To get started, obtain an API key and configure the provider in your config.json."
+            "### TARS\nTARS is an NaruZkurAI-compatible proxy router. To get started, obtain an API key and configure the provider in your config.json."
           ],
           "type": "string"
         },
@@ -300,7 +300,7 @@
         },
         "apiKey": {
           "title": "Api Key",
-          "description": "OpenAI, Anthropic, Cohere, Together, Novita AI, nCompass, or other API key",
+          "description": "NaruZkurAI, Anthropic, Cohere, Together, Novita AI, nCompass, or other API key",
           "type": "string"
         },
         "apiBase": {
@@ -465,18 +465,18 @@
         },
         "apiType": {
           "title": "Api Type",
-          "markdownDescription": "OpenAI API type, either `openai` or `azure`",
-          "x-intellij-html-description": "OpenAI API type, either <code>openai</code> or <code>azure</code>",
-          "enum": ["openai", "azure"]
+          "markdownDescription": "NaruZkurAI API type, either `naruzkurai` or `azure`",
+          "x-intellij-html-description": "NaruZkurAI API type, either <code>naruzkurai</code> or <code>azure</code>",
+          "enum": ["naruzkurai", "azure"]
         },
         "apiVersion": {
           "title": "Api Version",
-          "description": "Azure OpenAI API version (e.g. 2023-07-01-preview)",
+          "description": "Azure NaruZkurAI API version (e.g. 2023-07-01-preview)",
           "type": "string"
         },
         "deployment": {
           "title": "Deployment",
-          "description": "Azure OpenAI deployment",
+          "description": "Azure NaruZkurAI deployment",
           "type": "string"
         },
         "capabilities": {
@@ -520,7 +520,7 @@
             "properties": {
               "provider": {
                 "enum": [
-                  "openai",
+                  "naruzkurai",
                   "anthropic",
                   "cohere",
                   "gemini",
@@ -576,7 +576,7 @@
           "if": {
             "properties": {
               "provider": {
-                "enum": ["openai"]
+                "enum": ["naruzkurai"]
               }
             },
             "required": ["provider"]
@@ -660,7 +660,7 @@
           "if": {
             "properties": {
               "provider": {
-                "enum": ["openai"]
+                "enum": ["naruzkurai"]
               }
             },
             "required": ["provider"]
@@ -756,7 +756,7 @@
           "if": {
             "properties": {
               "provider": {
-                "enum": ["openai"]
+                "enum": ["naruzkurai"]
               },
               "apiType": {
                 "not": {
@@ -1490,7 +1490,7 @@
           "if": {
             "properties": {
               "provider": {
-                "enum": ["openai"]
+                "enum": ["naruzkurai"]
               }
             },
             "required": ["provider"]
@@ -2856,7 +2856,7 @@
                 "huggingface-tei",
                 "transformers.js",
                 "ollama",
-                "openai",
+                "naruzkurai",
                 "cohere",
                 "gemini",
                 "voyage",

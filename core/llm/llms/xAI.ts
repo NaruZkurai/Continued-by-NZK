@@ -1,8 +1,8 @@
 import { LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class xAI extends OpenAI {
+class xAI extends NaruZkurAI {
   static providerName = "xAI";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.x.ai/v1/",

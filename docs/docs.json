@@ -97,7 +97,7 @@
                       "customize/model-providers/top-level/lmstudio",
                       "customize/model-providers/top-level/ollama",
                       "customize/model-providers/top-level/openrouter",
-                      "customize/model-providers/top-level/openai",
+                      "customize/model-providers/top-level/naruzkurai",
                       "customize/model-providers/top-level/tetrate_agent_router_service",
                       "customize/model-providers/top-level/vertexai"
                     ]
@@ -593,12 +593,12 @@
       "destination": "/customize/model-providers/ollama"
     },
     {
-      "source": "/reference/Model Providers/openai",
-      "destination": "/customize/model-providers/openai"
+      "source": "/reference/Model Providers/naruzkurai",
+      "destination": "/customize/model-providers/naruzkurai"
     },
     {
-      "source": "/advanced/model-providers/openai",
-      "destination": "/customize/model-providers/openai"
+      "source": "/advanced/model-providers/naruzkurai",
+      "destination": "/customize/model-providers/naruzkurai"
     },
     {
       "source": "/intro",
@@ -1042,8 +1042,8 @@
       "destination": "/faqs#i-installed-continue-but-dont-see-the-sidebar-window"
     },
     {
-      "source": "/troubleshooting#im-getting-a-404-error-from-openai",
-      "destination": "/faqs#im-getting-a-404-error-from-openai"
+      "source": "/troubleshooting#im-getting-a-404-error-from-naruzkurai",
+      "destination": "/faqs#im-getting-a-404-error-from-naruzkurai"
     },
     {
       "source": "/troubleshooting#im-getting-a-404-error-from-openrouter",

@@ -2,9 +2,9 @@ import { streamSse } from "@continuedev/fetch";
 import { Chunk, CompletionOptions, LLMOptions } from "../../index.js";
 import { osModelsEditPrompt } from "../templates/edit.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class SiliconFlow extends OpenAI {
+class SiliconFlow extends NaruZkurAI {
   static providerName = "siliconflow";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.siliconflow.cn/v1/",

@@ -13,7 +13,7 @@ export const mockAssistant: AssistantUnrolled = {
   name: "test-assistant",
   models: [
     {
-      provider: "openai",
+      provider: "naruzkurai",
       name: "test-model",
       model: "test-model",
     },

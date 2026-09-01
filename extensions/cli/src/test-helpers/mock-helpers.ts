@@ -1,5 +1,5 @@
+import { ChatCompletionMessageParam } from "naruzkurai/resources";
 import nock from "nock";
-import { ChatCompletionMessageParam } from "openai/resources";
 
 export interface MockAPIOptions {
   baseURL?: string;
@@ -8,14 +8,14 @@ export interface MockAPIOptions {
 }
 
 /**
- * Sets up mock for OpenAI API calls
+ * Sets up mock for NaruZkurAI API calls
  */
-export function mockOpenAIChat(
+export function mockNaruZkurAIChat(
   response: string,
   options: MockAPIOptions = {},
 ): nock.Scope {
   const {
-    baseURL = "https://api.openai.com",
+    baseURL = "https://api.naruzkurai.com",
     delay = 0,
     error = false,
   } = options;
@@ -50,14 +50,14 @@ export function mockOpenAIChat(
 }
 
 /**
- * Sets up mock for streaming OpenAI API calls
+ * Sets up mock for streaming NaruZkurAI API calls
  */
-export function mockOpenAIStream(
+export function mockNaruZkurAIStream(
   chunks: string[],
   options: MockAPIOptions = {},
 ): nock.Scope {
   const {
-    baseURL = "https://api.openai.com",
+    baseURL = "https://api.naruzkurai.com",
     delay = 0,
     error = false,
   } = options;
@@ -158,7 +158,7 @@ export function createMockConfig(overrides: any = {}): any {
   return {
     name: "Test Assistant",
     model: "gpt-4",
-    provider: "openai",
+    provider: "naruzkurai",
     apiKey: "test-api-key",
     systemMessage: "You are a helpful test assistant.",
     ...overrides,

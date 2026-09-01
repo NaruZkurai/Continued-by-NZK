@@ -23,7 +23,7 @@ export function OnboardingProvidersTab({
   );
 
   const providerConfigs = [
-    providers["openai"],
+    providers["naruzkurai"],
     providers["anthropic"],
     providers["gemini"],
   ];

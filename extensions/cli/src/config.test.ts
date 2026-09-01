@@ -35,7 +35,7 @@ describe("config", () => {
         version: "1.0.0",
         models: [
           {
-            provider: "openai",
+            provider: "naruzkurai",
             model: "text-embedding-ada-002",
             name: "Ada Embeddings",
             roles: ["embed"],

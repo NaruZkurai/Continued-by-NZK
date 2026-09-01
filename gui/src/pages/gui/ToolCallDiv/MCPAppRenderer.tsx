@@ -10,7 +10,7 @@ import {
 } from "@modelcontextprotocol/ext-apps/app-bridge";
 import { ToolCallState } from "core";
 import { getToolNameFromMCPServer } from "core/tools/mcpToolName";
-import { generateOpenAIToolCallId } from "core/tools/systemMessageTools/systemToolUtils";
+import { generateNaruZkurAIToolCallId } from "core/tools/systemMessageTools/systemToolUtils";
 import { renderContextItems } from "core/util/messageContent";
 import {
   useCallback,
@@ -215,7 +215,7 @@ export function McpAppRenderer({
             ),
             arguments: JSON.stringify(params.arguments),
           },
-          id: generateOpenAIToolCallId(),
+          id: generateNaruZkurAIToolCallId(),
           type: "function",
         },
       });

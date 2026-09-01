@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { Chunk, LLMOptions } from "../../index.js";
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 /**used to check a valid response from voyage is received
  * reference: https://docs.voyageai.com/reference/reranker-api
@@ -16,7 +16,7 @@ const VoyageRerankSuccessResponseSchema = z.object({
   ),
 });
 
-class Voyage extends OpenAI {
+class Voyage extends NaruZkurAI {
   static providerName = "voyage";
   static defaultOptions: Partial<LLMOptions> | undefined = {
     apiBase: "https://api.voyageai.com/v1/",

@@ -1,8 +1,8 @@
-import { ChatCompletionCreateParams } from "openai/resources/index";
+import { ChatCompletionCreateParams } from "naruzkurai/resources/index";
 import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-export class OVHcloud extends OpenAI {
+export class OVHcloud extends NaruZkurAI {
   static providerName = "ovhcloud";
 
   static defaultOptions: Partial<LLMOptions> = {

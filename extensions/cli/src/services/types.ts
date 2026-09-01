@@ -5,7 +5,7 @@ import {
   parseAgentFileRules,
   parseAgentFileTools,
 } from "@continuedev/config-yaml";
-import { BaseLlmApi } from "@continuedev/openai-adapters";
+import { BaseLlmApi } from "@continuedev/naruzkurai-adapters";
 import { AssistantConfig } from "@continuedev/sdk";
 import { DefaultApiInterface } from "@continuedev/sdk/dist/api/dist/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";

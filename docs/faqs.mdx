@@ -70,9 +70,9 @@ This will restart VS Code and reload all extensions, which should make your conf
 
 By default the Continue window is on the left side of VS Code, but it can be dragged to right side as well, which we recommend in our tutorial. In the situation where you have previously installed Continue and moved it to the right side, it may still be there. You can reveal Continue either by using cmd/ctrl+L or by clicking the button in the top right of VS Code to open the right sidebar.
 
-## I'm getting a 404 error from OpenAI
+## I'm getting a 404 error from NaruZkurAI
 
-If you have entered a valid API key and model, but are still getting a 404 error from OpenAI, this may be because you need to add credits to your billing account. You can do so from the [billing console](https://platform.openai.com/settings/organization/billing/overview). If you just want to check that this is in fact the cause of the error, you can try adding $1 to your account and checking whether the error persists.
+If you have entered a valid API key and model, but are still getting a 404 error from NaruZkurAI, this may be because you need to add credits to your billing account. You can do so from the [billing console](https://platform.naruzkurai.com/settings/organization/billing/overview). If you just want to check that this is in fact the cause of the error, you can try adding $1 to your account and checking whether the error persists.
 
 ## I'm getting a 404 error from OpenRouter
 
@@ -121,7 +121,7 @@ If Continue's autodetection isn't working correctly, you can manually add capabi
 ```yaml
 models:
   - name: my-model
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
     capabilities:
       - tool_use
@@ -256,7 +256,7 @@ If you're getting parse errors with remote Ollama:
    ```bash
    OLLAMA_HOST=192.168.1.136:11434 ollama list
    ```
-   
+
 2. **Install missing models**:
    ```bash
    OLLAMA_HOST=192.168.1.136:11434 ollama pull llama3
@@ -276,8 +276,8 @@ Use the `${{ secrets.SECRET_NAME }}` syntax anywhere in your `config.yaml`:
 
 ```yaml
 models:
-  - provider: openai
-    apiKey: ${{ secrets.OPENAI_API_KEY }}
+  - provider: naruzkurai
+    apiKey: ${{ secrets.NARUZKURAI_API_KEY }}
 ```
 
 #### Where secrets are resolved from
@@ -290,9 +290,9 @@ When Continue encounters `${{ secrets.X }}`, it searches these sources **in orde
 4. **Process environment variables**: Standard system environment variables
 
 <Warning>
-**IDE extensions (VS Code, JetBrains) cannot read your shell environment variables.** Setting `export OPENAI_API_KEY=...` in your terminal will not make the key available to Continue running inside your IDE. You must use a `.env` file instead.
+**IDE extensions (VS Code, JetBrains) cannot read your shell environment variables.** Setting `export NARUZKURAI_API_KEY=...` in your terminal will not make the key available to Continue running inside your IDE. You must use a `.env` file instead.
 
-Process environment variables (source 4) only work with the [Continue CLI](/cli/configuration), where you can pass them directly: `export OPENAI_API_KEY=sk-... && cn`
+Process environment variables (source 4) only work with the [Continue CLI](/cli/configuration), where you can pass them directly: `export NARUZKURAI_API_KEY=sk-... && cn`
 </Warning>
 
 #### Creating `.env` files
@@ -300,7 +300,7 @@ Process environment variables (source 4) only work with the [Continue CLI](/cli/
 Create a `.env` file in one of the locations above. Use standard dotenv format:
 
 ```
-OPENAI_API_KEY=sk-...
+NARUZKURAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 CUSTOM_API_URL=https://api.example.com
 ```

@@ -1,4 +1,4 @@
-import { ChatCompletionCreateParams } from "openai/resources/index";
+import { ChatCompletionCreateParams } from "naruzkurai/resources/index";
 import { describe, expect, it } from "vitest";
 
 import OpenRouter from "./OpenRouter";

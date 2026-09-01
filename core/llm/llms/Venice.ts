@@ -1,9 +1,9 @@
-import { ChatCompletionCreateParams } from "@continuedev/openai-adapters";
+import { ChatCompletionCreateParams } from "@continuedev/naruzkurai-adapters";
 import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI";
+import NaruZkurAI from "./NaruZkurAI";
 
-class Venice extends OpenAI {
+class Venice extends NaruZkurAI {
   static providerName = "venice";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.venice.ai/api/v1/",

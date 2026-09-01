@@ -1,6 +1,6 @@
 // @ts-ignore
 import { ContinueError, ContinueErrorReason } from "core/util/errors.js";
-import { ChatCompletionTool } from "openai/resources.mjs";
+import { ChatCompletionTool } from "naruzkurai/resources.mjs";
 
 import { isModelCapable } from "src/utils/modelCapability.js";
 

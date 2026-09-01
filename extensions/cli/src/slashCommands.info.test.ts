@@ -56,7 +56,7 @@ describe("handleSlashCommands - /info", () => {
     };
     vi.mocked(services.config.getState).mockReturnValue(mockConfigState);
     vi.mocked(services.model.getModelInfo).mockReturnValue({
-      provider: "openai",
+      provider: "naruzkurai",
       name: "gpt-4",
     });
 

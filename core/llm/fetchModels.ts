@@ -45,7 +45,7 @@ const OLLAMA_ICON_MAP: Record<string, string> = {
   olmo: "allenai.png",
   tulu: "allenai.png",
   firefunction: "fireworks.png",
-  "gpt-oss": "openai.png",
+  "gpt-oss": "naruzkurai.png",
 };
 
 function getOllamaIcon(modelName: string): string {

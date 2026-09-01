@@ -30,6 +30,51 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
   onRetry: defaultOnRetry,
 };
 
+// For "model downloading" errors the backend will eventually be ready, so we
+// wait indefinitely and allow the backoff to grow well beyond the default cap.
+const MODEL_DOWNLOAD_MAX_DELAY_MS = 60000;
+
+/**
+ * Detects the `model_downloading` error returned by NaruZkurAI-compatible backends
+ * (e.g. Unsloth Studio) when a requested model is still downloading:
+ *   { message: "Downloading '...' (1.9 GB). Retry shortly. ...",
+ *     type: "api_error", param: "model", code: "model_downloading" }
+ *
+ * Detection relies on both the structured `code` field and the message text,
+ * in case the error was serialized and its fields were reshaped.
+ */
+export function isModelDownloadingError(error: any): boolean {
+  if (!error) return false;
+  if (error.code === "model_downloading") return true;
+  if (typeof error.message === "string") {
+    const lower = error.message.toLowerCase();
+    return (
+      lower.includes("model_downloading") ||
+      (lower.startsWith("downloading '") && lower.includes("retry shortly"))
+    );
+  }
+  return false;
+}
+
+/**
+ * The effective number of attempts for a given error. Model-downloading errors
+ * return Infinity so the retry loop waits indefinitely for the model to be
+ * ready, while all other errors keep the configured bounded behavior.
+ */
+function effectiveMaxAttempts(error: any, configuredMax: number): number {
+  return isModelDownloadingError(error) ? Infinity : configuredMax;
+}
+
+/**
+ * The effective max delay for a given error. Model-downloading errors allow
+ * the backoff to grow much larger (a multi-GB download takes minutes).
+ */
+function effectiveMaxDelay(error: any, configuredMax: number): number {
+  return isModelDownloadingError(error)
+    ? MODEL_DOWNLOAD_MAX_DELAY_MS
+    : configuredMax;
+}
+
 /**
  * Default function to determine if an error should be retried
  * Retries on:
@@ -42,6 +87,11 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
 function defaultShouldRetry(error: any, attempt: number): boolean {
   // Note: maxAttempts check is handled by the retry logic itself
   // This function only determines if the error type is retryable
+
+  // Model is still downloading on the backend — retry until it is ready.
+  if (isModelDownloadingError(error)) {
+    return true;
+  }
 
   // Network/connection errors
   if (
@@ -234,7 +284,11 @@ export function withRetry(options: RetryOptions = {}) {
       ? async function* (this: any, ...methodArgs: any[]) {
           let lastError: any;
 
-          for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+          for (
+            let attempt = 1;
+            attempt <= effectiveMaxAttempts(lastError, config.maxAttempts);
+            attempt++
+          ) {
             try {
               const generator = originalMethod.apply(this, methodArgs);
               yield* createRetryableAsyncGenerator(
@@ -255,7 +309,7 @@ export function withRetry(options: RetryOptions = {}) {
               }
 
               // Don't delay on the last attempt
-              if (attempt === config.maxAttempts) {
+              if (attempt === effectiveMaxAttempts(error, config.maxAttempts)) {
                 break;
               }
 
@@ -263,7 +317,7 @@ export function withRetry(options: RetryOptions = {}) {
               const delay = calculateDelay(
                 attempt,
                 config.baseDelay,
-                config.maxDelay,
+                effectiveMaxDelay(error, config.maxDelay),
                 config.jitterFactor,
                 error,
               );
@@ -279,7 +333,11 @@ export function withRetry(options: RetryOptions = {}) {
       : async function (this: any, ...methodArgs: any[]) {
           let lastError: any;
 
-          for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+          for (
+            let attempt = 1;
+            attempt <= effectiveMaxAttempts(lastError, config.maxAttempts);
+            attempt++
+          ) {
             try {
               const result = originalMethod.apply(this, methodArgs);
               return await result;
@@ -292,7 +350,7 @@ export function withRetry(options: RetryOptions = {}) {
               }
 
               // Don't delay on the last attempt
-              if (attempt === config.maxAttempts) {
+              if (attempt === effectiveMaxAttempts(error, config.maxAttempts)) {
                 break;
               }
 
@@ -300,7 +358,7 @@ export function withRetry(options: RetryOptions = {}) {
               const delay = calculateDelay(
                 attempt,
                 config.baseDelay,
-                config.maxDelay,
+                effectiveMaxDelay(error, config.maxDelay),
                 config.jitterFactor,
                 error,
               );
@@ -351,7 +409,7 @@ async function* createRetryableAsyncGenerator<T>(
 
     for (
       let retryAttempt = attempt + 1;
-      retryAttempt <= config.maxAttempts;
+      retryAttempt <= effectiveMaxAttempts(error, config.maxAttempts);
       retryAttempt++
     ) {
       // Check if we should retry this error
@@ -360,7 +418,7 @@ async function* createRetryableAsyncGenerator<T>(
       }
 
       // Don't delay on the last attempt
-      if (retryAttempt === config.maxAttempts) {
+      if (retryAttempt === effectiveMaxAttempts(error, config.maxAttempts)) {
         break;
       }
 
@@ -368,7 +426,7 @@ async function* createRetryableAsyncGenerator<T>(
       const delay = calculateDelay(
         retryAttempt,
         config.baseDelay,
-        config.maxDelay,
+        effectiveMaxDelay(error, config.maxDelay),
         config.jitterFactor,
         error,
       );
@@ -424,7 +482,11 @@ export async function retryAsync<T>(
   const config = { ...DEFAULT_RETRY_OPTIONS, ...options };
   let lastError: any;
 
-  for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+  for (
+    let attempt = 1;
+    attempt <= effectiveMaxAttempts(lastError, config.maxAttempts);
+    attempt++
+  ) {
     try {
       return await fn();
     } catch (error) {
@@ -436,7 +498,7 @@ export async function retryAsync<T>(
       }
 
       // Don't delay on the last attempt
-      if (attempt === config.maxAttempts) {
+      if (attempt === effectiveMaxAttempts(error, config.maxAttempts)) {
         break;
       }
 
@@ -444,7 +506,7 @@ export async function retryAsync<T>(
       const delay = calculateDelay(
         attempt,
         config.baseDelay,
-        config.maxDelay,
+        effectiveMaxDelay(error, config.maxDelay),
         config.jitterFactor,
         error,
       );

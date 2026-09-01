@@ -2,12 +2,12 @@ import { streamSse } from "@continuedev/fetch";
 import { CompletionOptions, LLMOptions } from "../../index.js";
 import { osModelsEditPrompt } from "../templates/edit.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class LlamaStack extends OpenAI {
+class LlamaStack extends NaruZkurAI {
   static providerName = "llamastack";
   static defaultOptions: Partial<LLMOptions> = {
-    apiBase: "http://localhost:8321/v1/openai/v1/",
+    apiBase: "http://localhost:8321/v1/naruzkurai/v1/",
     model: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
     promptTemplates: {
       edit: osModelsEditPrompt,

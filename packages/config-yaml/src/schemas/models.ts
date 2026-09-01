@@ -178,8 +178,16 @@ export type PromptTemplates = z.infer<typeof promptTemplatesSchema>;
 const baseModelFields = {
   name: z.string(),
   model: z.string(),
+  quant: z.string().optional(),
   apiKey: z.string().optional(),
   apiBase: z.string().optional(),
+  apiURL: z.string().optional(),
+  ApiHttpOrHttps: z
+    .union([
+      z.boolean(),
+      z.string().transform((v) => v.trim().toLowerCase()),
+    ])
+    .optional(),
   contextLength: z.number().optional(),
   maxStopWords: z.number().optional(),
   roles: modelRolesSchema.array().optional(),

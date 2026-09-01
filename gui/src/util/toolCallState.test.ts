@@ -355,8 +355,8 @@ describe("addToolCallDeltaToState", () => {
     expect(result.parsedArgs).toEqual({ query: "test" });
   });
 
-  it("should handle realistic weather API streaming pattern from OpenAI example", () => {
-    // https://platform.openai.com/docs/guides/function-calling?api-mode=chat#streaming
+  it("should handle realistic weather API streaming pattern from NaruZkurAI example", () => {
+    // https://platform.naruzkurai.com/docs/guides/function-calling?api-mode=chat#streaming
     // Sequence of deltas as seen in the streaming example
     const streamSequence: ToolCallDelta[] = [
       {

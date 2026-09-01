@@ -1,5 +1,5 @@
-import { BaseLlmApi, isResponsesModel } from "@continuedev/openai-adapters";
-import type { ChatCompletionCreateParamsStreaming } from "openai/resources.mjs";
+import { BaseLlmApi, isResponsesModel } from "@continuedev/naruzkurai-adapters";
+import type { ChatCompletionCreateParamsStreaming } from "naruzkurai/resources.mjs";
 
 import { error, warn } from "../logging.js";
 
@@ -96,7 +96,7 @@ export function isContextLengthError(error: unknown): boolean {
     // Anthropic Claude
     "input length and max_tokens exceed context limit",
     "decrease input length or max_tokens",
-    // OpenAI
+    // NaruZkurAI
     "maximum context length",
     "reduce the length of the messages",
     // Mistral
@@ -130,7 +130,7 @@ function isRetryableError(error: any): boolean {
     return true;
   }
 
-  // OpenAI/API specific errors
+  // NaruZkurAI/API specific errors
   if (isServerError(error)) {
     return true;
   }

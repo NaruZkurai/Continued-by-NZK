@@ -196,7 +196,7 @@ schema: v1
 models:
   - name: test-${modelName}
     model: ${modelName}
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     apiBase: ${mockServer.url}
     roles:

@@ -1,8 +1,8 @@
 import { LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class Nvidia extends OpenAI {
+class Nvidia extends NaruZkurAI {
   // NVIDIA NIMs currently limits the number of stops for Starcoder 2 to 4
   // https://docs.api.nvidia.com/nim/reference/bigcode-starcoder2-7b-infer
   maxStopWords = 4;

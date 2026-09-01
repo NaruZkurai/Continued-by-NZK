@@ -46,7 +46,7 @@ import {
 const PROVIDER_HANDLES_TEMPLATING: string[] = [
   "lmstudio",
   "lemonade",
-  "openai",
+  "naruzkurai",
   "nvidia",
   "ollama",
   "together",
@@ -112,7 +112,7 @@ const PROVIDER_HANDLES_TEMPLATING: string[] = [
 ];
 
 const PROVIDER_SUPPORTS_IMAGES: string[] = [
-  "openai",
+  "naruzkurai",
   "ollama",
   "lemonade",
   "cohere",
@@ -256,7 +256,7 @@ const PARALLEL_PROVIDERS: string[] = [
 ];
 
 function llmCanGenerateInParallel(provider: string, model: string): boolean {
-  if (provider === "openai") {
+  if (provider === "naruzkurai") {
     return model.includes("gpt");
   }
 

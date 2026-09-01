@@ -1,8 +1,8 @@
 import { LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class Fireworks extends OpenAI {
+class Fireworks extends NaruZkurAI {
   static providerName = "fireworks";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.fireworks.ai/inference/v1/",

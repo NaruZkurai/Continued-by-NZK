@@ -32,7 +32,7 @@ const CONTINUE_SETUP_URL = "https://docs.continue.dev/setup/overview";
 
 export function AddModelForm({ onDone }: AddModelFormProps) {
   const [selectedProvider, setSelectedProvider] = useState<ProviderInfo>(
-    providers["openai"]!,
+    providers["naruzkurai"]!,
   );
   const { selectedProfile } = useAuth();
   const [selectedModel, setSelectedModel] = useState(
@@ -79,7 +79,7 @@ export function AddModelForm({ onDone }: AddModelFormProps) {
   }, [ideMessenger, selectedProvider, formMethods]);
 
   const popularProviderTitles = [
-    providers["openai"]?.title || "",
+    providers["naruzkurai"]?.title || "",
     providers["anthropic"]?.title || "",
     providers["mistral"]?.title || "",
     providers["gemini"]?.title || "",
@@ -89,7 +89,7 @@ export function AddModelForm({ onDone }: AddModelFormProps) {
   ];
 
   const allProviders = Object.entries(providers)
-    .filter(([key]) => !["openai-aiohttp"].includes(key))
+    .filter(([key]) => !["naruzkurai-aiohttp"].includes(key))
     .map(([, provider]) => provider)
     .filter((provider) => !!provider)
     .map((provider) => provider!); // for type checking
@@ -130,7 +130,7 @@ export function AddModelForm({ onDone }: AddModelFormProps) {
   }, [selectedProvider]);
 
   const requiresSkPrefix =
-    selectedProvider.provider === "openai" ||
+    selectedProvider.provider === "naruzkurai" ||
     selectedProvider.provider === "anthropic";
 
   const apiKeyValue = formMethods.watch("apiKey");

@@ -10,7 +10,7 @@ import {
   ToolResultChatMessage,
 } from "../../index.js";
 import { BaseLLM } from "../index.js";
-import { fromChatCompletionChunk } from "../openaiTypeConverters.js";
+import { fromChatCompletionChunk } from "../naruzkuraiTypeConverters.js";
 
 let watsonxToken = {
   expiration: 0,

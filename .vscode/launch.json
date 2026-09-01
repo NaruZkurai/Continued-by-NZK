@@ -14,7 +14,15 @@
         // Pass a directory to manually test in
         "${workspaceFolder}/manual-testing-sandbox",
         "${workspaceFolder}/manual-testing-sandbox/test.js",
-        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
+        // Load the extension under development from the source tree...
+        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode",
+        // ...and DISABLE the installed copy so it doesn't also load. If both
+        // the source copy and the installed `naruzkurai.continued` load in the
+        // same host, they both register the same `continue.*` command IDs and
+        // VS Code throws: "command 'continue.focusContinueInput' already
+        // registered".
+        "--disable-extension=naruzkurai.continued",
+        "--disable-extension=continue.continue"
       ],
       "pauseForSourceMap": false,
       "outFiles": ["${workspaceFolder}/extensions/vscode/out/extension.js"],
@@ -95,18 +103,18 @@
       }
     },
     {
-      "name": "[openai-adapters] Jest Test Debugger, Current Open File",
+      "name": "[naruzkurai-adapters] Jest Test Debugger, Current Open File",
       "type": "node",
       "request": "launch",
       "runtimeArgs": [
         "--inspect-brk",
-        "${workspaceRoot}/packages/openai-adapters/node_modules/jest/bin/jest.js",
+        "${workspaceRoot}/packages/naruzkurai-adapters/node_modules/jest/bin/jest.js",
         "--runInBand",
         "--config",
-        "${workspaceRoot}/packages/openai-adapters/jest.config.mjs",
+        "${workspaceRoot}/packages/naruzkurai-adapters/jest.config.mjs",
         "${relativeFile}"
       ],
-      "cwd": "${workspaceRoot}/packages/openai-adapters",
+      "cwd": "${workspaceRoot}/packages/naruzkurai-adapters",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "env": {

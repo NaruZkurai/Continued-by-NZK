@@ -1,8 +1,8 @@
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 import type { CompletionOptions, LLMOptions } from "../../index.js";
 
-class Together extends OpenAI {
+class Together extends NaruZkurAI {
   static providerName = "together";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.together.xyz/v1/",

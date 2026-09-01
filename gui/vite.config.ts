@@ -33,6 +33,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    environmentOptions: {
+      jsdom: {
+        // Provide a real origin so jsdom exposes a working `localStorage`.
+        // Several modules read localStorage at import time (e.g. getFontSize)
+        // and crash with "Cannot read properties of undefined" otherwise.
+        url: "http://localhost/",
+      },
+    },
     setupFiles: "./src/util/test/setupTests.ts",
     onConsoleLog(log, type) {
       if (type === "stderr") {

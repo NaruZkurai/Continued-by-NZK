@@ -38,9 +38,9 @@ schema: v1
 # List of available models
 models:
   - name: GPT-4
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
-    apiKey: TEST-openai-test
+    apiKey: TEST-naruzkurai-test
 `;
 
       const result = updateAnthropicModelInYaml(yamlWithComments, testApiKey);
@@ -101,9 +101,9 @@ version: 1.0.0
 schema: v1
 models:
   - name: GPT-4
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
-    apiKey: TEST-openai-test
+    apiKey: TEST-naruzkurai-test
 `;
 
       const result = updateAnthropicModelInYaml(existingConfig, testApiKey);
@@ -111,7 +111,7 @@ models:
       expect(result).toContain("model: gpt-4");
       expect(result).toContain("model: claude-sonnet-4-6");
       expect(result).toContain("apiKey: sk-ant-test123456789");
-      expect(result).toContain("apiKey: TEST-openai-test");
+      expect(result).toContain("apiKey: TEST-naruzkurai-test");
     });
 
     it("should update existing anthropic model", () => {
@@ -124,9 +124,9 @@ models:
     model: claude-sonnet-4-6
     apiKey: old-anthropic-key
   - name: GPT-4
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
-    apiKey: TEST-openai-test
+    apiKey: TEST-naruzkurai-test
 `;
 
       const result = updateAnthropicModelInYaml(existingConfig, testApiKey);
@@ -134,7 +134,7 @@ models:
       expect(result).toContain("model: claude-sonnet-4-6");
       expect(result).toContain("model: gpt-4");
       expect(result).toContain("apiKey: sk-ant-test123456789");
-      expect(result).toContain("apiKey: TEST-openai-test");
+      expect(result).toContain("apiKey: TEST-naruzkurai-test");
       expect(result).not.toContain("old-anthropic-key");
 
       // Should only have one Claude Sonnet model
@@ -183,7 +183,7 @@ models: []
 name: Test
 models:
   - name: Existing
-    provider: openai
+    provider: naruzkurai
     model: existing-model
     apiKey: test
 `;

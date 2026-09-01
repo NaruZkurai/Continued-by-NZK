@@ -17,7 +17,7 @@ sidebarTitle: "Pull Request Review Bot"
 
 <CardGroup cols={3}>
   <Card title="Privacy-First" icon="shield">
-    All logs and processing happen in your runner: Continue CLI runs in GitHub Actions → code to your LLM provider (OpenAI, Anthropic, etc.). No hosted Continue service reads your code.
+    All logs and processing happen in your runner: Continue CLI runs in GitHub Actions → code to your LLM provider (NaruZkurAI, Anthropic, etc.). No hosted Continue service reads your code.
 
   </Card>
 
@@ -44,7 +44,7 @@ Before starting, ensure you have:
 
 <Info>
   **Want to customize the review bot?**
-  
+
   You can remix the default review bot configuration at [continue.dev/continuedev/review-bot](https://continue.dev/continuedev/review-bot) to create your own personalized version with custom prompts, rules, and behaviors.
 </Info>
 
@@ -107,7 +107,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' ||
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@review-bot'))
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -141,12 +141,12 @@ jobs:
           else
             PR_NUMBER=$(jq -r .issue.number "$GITHUB_EVENT_PATH")
           fi
-          
+
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-          
+
           # Get pull request diff
           gh pr diff $PR_NUMBER > pr.diff
-          
+
           # Get changed files
           gh pr view $PR_NUMBER --json files -q '.files[].path' > changed_files.txt
 
@@ -163,7 +163,7 @@ jobs:
             echo "ℹ️  No custom rules found. Using general best practices."
             RULES_CONTEXT="Review for general best practices, security issues, and code quality."
           fi
-          
+
           # Build review prompt
           PROMPT="Review this pull request with the following context:
 
@@ -198,23 +198,23 @@ jobs:
           # Add header
           cat > review_comment.md <<'EOF'
           ## 🤖 AI Code Review
-          
+
           EOF
-          
+
           # Add review content
           cat review_output.md >> review_comment.md
-          
+
           # Add footer
           cat >> review_comment.md <<'EOF'
-          
+
           ---
           *Powered by [Continue](https://continue.dev) • Need a focused review? Comment `@review-bot check for [specific concern]`*
           EOF
-          
+
           # Check for existing review comment
           EXISTING_COMMENT=$(gh pr view ${{ steps.pr.outputs.pr_number }} \
             --json comments -q '.comments[] | select(.body | contains("🤖 AI Code Review")) | .id' | head -1)
-          
+
           if [ -n "$EXISTING_COMMENT" ]; then
             echo "Updating existing comment..."
             gh api --method PATCH \
@@ -234,7 +234,7 @@ Define your team's standards in `.continue/rules/`:
 
 <Tabs>
   <Tab title="Security Rule">
-    
+
  Create `.continue/rules/security.md`:
 
 ```markdown
@@ -341,7 +341,7 @@ The workflow will respond with a targeted review based on your request.
 ## Advanced Configuration
 <Tabs>
   <Tab title="Use Your Own Continue Config">
-    
+
   By default, the workflow uses the `continuedev/review-bot` config optimized for code reviews. Replace `continuedev/review-bot` with your own config:
 
   ```yaml
@@ -387,7 +387,7 @@ The workflow will respond with a targeted review based on your request.
       ADDITIONS=$(gh pr view ${{ steps.pr.outputs.pr_number }} --json additions -q .additions)
       DELETIONS=$(gh pr view ${{ steps.pr.outputs.pr_number }} --json deletions -q .deletions)
       TOTAL=$((ADDITIONS + DELETIONS))
-      
+
       if [ $TOTAL -gt 1000 ]; then
         echo "skip=true" >> $GITHUB_OUTPUT
         echo "⚠️  Pull request too large for automatic review ($TOTAL lines changed)"

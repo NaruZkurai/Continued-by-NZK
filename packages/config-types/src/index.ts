@@ -43,7 +43,7 @@ export type RequestOptions = z.infer<typeof requestOptionsSchema>;
 export const modelDescriptionSchema = z.object( {
   title: z.string(),
   provider: z.enum( [
-    "openai",
+    "naruzkurai",
     "naruzkurai",
     "anthropic",
     "cohere",
@@ -64,8 +64,19 @@ export const modelDescriptionSchema = z.object( {
     "minimax",
   ] ),
   model: z.string(),
+  quant: z.string().optional(),
   apiKey: z.string().optional(),
   apiBase: z.string().optional(),
+  // Preferred over apiBase. Exclusive to the `naruzkurai` provider for now.
+  apiURL: z.string().optional(),
+  // naruzkurai-only: forces the outbound scheme. Defaults to false (keep the
+  // configured scheme). May be `false` or, case-insensitively, "http"/"https".
+  ApiHttpOrHttps: z
+    .union([
+      z.boolean(),
+      z.string().transform((v) => v.trim().toLowerCase()),
+    ])
+    .optional(),
   contextLength: z.number().optional(),
   template: z
     .enum( [
@@ -108,7 +119,7 @@ export const embeddingsProviderSchema = z.object( {
   provider: z.enum( [
     "transformers.js",
     "ollama",
-    "openai",
+    "naruzkurai",
     "cohere",
     "gemini",
     "ovhcloud",

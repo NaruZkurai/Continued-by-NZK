@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { ConfigHandler } from "../config/ConfigHandler.js";
 import { ChatMessage, IDE, ILLM, Range, RangeInFile } from "../index.js";
-import OpenAI from "../llm/llms/OpenAI.js";
+import NaruZkurAI from "../llm/llms/NaruZkurAI.js";
 import { DEFAULT_AUTOCOMPLETE_OPTS } from "../util/parameters.js";
 
 import { ContextRetrievalService } from "../autocomplete/context/ContextRetrievalService.js";
@@ -29,11 +29,11 @@ import { PrefetchQueue } from "./NextEditPrefetchQueue.js";
 import { NextEditProviderFactory } from "./NextEditProviderFactory.js";
 import { BaseNextEditModelProvider } from "./providers/BaseNextEditProvider.js";
 import {
-  ModelSpecificContext,
-  NextEditOutcome,
-  Prompt,
-  PromptMetadata,
-  RecentlyEditedRange,
+    ModelSpecificContext,
+    NextEditOutcome,
+    Prompt,
+    PromptMetadata,
+    RecentlyEditedRange,
 } from "./types.js";
 
 const autocompleteCache = AutocompleteLruCache.get();
@@ -153,7 +153,7 @@ export class NextEditProvider {
       llm.completionOptions.temperature = 0.01;
     }
 
-    if (llm instanceof OpenAI && llm.providerName !== "openrouter") {
+    if (llm instanceof NaruZkurAI && llm.providerName !== "openrouter") {
       llm.useLegacyCompletionsEndpoint = true;
     }
 

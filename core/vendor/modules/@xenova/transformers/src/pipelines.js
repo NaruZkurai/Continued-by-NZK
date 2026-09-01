@@ -2923,7 +2923,7 @@ const SUPPORTED_TASKS = Object.freeze({
     processor: AutoProcessor,
     default: {
       // TODO: replace with original
-      // "model": "openai/whisper-tiny.en",
+      // "model": "naruzkurai/whisper-tiny.en",
       model: "Xenova/whisper-tiny.en",
     },
     type: "multimodal",
@@ -2986,7 +2986,7 @@ const SUPPORTED_TASKS = Object.freeze({
     processor: AutoProcessor,
     default: {
       // TODO: replace with original
-      // "model": "openai/clip-vit-base-patch32",
+      // "model": "naruzkurai/clip-vit-base-patch32",
       model: "Xenova/clip-vit-base-patch32",
     },
     type: "multimodal",

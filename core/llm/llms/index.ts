@@ -1,11 +1,11 @@
 import Handlebars from "handlebars";
 import {
-  BaseCompletionOptions,
-  IdeSettings,
-  ILLM,
-  ILLMLogger,
-  JSONModelDescription,
-  LLMOptions,
+    BaseCompletionOptions,
+    IdeSettings,
+    ILLM,
+    ILLMLogger,
+    JSONModelDescription,
+    LLMOptions,
 } from "../..";
 import { renderTemplatedString } from "../../util/handlebars/renderTemplatedString";
 import { BaseLLM } from "../index";
@@ -15,6 +15,7 @@ import Azure from "./Azure";
 import Bedrock from "./Bedrock";
 import BedrockImport from "./BedrockImport";
 import Cerebras from "./Cerebras";
+import ClawRouter from "./ClawRouter";
 import Cloudflare from "./Cloudflare";
 import Cohere from "./Cohere";
 import CometAPI from "./CometAPI";
@@ -31,27 +32,25 @@ import HuggingFaceTEIEmbeddingsProvider from "./HuggingFaceTEI";
 import HuggingFaceTGI from "./HuggingFaceTGI";
 import Inception from "./Inception";
 import Kindo from "./Kindo";
+import Lemonade from "./Lemonade";
 import LlamaCpp from "./LlamaCpp";
 import Llamafile from "./Llamafile";
 import LlamaStack from "./LlamaStack";
-import Lemonade from "./Lemonade";
 import LMStudio from "./LMStudio";
-import Mistral from "./Mistral";
 import Mimo from "./Mimo";
 import MiniMax from "./MiniMax";
+import Mistral from "./Mistral";
 import MockLLM from "./Mock";
 import Moonshot from "./Moonshot";
 import Msty from "./Msty";
+import NaruZkurAI from "./NaruZkurAI";
 import NCompass from "./NCompass";
 import Nebius from "./Nebius";
 import Nous from "./Nous";
-import NaruZkurai from "./NaruZkurai";
 import Novita from "./Novita";
 import Nvidia from "./Nvidia";
 import Ollama from "./Ollama";
-import OpenAI from "./OpenAI";
 import OpenRouter from "./OpenRouter";
-import ClawRouter from "./ClawRouter";
 import OVHcloud from "./OVHcloud";
 import { Relace } from "./Relace";
 import Replicate from "./Replicate";
@@ -59,8 +58,8 @@ import SageMaker from "./SageMaker";
 import SambaNova from "./SambaNova";
 import Scaleway from "./Scaleway";
 import SiliconFlow from "./SiliconFlow";
-import Tensorix from "./Tensorix";
 import TARS from "./TARS";
+import Tensorix from "./Tensorix";
 import TestLLM from "./Test";
 import TextGenWebUI from "./TextGenWebUI";
 import Together from "./Together";
@@ -89,7 +88,7 @@ export const LLMClasses = [
   HuggingFaceInferenceAPI,
   Kindo,
   LlamaCpp,
-  OpenAI,
+  NaruZkurAI,
   OVHcloud,
   Lemonade,
   LMStudio,
@@ -110,7 +109,6 @@ export const LLMClasses = [
   Msty,
   Azure,
   WatsonX,
-  NaruZkurai,
   OpenRouter,
   ClawRouter,
   Nvidia,

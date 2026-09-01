@@ -131,7 +131,7 @@ function countTokens(
   return getAdjustedTokenCountFromModel(baseTokens, modelName);
 }
 
-// https://community.openai.com/t/how-to-calculate-the-tokens-when-using-function-call/266573/10
+// https://community.naruzkurai.com/t/how-to-calculate-the-tokens-when-using-function-call/266573/10
 function countToolsTokens(tools: Tool[], modelName: string): number {
   const count = (value: string) =>
     encodingForModel(modelName).encode(value).length;
@@ -181,7 +181,7 @@ function countChatMessageTokens(
   chatMessage: ChatMessage,
 ): number {
   // Doing simpler, safer version of what is here:
-  // https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
+  // https://github.com/naruzkurai/naruzkurai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
   // every message follows <|im_start|>{role/name}\n{content}<|end|>\n
   const BASE_TOKENS = 4;
   const TOOL_CALL_EXTRA_TOKENS = 10;

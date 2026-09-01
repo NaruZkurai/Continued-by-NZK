@@ -27,8 +27,8 @@ const directories = [
   "./packages/llm-info/dist",
   "./packages/config-yaml/node_modules",
   "./packages/config-yaml/dist",
-  "./packages/openai-adapters/node_modules",
-  "./packages/openai-adapters/dist",
+  "./packages/naruzkurai-adapters/node_modules",
+  "./packages/naruzkurai-adapters/dist",
   "./packages/hub/node_modules",
   "./packages/hub/dist",
   // docs

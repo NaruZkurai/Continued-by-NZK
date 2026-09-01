@@ -10,7 +10,7 @@ describe("validateContextLength", () => {
   ): ModelConfig => ({
     name: "test-model",
     model: "test",
-    provider: "openai",
+    provider: "naruzkurai",
     defaultCompletionOptions: {
       contextLength,
       maxTokens,

@@ -1,5 +1,5 @@
 import { Tool, ToolCallDelta, ToolCallState } from "../..";
-import { generateOpenAIToolCallId } from "./systemToolUtils";
+import { generateNaruZkurAIToolCallId } from "./systemToolUtils";
 
 export interface SystemMessageToolsFramework {
   acceptedToolCallStarts: [string, string][];
@@ -40,7 +40,7 @@ export type ToolCallParseState = {
 };
 
 export const getInitialToolCallParseState = (): ToolCallParseState => ({
-  toolCallId: generateOpenAIToolCallId(),
+  toolCallId: generateNaruZkurAIToolCallId(),
   isWithinArgStart: false,
   currentArgName: undefined,
   currentArgChunks: [],

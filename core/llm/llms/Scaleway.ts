@@ -1,9 +1,9 @@
-import OpenAI from "./OpenAI";
+import NaruZkurAI from "./NaruZkurAI";
 
-import { LLMOptions, CompletionOptions, ChatMessage } from "../../index.js";
-import { ChatCompletionCreateParams } from "openai/resources/index";
+import { ChatCompletionCreateParams } from "naruzkurai/resources/index";
+import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 
-class Scaleway extends OpenAI {
+class Scaleway extends NaruZkurAI {
   static providerName = "scaleway";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.scaleway.ai/v1/",

@@ -1,8 +1,8 @@
 import { LLMOptions } from "../..";
 
-import OpenAI from "./OpenAI";
+import NaruZkurAI from "./NaruZkurAI";
 
-class Nous extends OpenAI {
+class Nous extends NaruZkurAI {
   static providerName = "nous";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://inference-api.nousresearch.com/v1",

@@ -1,9 +1,9 @@
-import { ChatCompletionCreateParams } from "openai/resources/index";
+import { ChatCompletionCreateParams } from "naruzkurai/resources/index";
 import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class Cerebras extends OpenAI {
+class Cerebras extends NaruZkurAI {
   static providerName = "cerebras";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.cerebras.ai/v1/",

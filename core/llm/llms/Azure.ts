@@ -1,20 +1,20 @@
 import { LLMOptions } from "../../index.js";
-import { LlmApiRequestType } from "../openaiTypeConverters.js";
+import { LlmApiRequestType } from "../naruzkuraiTypeConverters.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class Azure extends OpenAI {
+class Azure extends NaruZkurAI {
   static providerName = "azure";
 
   protected supportsPrediction(model: string): boolean {
     return false;
   }
 
-  protected useOpenAIAdapterFor: (LlmApiRequestType | "*")[] = [];
+  protected useNaruZkurAIAdapterFor: (LlmApiRequestType | "*")[] = [];
 
   static defaultOptions: Partial<LLMOptions> = {
     apiVersion: "2024-02-15-preview",
-    apiType: "azure-openai",
+    apiType: "azure-naruzkurai",
   };
 
   constructor(options: LLMOptions) {

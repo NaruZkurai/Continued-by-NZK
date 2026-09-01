@@ -2,9 +2,9 @@ import { streamSse } from "@continuedev/fetch";
 import { CompletionOptions, LLMOptions } from "../../index.js";
 import { osModelsEditPrompt } from "../templates/edit.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class Deepseek extends OpenAI {
+class Deepseek extends NaruZkurAI {
   static providerName = "deepseek";
   protected supportsReasoningField = false;
   protected supportsReasoningDetailsField = false;

@@ -9,6 +9,7 @@ export interface ErrorAnalysis {
   apiKeyUrl?: string;
   helpUrl?: string;
   customErrorMessage?: string;
+  isModelDownloading?: boolean;
 }
 
 function parseErrorMessage(fullErrMsg: string): string {
@@ -106,21 +107,21 @@ export function analyzeError(
   const lowerParsedError = parsedError.toLowerCase();
   const errorText = lowerMessage + " " + lowerParsedError;
 
-  // OpenAI organization verification error (reasoning summaries or streaming)
-  const isOpenAI =
-    errorText.includes("openai") ||
-    (providerName ?? "").toLowerCase().includes("openai");
+  // NaruZkurAI organization verification error (reasoning summaries or streaming)
+  const isNaruZkurAI =
+    errorText.includes("naruzkurai") ||
+    (providerName ?? "").toLowerCase().includes("naruzkurai");
   if (
-    isOpenAI &&
+    isNaruZkurAI &&
     (errorText.includes(
       "organization must be verified to generate reasoning summaries",
     ) ||
       errorText.includes("organization must be verified to stream"))
   ) {
     helpUrl =
-      "https://help.openai.com/en/articles/10910291-api-organization-verification";
+      "https://help.naruzkurai.com/en/articles/10910291-api-organization-verification";
     customErrorMessage =
-      "Your OpenAI organization must be verified for this feature. To avoid this, add `useResponsesApi: false` to your model config to use the /chat/completions endpoint instead, or verify your organization via the help page.";
+      "Your NaruZkurAI organization must be verified for this feature. To avoid this, add `useResponsesApi: false` to your model config to use the /chat/completions endpoint instead, or verify your organization via the help page.";
   }
 
   // Invalid API key detection
@@ -164,6 +165,11 @@ export function analyzeError(
     customErrorMessage = `Your ${providerLabel} account appears to be out of credits. Add more credits to your account to continue using this model.`;
   }
 
+  // Model is still downloading on the backend (e.g. Unsloth Studio).
+  // With `isModelDownloading` set, the caller (streamThunkWrapper) will wait
+  // and retry until the download completes instead of showing an error dialog.
+  const isModelDownloading = isModelDownloadingError(error);
+
   return {
     parsedError,
     statusCode,
@@ -173,5 +179,46 @@ export function analyzeError(
     apiKeyUrl,
     helpUrl,
     customErrorMessage,
+    isModelDownloading,
   };
+}
+
+/**
+ * Detects the `model_downloading` condition returned by NaruZkurAI-compatible
+ * backends (e.g. Unsloth Studio) when a requested model is still downloading.
+ *
+ * Unsloth returns an `api_error` shaped like:
+ *   { message: "Downloading '...' (1.9 GB). Retry shortly. Track it in Unsloth Studio.",
+ *     type: "api_error", param: "model", code: "model_downloading" }
+ *
+ * Detection uses both the structured `code` field and the message text, so it
+ * remains accurate even if the error was serialized and reshaped in transit.
+ *
+ * Accepts either a string message (e.g. `error.message`) or an error-like
+ * object with `code` / `message` fields.
+ */
+export function isModelDownloadingError(
+  error: unknown | string,
+): boolean {
+  if (typeof error === "string") {
+    return isModelDownloadingMessage(error);
+  }
+  if (error && typeof error === "object") {
+    const obj = error as { code?: unknown; message?: unknown };
+    if (obj.code === "model_downloading") {
+      return true;
+    }
+    if (typeof obj.message === "string") {
+      return isModelDownloadingMessage(obj.message);
+    }
+  }
+  return false;
+}
+
+function isModelDownloadingMessage(message: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes("model_downloading") ||
+    (lower.startsWith("downloading '") && lower.includes("retry shortly"))
+  );
 }

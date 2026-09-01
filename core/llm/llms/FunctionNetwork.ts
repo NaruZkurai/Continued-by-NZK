@@ -1,8 +1,8 @@
 import { LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class FunctionNetwork extends OpenAI {
+class FunctionNetwork extends NaruZkurAI {
   static providerName = "function-network";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.function.network/v1/",

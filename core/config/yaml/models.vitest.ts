@@ -7,8 +7,8 @@ import { llmsFromModelConfig } from "./models";
 // Mock the LLM classes
 vi.mock("../../llm/llms", () => ({
   LLMClasses: [
-    class MockOpenAI {
-      static providerName = "openai";
+    class MockNaruZkurAI {
+      static providerName = "naruzkurai";
       static defaultOptions = {
         completionOptions: {
           maxTokens: 2048,
@@ -88,8 +88,8 @@ describe("llmsFromModelConfig requestOptions merging", () => {
 
   it("should merge model requestOptions with config requestOptions", async () => {
     const model: ModelConfig = {
-      name: "test-openai",
-      provider: "openai",
+      name: "test-naruzkurai",
+      provider: "naruzkurai",
       model: "gpt-4",
       requestOptions: {
         timeout: 60000,
@@ -123,8 +123,8 @@ describe("llmsFromModelConfig requestOptions merging", () => {
 
   it("should use config requestOptions when model has no requestOptions", async () => {
     const model: ModelConfig = {
-      name: "test-openai",
-      provider: "openai",
+      name: "test-naruzkurai",
+      provider: "naruzkurai",
       model: "gpt-4",
       // no requestOptions
     };
@@ -145,8 +145,8 @@ describe("llmsFromModelConfig requestOptions merging", () => {
 
   it("should use model requestOptions when config has no requestOptions", async () => {
     const model: ModelConfig = {
-      name: "test-openai",
-      provider: "openai",
+      name: "test-naruzkurai",
+      provider: "naruzkurai",
       model: "gpt-4",
       requestOptions: {
         timeout: 45000,
@@ -175,8 +175,8 @@ describe("llmsFromModelConfig requestOptions merging", () => {
 
   it("should handle empty headers correctly in merge", async () => {
     const model: ModelConfig = {
-      name: "test-openai",
-      provider: "openai",
+      name: "test-naruzkurai",
+      provider: "naruzkurai",
       model: "gpt-4",
       requestOptions: {
         timeout: 60000,
@@ -212,8 +212,8 @@ describe("llmsFromModelConfig requestOptions merging", () => {
 
   it("should handle autodetect models with merged requestOptions", async () => {
     const model: ModelConfig = {
-      name: "autodetect-openai",
-      provider: "openai",
+      name: "autodetect-naruzkurai",
+      provider: "naruzkurai",
       model: "AUTODETECT",
       requestOptions: {
         timeout: 120000,
@@ -313,7 +313,7 @@ describe("llmsFromModelConfig requestOptions merging", () => {
   it("should handle complex header merging scenarios", async () => {
     const model: ModelConfig = {
       name: "complex-headers",
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-4",
       requestOptions: {
         headers: {

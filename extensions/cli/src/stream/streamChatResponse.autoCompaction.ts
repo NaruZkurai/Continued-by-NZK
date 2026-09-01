@@ -1,7 +1,7 @@
 import { ModelConfig } from "@continuedev/config-yaml";
-import { BaseLlmApi } from "@continuedev/openai-adapters";
+import { BaseLlmApi } from "@continuedev/naruzkurai-adapters";
 import type { ChatHistoryItem } from "core/index.js";
-import type { ChatCompletionTool } from "openai/resources/chat/completions.mjs";
+import type { ChatCompletionTool } from "naruzkurai/resources/chat/completions.mjs";
 import React from "react";
 
 import {

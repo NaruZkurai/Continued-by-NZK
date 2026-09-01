@@ -2,9 +2,9 @@ import fs from "fs/promises";
 import path from "path";
 
 import {
-  cleanupTestContext,
-  createTestContext,
-  runCLI,
+    cleanupTestContext,
+    createTestContext,
+    runCLI,
 } from "../test-helpers/cli-helpers.js";
 
 describe("E2E: Headless Mode (Minimal)", () => {
@@ -25,14 +25,14 @@ describe("E2E: Headless Mode (Minimal)", () => {
       configPath,
       `name: Test Assistant
 model: gpt-4
-provider: openai`,
+provider: naruzkurai`,
     );
 
     // For now, just test that it tries to load the config
-    // Without proper mocking, it will fail to connect to OpenAI
+    // Without proper mocking, it will fail to connect to NaruZkurAI
     const result = await runCLI(context, {
       args: ["-p", "--config", configPath, "Hello"],
-      env: { OPENAI_API_KEY: "test-key" },
+      env: { NARUZKURAI_API_KEY: "test-key" },
       expectError: true,
     });
 
@@ -47,13 +47,13 @@ provider: openai`,
       configPath,
       `name: Test Assistant
 model: gpt-4
-provider: openai`,
+provider: naruzkurai`,
     );
 
     const result = await runCLI(context, {
       args: ["-p", "--config", configPath, "Hello, world!"],
       env: {
-        OPENAI_API_KEY: "test-key",
+        NARUZKURAI_API_KEY: "test-key",
         // Simulate TTY-less environment (like Docker, CI, or VSCode terminal tool)
         FORCE_NO_TTY: "true",
       },

@@ -1,15 +1,15 @@
 import { streamSse } from "@continuedev/fetch";
 import { ChatMessage, CompletionOptions, LLMOptions } from "../../index.js";
 
-import { ChatCompletionCreateParams } from "@continuedev/openai-adapters";
+import { ChatCompletionCreateParams } from "@continuedev/naruzkurai-adapters";
 import { APPLY_UNIQUE_TOKEN } from "../../edit/constants.js";
 import { UNIQUE_TOKEN } from "../../nextEdit/constants.js";
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 /**
  * Inception Labs provider
  *
- * Integrates with Inception Labs' OpenAI-compatible API endpoints.
+ * Integrates with Inception Labs' NaruZkurAI-compatible API endpoints.
  * Provides access to Mercury models for autocomplete and other tasks.
  *
  * Different models use different API endpoints:
@@ -18,7 +18,7 @@ import OpenAI from "./OpenAI.js";
  *
  * More information at: https://docs.inceptionlabs.ai/
  */
-class Inception extends OpenAI {
+class Inception extends NaruZkurAI {
   static providerName = "inception";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.inceptionlabs.ai/v1/",
@@ -35,8 +35,8 @@ class Inception extends OpenAI {
     return true;
   }
 
-  // It seems like this should be inherited automatically from the parent OpenAI class, but it sometimes doesn't.
-  // protected useOpenAIAdapterFor: (LlmApiRequestType | "*")[] = [
+  // It seems like this should be inherited automatically from the parent NaruZkurAI class, but it sometimes doesn't.
+  // protected useNaruZkurAIAdapterFor: (LlmApiRequestType | "*")[] = [
   //   "chat",
   //   "embed",
   //   "list",
@@ -113,7 +113,7 @@ class Inception extends OpenAI {
         options,
       );
     } else {
-      // Use regular chat/completions endpoint - call parent OpenAI implementation.
+      // Use regular chat/completions endpoint - call parent NaruZkurAI implementation.
       yield* super._streamChat(messages, signal, options);
     }
   }

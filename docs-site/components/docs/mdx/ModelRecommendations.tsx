@@ -12,7 +12,7 @@ const modelRecs: Record<
     closed: [
       "[Claude Opus 4.1](https://continue.dev/anthropic/claude-4-1-opus)",
       "[Claude Sonnet 4.6](https://continue.dev/anthropic/claude-sonnet-4-6)",
-      "[GPT-5](https://continue.dev/openai/gpt-5)",
+      "[GPT-5](https://continue.dev/naruzkurai/gpt-5)",
       "[Gemini 2.5 Pro](https://continue.dev/google/gemini-2.5-pro)",
     ],
     notes: "Closed models are slightly better than open models",
@@ -25,7 +25,7 @@ const modelRecs: Record<
     closed: [
       "[Claude Opus 4.1](https://continue.dev/anthropic/claude-4-1-opus)",
       "[Claude Sonnet 4.6](https://continue.dev/anthropic/claude-sonnet-4-6)",
-      "[GPT-5](https://continue.dev/openai/gpt-5)",
+      "[GPT-5](https://continue.dev/naruzkurai/gpt-5)",
       "[Gemini 2.5 Pro](https://continue.dev/google/gemini-2.5-pro)",
     ],
     notes: "Closed and open models have similar performance",

@@ -1,5 +1,50 @@
 import "@testing-library/jest-dom";
 
+// Provide a working localStorage for tests. Several modules call
+// localStorage.getItem at import time (e.g. getFontSize), which crashes in
+// the default vitest/jsdom environment where localStorage is unavailable.
+class LocalStorageMock {
+  private store: Record<string, string> = {};
+
+  getItem(key: string): string | null {
+    return key in this.store ? this.store[key] : null;
+  }
+
+  setItem(key: string, value: string): void {
+    this.store[key] = String(value);
+  }
+
+  removeItem(key: string): void {
+    delete this.store[key];
+  }
+
+  clear(): void {
+    this.store = {};
+  }
+
+  get length(): number {
+    return Object.keys(this.store).length;
+  }
+
+  key(index: number): string | null {
+    return Object.keys(this.store)[index] ?? null;
+  }
+}
+
+if (typeof localStorage === "undefined") {
+  (globalThis as any).localStorage = new LocalStorageMock();
+} else {
+  // jsdom may define localStorage but throw on access; ensure it's usable.
+  try {
+    localStorage.getItem("__test__");
+  } catch {
+    Object.defineProperty(globalThis, "localStorage", {
+      value: new LocalStorageMock(),
+      configurable: true,
+    });
+  }
+}
+
 afterEach(() => {
   vi.clearAllMocks();
 });

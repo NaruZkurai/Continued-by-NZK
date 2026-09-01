@@ -134,7 +134,7 @@ schema: v1
 models:
   - name: test-gpt-4
     model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key-1
     apiBase: ${gpt4Server.url}
     roles:

@@ -1,11 +1,11 @@
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 import type { CompletionOptions, LLMOptions } from "../../index.js";
 
-class Novita extends OpenAI {
+class Novita extends NaruZkurAI {
   static providerName = "novita";
   static defaultOptions: Partial<LLMOptions> = {
-    apiBase: "https://api.novita.ai/v3/openai/",
+    apiBase: "https://api.novita.ai/v3/naruzkurai/",
   };
 
   private static MODEL_IDS: { [name: string]: string } = {

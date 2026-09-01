@@ -61,7 +61,7 @@ vi.mock("os", async (importOriginal) => {
 
 describe("handleAutoCompaction", () => {
   const mockModel = {
-    provider: "openai",
+    provider: "naruzkurai",
     name: "gpt-4",
     model: "gpt-4",
     defaultCompletionOptions: {

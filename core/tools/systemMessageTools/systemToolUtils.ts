@@ -18,7 +18,7 @@ function randomLettersAndNumbers(length: number): string {
   return result;
 }
 
-export function generateOpenAIToolCallId(): string {
+export function generateNaruZkurAIToolCallId(): string {
   return `call_${randomLettersAndNumbers(24)}`;
 }
 

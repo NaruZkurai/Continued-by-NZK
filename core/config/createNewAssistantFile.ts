@@ -12,9 +12,9 @@ schema: v1
 # https://docs.continue.dev/customization/models
 models:
   - name: my gpt-5
-    provider: openai
+    provider: naruzkurai
     model: gpt-5
-    apiKey: YOUR_OPENAI_API_KEY_HERE
+    apiKey: YOUR_NARUZKURAI_API_KEY_HERE
   - name: qwen2.5-coder 7b
     provider: ollama
     model: qwen2.5-coder:7b

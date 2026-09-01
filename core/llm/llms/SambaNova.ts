@@ -1,8 +1,8 @@
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
 import type { LLMOptions } from "../../index.js";
 
-class SambaNova extends OpenAI {
+class SambaNova extends NaruZkurAI {
   static providerName = "sambanova";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "https://api.sambanova.ai/v1/",

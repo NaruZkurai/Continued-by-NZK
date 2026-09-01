@@ -43,7 +43,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
         defaultCompletionOptions: {
           contextLength: 8192,
         },
@@ -56,7 +56,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       expect(getModelContextLimit(model)).toBe(DEFAULT_CONTEXT_LENGTH);
@@ -76,7 +76,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       const tokenCount = countChatHistoryItemTokens(historyItem, model);
@@ -99,7 +99,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       const tokenCount = countChatHistoryItemTokens(historyItem, model);
@@ -128,7 +128,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       const tokenCount = countChatHistoryItemTokens(historyItem, model);
@@ -154,7 +154,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       const tokenCount = countChatHistoryItemTokens(historyItem, model);
@@ -189,7 +189,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       const tokenCount = countChatHistoryTokens(chatHistory, model);
@@ -202,7 +202,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
       };
 
       const tokenCount = countChatHistoryTokens([], model);
@@ -215,7 +215,7 @@ describe("tokenizer", () => {
       const model: ModelConfig = {
         name: "test-model",
         model: "test",
-        provider: "openai",
+        provider: "naruzkurai",
         defaultCompletionOptions: {
           contextLength: 1000,
         },
@@ -234,7 +234,7 @@ describe("tokenizer", () => {
     ): ModelConfig => ({
       name: "test-model",
       model: "test",
-      provider: "openai",
+      provider: "naruzkurai",
       defaultCompletionOptions: {
         contextLength,
         maxTokens,

@@ -2,14 +2,14 @@ import * as fs from "fs/promises";
 import * as path from "path";
 
 import {
-  cleanupTestContext,
-  createTestContext,
-  runCLI,
+    cleanupTestContext,
+    createTestContext,
+    runCLI,
 } from "../test-helpers/cli-helpers.js";
 import {
-  cleanupMockLLMServer,
-  createMockLLMServer,
-  type MockLLMServer,
+    cleanupMockLLMServer,
+    createMockLLMServer,
+    type MockLLMServer,
 } from "../test-helpers/mock-llm-server.js";
 
 describe("E2E: Headless Mode with ANTHROPIC_API_KEY", () => {
@@ -33,14 +33,14 @@ describe("E2E: Headless Mode with ANTHROPIC_API_KEY", () => {
       response: "Hello! This is a response from Claude.",
     });
 
-    // Use OpenAI provider pointing to mock server (same as working tests)
+    // Use NaruZkurAI provider pointing to mock server (same as working tests)
     const configContent = `name: Test Assistant
 version: 1.0.0
 schema: v1
 models:
   - name: test-claude
     model: claude-3-5-sonnet
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     apiBase: ${mockServer.url}
     roles:

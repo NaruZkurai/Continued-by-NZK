@@ -4,7 +4,7 @@ version: 2
 ---
 I need you to update this repo with the latest information about large language models from certain providers.
 The information is stored in the `packages/llm-info` directory, which operates as its own npm package.
-Information is stored in a simple JSON format, with one file of models per "provider" (e.g. gemini, ollama, openai, etc).
+Information is stored in a simple JSON format, with one file of models per "provider" (e.g. gemini, ollama, naruzkurai, etc).
 For example, Gemini model information is stored in `packages/llm-info/src/providers/gemini.ts`.
 
 To make these updates for a given provider, perform the following steps one at a time:
@@ -49,7 +49,7 @@ If you do not see either of these tools, stop and let me know.
 
 Retrieve the following sites per these providers, and consider these notes on how to extract the information:
 - "gemini": https://ai.google.dev/gemini-api/docs/models - maxCompletionTokens is called "Output token limit", contextLength is called "Input token limit"
-// TODO: add info for openai, ollama, etc
+// TODO: add info for naruzkurai, ollama, etc
 
 For any other providers, search the web for "latest [provider] models" and find the most relevant model information using your best judgement.
 Generally, ignore models that do not support text output. These models will be used in a coding agent client that only supports text/image input and text/output, so extraneous capabilities can be ignored.

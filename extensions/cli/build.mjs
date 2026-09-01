@@ -55,9 +55,9 @@ try {
         __dirname,
         "../../packages/config-yaml/dist/index.js",
       ),
-      "@continuedev/openai-adapters": resolve(
+      "@continuedev/naruzkurai-adapters": resolve(
         __dirname,
-        "../../packages/openai-adapters/dist/index.js",
+        "../../packages/naruzkurai-adapters/dist/index.js",
       ),
       "@continuedev/config-types": resolve(
         __dirname,

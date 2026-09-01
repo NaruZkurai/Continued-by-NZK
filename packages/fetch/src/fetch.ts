@@ -112,7 +112,7 @@ export async function fetchwithRequestOptions(
   if (init?.headers) {
     const headersSource = init.headers as any;
 
-    // Check if it's a Headers-like object (OpenAI v5 HeadersList, standard Headers)
+    // Check if it's a Headers-like object (NaruZkurAI v5 HeadersList, standard Headers)
     if (headersSource && typeof headersSource.forEach === "function") {
       // Use forEach method which works reliably on Headers objects
       headersSource.forEach((value: string, key: string) => {

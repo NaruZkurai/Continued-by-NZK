@@ -334,9 +334,9 @@ describe("Test Suite", () => {
   it("should add and delete a model from config.json", async () => {
     const model: SerializedContinueConfig["models"][number] = {
       title: "Test Model",
-      provider: "openai",
+      provider: "naruzkurai",
       model: "gpt-3.5-turbo",
-      underlyingProviderName: "openai",
+      underlyingProviderName: "naruzkurai",
     };
     await request("config/addModel", { model });
     const {

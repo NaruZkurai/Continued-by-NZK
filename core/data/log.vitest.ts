@@ -24,7 +24,7 @@ const TEST_EVENT: DevDataLogEvent = {
     generatedTokens: 100,
     model: "gpt-4",
     promptTokens: 50,
-    provider: "openai",
+    provider: "naruzkurai",
   },
 };
 
@@ -33,7 +33,7 @@ const TEST_AGENT_INTERACTION_EVENT: DevDataLogEvent = {
   data: {
     prompt: "Hello, world!",
     completion: "Hello, world!",
-    modelProvider: "openai",
+    modelProvider: "naruzkurai",
     modelName: "gpt-4",
     modelTitle: "gpt-4",
     sessionId: "1234",

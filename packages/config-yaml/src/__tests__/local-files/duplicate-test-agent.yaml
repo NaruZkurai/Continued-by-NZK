@@ -14,16 +14,16 @@ rules:
 
 models:
   - name: gpt-5
-    provider: openai
+    provider: naruzkurai
     model: gpt-5
-    apiKey: ${{ secrets.OPENAI_API_KEY }}
+    apiKey: ${{ secrets.NARUZKURAI_API_KEY }}
     roles:
       - chat
 
   - name: gpt-5
-    provider: openai
+    provider: naruzkurai
     model: gpt-5
-    apiKey: ${{ secrets.OPENAI_API_KEY }}
+    apiKey: ${{ secrets.NARUZKURAI_API_KEY }}
     roles:
       - chat
 

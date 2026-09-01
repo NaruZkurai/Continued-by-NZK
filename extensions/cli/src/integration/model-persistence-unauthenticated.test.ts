@@ -38,7 +38,7 @@ describe("Model Persistence (Hub auth removed)", () => {
       version: "1.0.0",
       models: [
         {
-          provider: "openai",
+          provider: "naruzkurai",
           model: "gpt-4",
           name: "GPT-4",
           apiKey: "test-key",

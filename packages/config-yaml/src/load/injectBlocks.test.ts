@@ -40,24 +40,24 @@ describe("injectBlocks with input-to-secret conversion", () => {
     // Set up an injected block with input template variables in model
     // Note: Block schema requires exactly 1 element in arrays
     const injectedBlockContent = `
-name: OpenAI Block
+name: NaruZkurAI Block
 version: 1.0.0
 schema: v1
 models:
   - name: gpt-4
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
-    apiKey: \${{ inputs.openaiKey }}
+    apiKey: \${{ inputs.naruzkuraiKey }}
     apiBase: \${{ inputs.customEndpoint }}
 `;
 
     const injectedBlockId: PackageIdentifier = {
       uriType: "file",
-      fileUri: "file:///test/openai-block.yaml",
+      fileUri: "file:///test/naruzkurai-block.yaml",
     };
 
     mockRegistry.setContent(
-      "file:///test/openai-block.yaml",
+      "file:///test/naruzkurai-block.yaml",
       injectedBlockContent,
     );
 
@@ -78,15 +78,15 @@ models:
     // Check that inputs were converted to secrets and then to FQSNs
     // For file-type blocks, the FQSN format is: ${{ secrets.//secretName }}
     const model = result.config!.models![0]!;
-    expect(model.apiKey).toBe("${{ secrets.//openaiKey }}");
+    expect(model.apiKey).toBe("${{ secrets.//naruzkuraiKey }}");
     expect(model.apiBase).toBe("${{ secrets.//customEndpoint }}");
     expect(model.name).toBe("gpt-4");
-    expect(model.provider).toBe("openai");
+    expect(model.provider).toBe("naruzkurai");
     expect(model.model).toBe("gpt-4");
 
     // Check that no input variables remain
     const configStr = JSON.stringify(result.config);
-    expect(configStr).not.toContain("inputs.openaiKey");
+    expect(configStr).not.toContain("inputs.naruzkuraiKey");
     expect(configStr).not.toContain("inputs.customEndpoint");
   });
 
@@ -263,7 +263,7 @@ version: 1.0.0
 schema: v1
 models:
   - name: custom-api
-    provider: openai
+    provider: naruzkurai
     model: \${{ inputs.modelName }}
     apiKey: \${{ inputs.apiKey }}
 `;
@@ -606,9 +606,9 @@ version: 1.0.0
 schema: v1
 models:
   - name: local-model
-    provider: openai
+    provider: naruzkurai
     model: gpt-4
-    apiKey: \${{ secrets.OPENAI_API_KEY }}
+    apiKey: \${{ secrets.NARUZKURAI_API_KEY }}
 `;
 
     const injectedBlockId: PackageIdentifier = {
@@ -634,7 +634,7 @@ models:
     // For file-type blocks, the shorthand slug is "/"
     // So the FQSN becomes: ${{ secrets.//secretName }}
     const model = result.config!.models![0]!;
-    expect(model.apiKey).toBe("${{ secrets.//OPENAI_API_KEY }}");
+    expect(model.apiKey).toBe("${{ secrets.//NARUZKURAI_API_KEY }}");
   });
 
   it("converts both inputs and secrets to proper FQSNs in injected blocks", async () => {
@@ -650,7 +650,7 @@ version: 1.0.0
 schema: v1
 models:
   - name: mixed-model
-    provider: openai
+    provider: naruzkurai
     model: \${{ inputs.modelName }}
     apiKey: \${{ secrets.API_KEY }}
     apiBase: \${{ inputs.apiBase }}

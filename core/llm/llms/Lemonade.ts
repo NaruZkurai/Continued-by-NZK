@@ -1,8 +1,8 @@
 import { LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class Lemonade extends OpenAI {
+class Lemonade extends NaruZkurAI {
   static providerName = "lemonade";
   static defaultOptions: Partial<LLMOptions> = {
     apiBase: "http://localhost:8000/api/v1/",

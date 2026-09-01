@@ -1,11 +1,11 @@
 import { LLMOptions } from "../../index.js";
 
-import OpenAI from "./OpenAI.js";
+import NaruZkurAI from "./NaruZkurAI.js";
 
-class DeepInfra extends OpenAI {
+class DeepInfra extends NaruZkurAI {
   static providerName = "deepinfra";
   static defaultOptions: Partial<LLMOptions> = {
-    apiBase: "https://api.deepinfra.com/v1/openai/",
+    apiBase: "https://api.deepinfra.com/v1/naruzkurai/",
   };
   maxStopWords: number | undefined = 16;
 

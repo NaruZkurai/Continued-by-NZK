@@ -24,7 +24,7 @@ version: 1.0.0
 schema: v1
 models:
   - model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     roles:
       - chat`,
@@ -32,7 +32,7 @@ models:
 
     const result = await runCLI(context, {
       args: ["-p", "--config", context.configPath],
-      env: { OPENAI_API_KEY: "test-key" },
+      env: { NARUZKURAI_API_KEY: "test-key" },
       expectError: true,
       timeout: 5000, // Short timeout to avoid hanging
     });
@@ -58,7 +58,7 @@ version: 1.0.0
 schema: v1
 models:
   - model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     roles:
       - chat`,
@@ -66,7 +66,7 @@ models:
 
     const result = await runCLI(context, {
       args: ["-p", "--config", context.configPath, "Hello assistant"],
-      env: { OPENAI_API_KEY: "test-key" },
+      env: { NARUZKURAI_API_KEY: "test-key" },
       expectError: true, // Will fail due to invalid API key, but should process the prompt
       timeout: 5000,
     });
@@ -92,7 +92,7 @@ version: 1.0.0
 schema: v1
 models:
   - model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     roles:
       - chat`,
@@ -100,7 +100,7 @@ models:
 
     const result = await runCLI(context, {
       args: ["-p", "--config", context.configPath],
-      env: { OPENAI_API_KEY: "test-key" },
+      env: { NARUZKURAI_API_KEY: "test-key" },
       input: "Hello from stdin",
       expectError: true, // Will show "prompt required" error because stdin is disabled in tests
       timeout: 5000,
@@ -124,7 +124,7 @@ version: 1.0.0
 schema: v1
 models:
   - model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     roles:
       - chat`,
@@ -132,7 +132,7 @@ models:
 
     const result = await runCLI(context, {
       args: ["-p", "--config", context.configPath, "Command line prompt"],
-      env: { OPENAI_API_KEY: "test-key" },
+      env: { NARUZKURAI_API_KEY: "test-key" },
       input: "Stdin input that should be ignored",
       expectError: true, // Will fail due to invalid API key
       timeout: 5000,
@@ -156,7 +156,7 @@ version: 1.0.0
 schema: v1
 models:
   - model: gpt-4
-    provider: openai
+    provider: naruzkurai
     apiKey: test-key
     roles:
       - chat`,
@@ -164,7 +164,7 @@ models:
 
     const result = await runCLI(context, {
       args: ["-p", "--config", context.configPath, "--agent", "test/agent"],
-      env: { OPENAI_API_KEY: "test-key" },
+      env: { NARUZKURAI_API_KEY: "test-key" },
       expectError: true, // Will fail trying to load agent from hub, but should pass prompt validation
       timeout: 5000,
     });

@@ -26,8 +26,8 @@ describe("PROVIDER_TOOL_SUPPORT", () => {
     });
   });
 
-  describe("openai", () => {
-    const supportsFn = PROVIDER_TOOL_SUPPORT["openai"];
+  describe("naruzkurai", () => {
+    const supportsFn = PROVIDER_TOOL_SUPPORT["naruzkurai"];
 
     it("should return true for GPT-4 models", () => {
       expect(supportsFn("gpt-4")).toBe(true);
@@ -310,15 +310,15 @@ describe("PROVIDER_TOOL_SUPPORT", () => {
 
     it("should return true for prefix match models", () => {
       expect(supportsFn("qwen/qwen3-235b-a22b-instruct-2507")).toBe(true);
-      expect(supportsFn("openai/gpt-oss-20b")).toBe(true);
-      expect(supportsFn("openai/gpt-oss-120b")).toBe(true);
+      expect(supportsFn("naruzkurai/gpt-oss-20b")).toBe(true);
+      expect(supportsFn("naruzkurai/gpt-oss-120b")).toBe(true);
     });
 
     it("should return false for unsupported models", () => {
       expect(supportsFn("deepseek/deepseek-chat")).toBe(false);
       expect(supportsFn("meta-llama/llama-2-7b")).toBe(false);
       expect(supportsFn("qwen/qwen-2.0-7b")).toBe(false);
-      expect(supportsFn("openai/gpt-4")).toBe(false);
+      expect(supportsFn("naruzkurai/gpt-4")).toBe(false);
     });
   });
 
@@ -330,7 +330,7 @@ describe("PROVIDER_TOOL_SUPPORT", () => {
     });
 
     it("should return true for supported prefixes", () => {
-      expect(supportsFn("openai/gpt-4o")).toBe(true);
+      expect(supportsFn("naruzkurai/gpt-4o")).toBe(true);
       expect(supportsFn("anthropic/claude-sonnet-4")).toBe(true);
       expect(supportsFn("google/gemini-2-flash")).toBe(true);
       expect(supportsFn("google/gemini-3-pro-preview")).toBe(true);
@@ -383,7 +383,7 @@ describe("PROVIDER_TOOL_SUPPORT", () => {
   describe("edge cases", () => {
     it("should handle empty model names", () => {
       expect(PROVIDER_TOOL_SUPPORT["anthropic"]("")).toBe(false);
-      expect(PROVIDER_TOOL_SUPPORT["openai"]("")).toBe(false);
+      expect(PROVIDER_TOOL_SUPPORT["naruzkurai"]("")).toBe(false);
       expect(PROVIDER_TOOL_SUPPORT["gemini"]("")).toBe(false);
       expect(PROVIDER_TOOL_SUPPORT["bedrock"]("")).toBe(false);
       expect(PROVIDER_TOOL_SUPPORT["ollama"]("")).toBe(false);
@@ -399,7 +399,7 @@ describe("PROVIDER_TOOL_SUPPORT", () => {
 });
 
 describe("isRecommendedAgentModel", () => {
-  describe("OpenAI models", () => {
+  describe("NaruZkurAI models", () => {
     it("should return true for o1, o3, o4 models", () => {
       expect(isRecommendedAgentModel("o1")).toBe(true);
       expect(isRecommendedAgentModel("o1-preview")).toBe(true);

@@ -1,4 +1,4 @@
-import { analyzeError } from "./errorAnalysis";
+import { analyzeError, isModelDownloadingError } from "./errorAnalysis";
 
 describe("errorAnalysis", () => {
   describe("analyzeError", () => {
@@ -14,6 +14,7 @@ describe("errorAnalysis", () => {
           modelTitle: "Chat model",
           providerName: "the model provider",
           apiKeyUrl: undefined,
+          isModelDownloading: false,
         });
       });
 
@@ -27,6 +28,7 @@ describe("errorAnalysis", () => {
           modelTitle: "Chat model",
           providerName: "the model provider",
           apiKeyUrl: undefined,
+          isModelDownloading: false,
         });
       });
 
@@ -40,6 +42,7 @@ describe("errorAnalysis", () => {
           modelTitle: "Chat model",
           providerName: "the model provider",
           apiKeyUrl: undefined,
+          isModelDownloading: false,
         });
       });
 
@@ -54,6 +57,7 @@ describe("errorAnalysis", () => {
           modelTitle: "Chat model",
           providerName: "the model provider",
           apiKeyUrl: undefined,
+          isModelDownloading: false,
         });
       });
 
@@ -68,6 +72,7 @@ describe("errorAnalysis", () => {
           modelTitle: "Chat model",
           providerName: "the model provider",
           apiKeyUrl: undefined,
+          isModelDownloading: false,
         });
       });
     });
@@ -231,15 +236,15 @@ describe("errorAnalysis", () => {
       it("should use selectedModel title and underlyingProviderName", () => {
         const selectedModel = {
           title: "GPT-4",
-          underlyingProviderName: "openai",
+          underlyingProviderName: "naruzkurai",
         };
         const error = new Error("Test error");
         const result = analyzeError(error, selectedModel);
 
         expect(result.modelTitle).toBe("GPT-4");
-        expect(result.providerName).toBe("OpenAI");
+        expect(result.providerName).toBe("NaruZkurAI");
         expect(result.apiKeyUrl).toBe(
-          "https://platform.openai.com/account/api-keys",
+          "https://platform.naruzkurai.com/account/api-keys",
         );
       });
 
@@ -258,15 +263,15 @@ describe("errorAnalysis", () => {
 
       it("should handle selectedModel with missing title", () => {
         const selectedModel = {
-          underlyingProviderName: "openai",
+          underlyingProviderName: "naruzkurai",
         };
         const error = new Error("Test error");
         const result = analyzeError(error, selectedModel);
 
         expect(result.modelTitle).toBe(undefined);
-        expect(result.providerName).toBe("OpenAI");
+        expect(result.providerName).toBe("NaruZkurAI");
         expect(result.apiKeyUrl).toBe(
-          "https://platform.openai.com/account/api-keys",
+          "https://platform.naruzkurai.com/account/api-keys",
         );
       });
 
@@ -335,12 +340,12 @@ describe("errorAnalysis", () => {
       it("should be case sensitive for provider matching", () => {
         const selectedModel = {
           title: "GPT-4",
-          underlyingProviderName: "OpenAI", // Different case
+          underlyingProviderName: "NaruZkurAI", // Different case
         };
         const error = new Error("Test error");
         const result = analyzeError(error, selectedModel);
 
-        expect(result.providerName).toBe("OpenAI"); // Should use the original casing
+        expect(result.providerName).toBe("NaruZkurAI"); // Should use the original casing
         expect(result.apiKeyUrl).toBe(undefined); // No match found
       });
     });
@@ -352,7 +357,7 @@ describe("errorAnalysis", () => {
         );
         const selectedModel = {
           title: "GPT-4",
-          underlyingProviderName: "openai",
+          underlyingProviderName: "naruzkurai",
         };
         const result = analyzeError(error, selectedModel);
 
@@ -362,9 +367,9 @@ describe("errorAnalysis", () => {
           'HTTP 429 Rate Limited\n\n{"error": "Too many requests", "retry_after": 60}',
         );
         expect(result.modelTitle).toBe("GPT-4");
-        expect(result.providerName).toBe("OpenAI");
+        expect(result.providerName).toBe("NaruZkurAI");
         expect(result.apiKeyUrl).toBe(
-          "https://platform.openai.com/account/api-keys",
+          "https://platform.naruzkurai.com/account/api-keys",
         );
       });
 
@@ -382,7 +387,7 @@ describe("errorAnalysis", () => {
         );
         const selectedModel = {
           title: "GPT-4",
-          underlyingProviderName: "openai",
+          underlyingProviderName: "naruzkurai",
         };
         const result = analyzeError(error, selectedModel);
 
@@ -480,19 +485,19 @@ describe("errorAnalysis", () => {
     });
 
     describe("real-world error scenarios", () => {
-      it("should handle OpenAI API key error", () => {
+      it("should handle NaruZkurAI API key error", () => {
         const error = new Error(
           '401 Unauthorized\n\n{"error": {"message": "Invalid API key", "type": "invalid_request_error"}}',
         );
         const selectedModel = {
           title: "GPT-4",
-          underlyingProviderName: "openai",
+          underlyingProviderName: "naruzkurai",
         };
         const result = analyzeError(error, selectedModel);
 
         expect(result.statusCode).toBe(401);
         expect(result.apiKeyUrl).toBe(
-          "https://platform.openai.com/account/api-keys",
+          "https://platform.naruzkurai.com/account/api-keys",
         );
       });
 
@@ -533,38 +538,38 @@ describe("errorAnalysis", () => {
     });
 
     describe("custom error detection", () => {
-      it("should detect OpenAI organization verification error for reasoning summaries", () => {
+      it("should detect NaruZkurAI organization verification error for reasoning summaries", () => {
         const error = new Error(
-          "OpenAI error: organization must be verified to generate reasoning summaries",
+          "NaruZkurAI error: organization must be verified to generate reasoning summaries",
         );
         const result = analyzeError(error, null);
 
         expect(result.helpUrl).toBe(
-          "https://help.openai.com/en/articles/10910291-api-organization-verification",
+          "https://help.naruzkurai.com/en/articles/10910291-api-organization-verification",
         );
         expect(result.customErrorMessage).toContain("useResponsesApi");
       });
 
-      it("should detect OpenAI organization verification error for streaming", () => {
+      it("should detect NaruZkurAI organization verification error for streaming", () => {
         const error = new Error(
-          "OpenAI error: organization must be verified to stream this model",
+          "NaruZkurAI error: organization must be verified to stream this model",
         );
         const result = analyzeError(error, null);
 
         expect(result.helpUrl).toBe(
-          "https://help.openai.com/en/articles/10910291-api-organization-verification",
+          "https://help.naruzkurai.com/en/articles/10910291-api-organization-verification",
         );
         expect(result.customErrorMessage).toContain("useResponsesApi");
       });
 
-      it("should detect OpenAI org verification error case-insensitively", () => {
+      it("should detect NaruZkurAI org verification error case-insensitively", () => {
         const error = new Error(
-          "OPENAI: Organization Must Be Verified To Generate Reasoning Summaries",
+          "NARUZKURAI: Organization Must Be Verified To Generate Reasoning Summaries",
         );
         const result = analyzeError(error, null);
 
         expect(result.helpUrl).toBe(
-          "https://help.openai.com/en/articles/10910291-api-organization-verification",
+          "https://help.naruzkurai.com/en/articles/10910291-api-organization-verification",
         );
       });
 
@@ -572,7 +577,7 @@ describe("errorAnalysis", () => {
         const error = new Error("organization must be verified");
         const result = analyzeError(error, null);
 
-        // Should not match without "openai"
+        // Should not match without "naruzkurai"
         expect(result.helpUrl).toBeUndefined();
       });
 
@@ -609,8 +614,8 @@ describe("errorAnalysis", () => {
         const error = new Error("Invalid API Key");
         const selectedModel = {
           title: "GPT-4",
-          underlyingProviderName: "openai",
-          apiKey: "secrets.OPENAI_API_KEY",
+          underlyingProviderName: "naruzkurai",
+          apiKey: "secrets.NARUZKURAI_API_KEY",
         };
         const result = analyzeError(error, selectedModel);
 
@@ -640,6 +645,34 @@ describe("errorAnalysis", () => {
         const result = analyzeError(error, selectedModel);
 
         expect(result.customErrorMessage).toContain("out of credits");
+      });
+    });
+
+    describe("model downloading detection", () => {
+      it("should detect model_downloading error from Unsloth", () => {
+        const error = new Error(
+          "Downloading 'unsloth/Qwen3.5-2B-MTP-GGUF:UD-Q4_K_XL' (1.9 GB). Retry shortly. Track it in Unsloth Studio.",
+        );
+        const result = analyzeError(error, null);
+
+        expect(result.isModelDownloading).toBe(true);
+      });
+
+      it("should detect model_downloading from code field", () => {
+        const error = new Error("some generic message");
+        (error as any).code = "model_downloading";
+        const result = analyzeError(error, null);
+
+        // analyzeError only reads the message string; isModelDownloadingError
+        // handles both the message and code fields independently.
+        expect(isModelDownloadingError(error)).toBe(true);
+      });
+
+      it("should not detect unrelated errors as downloading", () => {
+        const error = new Error("Invalid API key provided");
+        const result = analyzeError(error, null);
+
+        expect(result.isModelDownloading).toBe(false);
       });
     });
   });

@@ -1,8 +1,8 @@
 import { ModelConfig } from "@continuedev/config-yaml";
-import { BaseLlmApi } from "@continuedev/openai-adapters";
+import { BaseLlmApi } from "@continuedev/naruzkurai-adapters";
 import type { ChatHistoryItem } from "core/index.js";
 import { convertToUnifiedHistory } from "core/util/messageConversion.js";
-import type { ChatCompletionChunk } from "openai/resources/chat/completions.mjs";
+import type { ChatCompletionChunk } from "naruzkurai/resources/chat/completions.mjs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { streamChatResponse } from "./streamChatResponse.js";
@@ -80,7 +80,7 @@ vi.mock("./streamChatResponse.compactionHelpers.js", () => ({
 
 describe("streamChatResponse - auto-continuation after compaction", () => {
   const mockModel: ModelConfig = {
-    provider: "openai",
+    provider: "naruzkurai",
     name: "gpt-4",
     model: "gpt-4",
     defaultCompletionOptions: {

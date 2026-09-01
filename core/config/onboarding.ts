@@ -36,10 +36,10 @@ const ANTHROPIC_ONBOARDING_MODELS = (apiKey: string): OnboardingModel[] => [
   },
 ];
 
-const OPENAI_ONBOARDING_MODELS = (apiKey: string): OnboardingModel[] => [
+const NARUZKURAI_ONBOARDING_MODELS = (apiKey: string): OnboardingModel[] => [
   {
-    name: "OpenAI GPT-4.1",
-    provider: "openai",
+    name: "NaruZkurAI GPT-4.1",
+    provider: "naruzkurai",
     model: "gpt-4.1-2025-04-14",
     apiKey,
     roles: ["chat", "edit", "apply"],
@@ -48,7 +48,7 @@ const OPENAI_ONBOARDING_MODELS = (apiKey: string): OnboardingModel[] => [
   },
   {
     name: "o3",
-    provider: "openai",
+    provider: "naruzkurai",
     model: "o3",
     apiKey,
     roles: ["chat"],
@@ -56,8 +56,8 @@ const OPENAI_ONBOARDING_MODELS = (apiKey: string): OnboardingModel[] => [
     capabilities: ["image_input"],
   },
   {
-    name: "OpenAI GPT-4.1 mini",
-    provider: "openai",
+    name: "NaruZkurAI GPT-4.1 mini",
+    provider: "naruzkurai",
     model: "gpt-4.1-mini-2025-04-14",
     apiKey,
     roles: ["chat", "edit", "apply"],
@@ -137,8 +137,8 @@ export function setupProviderConfig(
   let newModels: OnboardingModel[];
 
   switch (provider) {
-    case "openai":
-      newModels = OPENAI_ONBOARDING_MODELS(apiKey);
+    case "naruzkurai":
+      newModels = NARUZKURAI_ONBOARDING_MODELS(apiKey);
       break;
     case "anthropic":
       newModels = ANTHROPIC_ONBOARDING_MODELS(apiKey);

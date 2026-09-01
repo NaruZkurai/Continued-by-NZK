@@ -2,7 +2,7 @@ import { ModelConfig } from "@continuedev/config-yaml";
 import type { ChatHistoryItem } from "core/index.js";
 import { getAdjustedTokenCountFromModel } from "core/llm/getAdjustedTokenCount.js";
 import { encode } from "gpt-tokenizer";
-import type { ChatCompletionTool } from "openai/resources/chat/completions.mjs";
+import type { ChatCompletionTool } from "naruzkurai/resources/chat/completions.mjs";
 
 import { logger } from "./logger.js";
 
@@ -273,8 +273,8 @@ function countSingleToolTokens(tool: ChatCompletionTool): number {
 
 /**
  * Count tokens for tool definitions sent to the API.
- * Based on OpenAI's token counting for function calling.
- * @see https://community.openai.com/t/how-to-calculate-the-tokens-when-using-function-call/266573/10
+ * Based on NaruZkurAI's token counting for function calling.
+ * @see https://community.naruzkurai.com/t/how-to-calculate-the-tokens-when-using-function-call/266573/10
  * @param tools Array of ChatCompletionTool objects
  * @returns Estimated token count for all tool definitions
  */

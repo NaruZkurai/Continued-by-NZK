@@ -95,12 +95,12 @@ describe("Agent file Integration Tests", () => {
   const mockAssistant = {
     models: [
       {
-        provider: "openai",
+        provider: "naruzkurai",
         name: "gpt-3.5-turbo",
         roles: ["chat"],
       },
       {
-        provider: "openai",
+        provider: "naruzkurai",
         name: "gpt-4",
         roles: ["chat"],
       },
@@ -142,7 +142,7 @@ describe("Agent file Integration Tests", () => {
     mockLoadPackageFromHub.mockResolvedValue(mockAgentFile);
     mockLoadModelFromHub.mockResolvedValue({
       name: "gpt-4-agent",
-      provider: "openai",
+      provider: "naruzkurai",
     });
     mockIsStringRule.mockImplementation((rule: string) => {
       // String rules are those that don't look like package identifiers

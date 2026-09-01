@@ -24,7 +24,7 @@ or
      schema: v1
 
      - name: Morph Fast Apply
-       provider: openai
+       provider: naruzkurai
        model: morph-v2
        apiKey: <YOUR_MORPH_API_KEY>
        apiBase: https://api.morphllm.com/v1/
@@ -40,7 +40,7 @@ or
      "models": [
        {
          "title": "Morph Fast Apply",
-         "provider": "openai",
+         "provider": "naruzkurai",
          "model": "morph-v2",
          "apiKey": "<YOUR_MORPH_API_KEY>",
          "apiBase": "https://api.morphllm.com/v1/",
@@ -68,7 +68,7 @@ We recommend configuring **morph-embedding-v2** as your embeddings model.
 
   models:
     - name: Morph Embeddings
-      provider: openai
+      provider: naruzkurai
       model: morph-embedding-v2
       apiKey: <YOUR_MORPH_API_KEY>
       apiBase: https://api.morphllm.com/v1/
@@ -80,7 +80,7 @@ We recommend configuring **morph-embedding-v2** as your embeddings model.
   ```json title="config.json"
   {
     "embeddingsProvider": {
-      "provider": "openai",
+      "provider": "naruzkurai",
       "model": "morph-embedding-v2",
       "apiKey": "<YOUR_MORPH_API_KEY>",
       "apiBase": "https://api.morphllm.com/v1/"

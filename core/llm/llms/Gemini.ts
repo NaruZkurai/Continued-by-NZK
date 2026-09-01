@@ -13,7 +13,7 @@ import { safeParseToolCallArgs } from "../../tools/parseArgs.js";
 import { renderChatMessage, stripImages } from "../../util/messageContent.js";
 import { extractBase64FromDataUrl } from "../../util/url.js";
 import { BaseLLM } from "../index.js";
-import { LlmApiRequestType } from "../openaiTypeConverters.js";
+import { LlmApiRequestType } from "../naruzkuraiTypeConverters.js";
 import {
   GeminiChatContent,
   GeminiChatContentPart,
@@ -43,7 +43,7 @@ class Gemini extends BaseLLM {
     maxEmbeddingBatchSize: 100,
   };
 
-  protected useOpenAIAdapterFor: (LlmApiRequestType | "*")[] = [
+  protected useNaruZkurAIAdapterFor: (LlmApiRequestType | "*")[] = [
     "chat",
     "embed",
     "list",

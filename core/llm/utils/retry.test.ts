@@ -214,6 +214,69 @@ describe("Retry Functionality", () => {
       expect(mockFn).toHaveBeenCalledTimes(1);
     });
 
+    it("should retry on model_downloading error (code)", async () => {
+      const error = new Error(
+        "Downloading 'unsloth/Qwen3.5-2B-MTP-GGUF:UD-Q4_K_XL' (1.9 GB). Retry shortly.",
+      );
+      (error as any).code = "model_downloading";
+      const mockFn = jest
+        .fn()
+        .mockRejectedValueOnce(error)
+        .mockResolvedValue("success");
+
+      const result = await retryAsync(mockFn, {
+        maxAttempts: 2,
+        baseDelay: 10,
+      });
+
+      expect(result).toBe("success");
+      expect(mockFn).toHaveBeenCalledTimes(2);
+    });
+
+    it("should retry on model_downloading error (message only)", async () => {
+      const error = new Error(
+        "Downloading 'unsloth/Qwen3.5-2B-MTP-GGUF:UD-Q4_K_XL' (1.9 GB). Retry shortly. Track it in Unsloth Studio.",
+      );
+      const mockFn = jest
+        .fn()
+        .mockRejectedValueOnce(error)
+        .mockResolvedValue("success");
+
+      const result = await retryAsync(mockFn, {
+        maxAttempts: 2,
+        baseDelay: 10,
+      });
+
+      expect(result).toBe("success");
+      expect(mockFn).toHaveBeenCalledTimes(2);
+    });
+
+    it("should wait past maxAttempts for model_downloading until the model is ready", async () => {
+      const downloadError = new Error(
+        "Downloading 'unsloth/Qwen3.5-2B-MTP-GGUF:UD-Q4_K_XL' (1.9 GB). Retry shortly.",
+      );
+      (downloadError as any).code = "model_downloading";
+
+      // Fail with model_downloading 5 times (well beyond maxAttempts=3),
+      // then succeed once the model has finished downloading.
+      const mockFn = jest
+        .fn()
+        .mockRejectedValueOnce(downloadError)
+        .mockRejectedValueOnce(downloadError)
+        .mockRejectedValueOnce(downloadError)
+        .mockRejectedValueOnce(downloadError)
+        .mockRejectedValueOnce(downloadError)
+        .mockResolvedValue("success");
+
+      const result = await retryAsync(mockFn, {
+        maxAttempts: 3,
+        baseDelay: 10,
+      });
+
+      expect(result).toBe("success");
+      expect(mockFn).toHaveBeenCalledTimes(6);
+    });
+
     it("should use custom shouldRetry function", async () => {
       const mockFn = jest.fn().mockRejectedValue(new Error("Custom Error"));
       const customShouldRetry = jest.fn().mockReturnValue(true);
