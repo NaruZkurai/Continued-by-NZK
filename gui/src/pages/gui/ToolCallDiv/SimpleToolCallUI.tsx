@@ -1,12 +1,18 @@
 import { Tool, ToolCallState } from "core";
+import { renderChatMessage } from "core/util/messageContent";
 import { ComponentType, useContext, useMemo, useState } from "react";
+import InlineEdit from "../../../components/StepContainer/InlineEdit";
 import {
-  ContextItemsPeekItem,
-  openContextItem,
+    ContextItemsPeekItem,
+    openContextItem,
 } from "../../../components/mainInput/belowMainInput/ContextItemsPeek";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { updateHistoryItemAtIndex } from "../../../redux/slices/sessionSlice";
+import { saveCurrentSession } from "../../../redux/thunks/session";
 import { ToggleWithIcon } from "./ToggleWithIcon";
 import { ToolCallStatusMessage } from "./ToolCallStatusMessage";
+import { ToolEditMessageIcon } from "./ToolEditMessageIcon";
 import { ToolTruncateHistoryIcon } from "./ToolTruncateHistoryIcon";
 import { toolCallStateToContextItems } from "./utils";
 
@@ -24,6 +30,11 @@ export function SimpleToolCallUI({
   historyIndex,
 }: SimpleToolCallUIProps) {
   const ideMessenger = useContext(IdeMessengerContext);
+  const dispatch = useAppDispatch();
+  const historyItem = useAppSelector(
+    (state) => state.session.history[historyIndex],
+  );
+  const [editing, setEditing] = useState(false);
   const shownContextItems = useMemo(() => {
     const contextItems = toolCallStateToContextItems(toolCallState);
     return contextItems.filter((item) => !item.hidden);
@@ -63,10 +74,42 @@ export function SimpleToolCallUI({
           <ToolCallStatusMessage tool={tool} toolCallState={toolCallState} />
         </div>
 
-        {!!toolCallState.output?.length && (
-          <ToolTruncateHistoryIcon historyIndex={historyIndex} />
-        )}
+        <div className="flex flex-row items-center gap-1">
+          {historyItem?.message.role === "assistant" && (
+            <ToolEditMessageIcon onClick={() => setEditing(true)} />
+          )}
+          {!!toolCallState.output?.length && (
+            <ToolTruncateHistoryIcon historyIndex={historyIndex} />
+          )}
+        </div>
       </div>
+
+      {editing && historyItem?.message.role === "assistant" && (
+        <InlineEdit
+          initialText={renderChatMessage(historyItem.message)}
+          onCancel={() => setEditing(false)}
+          onSave={(newText) => {
+            dispatch(
+              updateHistoryItemAtIndex({
+                index: historyIndex,
+                updates: {
+                  message: {
+                    ...historyItem.message,
+                    content: newText,
+                  } as any,
+                },
+              }),
+            );
+            dispatch(
+              saveCurrentSession({
+                openNewSession: false,
+                generateTitle: false,
+              }),
+            );
+            setEditing(false);
+          }}
+        />
+      )}
 
       {isToggleable && (
         <div

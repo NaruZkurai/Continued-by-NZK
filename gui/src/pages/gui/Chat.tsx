@@ -1,44 +1,48 @@
 import {
-  ArrowLeftIcon,
-  ChatBubbleOvalLeftIcon,
+    ArrowLeftIcon,
+    ChatBubbleOvalLeftIcon,
+    PencilIcon,
 } from "@heroicons/react/24/outline";
 import { Editor, JSONContent } from "@tiptap/react";
 import { ChatHistoryItem, InputModifiers } from "core";
 import { renderChatMessage } from "core/util/messageContent";
 import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
 } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import styled from "styled-components";
 import { Button, lightGray, vscBackground } from "../../components";
 import { useFindWidget } from "../../components/find/FindWidget";
+import HeaderButtonWithToolTip from "../../components/gui/HeaderButtonWithToolTip";
 import TimelineItem from "../../components/gui/TimelineItem";
 import { NewSessionButton } from "../../components/mainInput/belowMainInput/NewSessionButton";
 import ThinkingBlockPeek from "../../components/mainInput/belowMainInput/ThinkingBlockPeek";
 import ContinueInputBox from "../../components/mainInput/ContinueInputBox";
 import { useOnboardingCard } from "../../components/OnboardingCard";
 import StepContainer from "../../components/StepContainer";
+import InlineEdit from "../../components/StepContainer/InlineEdit";
 import { TabBar } from "../../components/TabBar/TabBar";
 import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { useWebviewListener } from "../../hooks/useWebviewListener";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-  selectDoneApplyStates,
-  selectPendingToolCalls,
+    selectDoneApplyStates,
+    selectPendingToolCalls,
 } from "../../redux/selectors/selectToolCalls";
 import {
-  cancelToolCall,
-  ChatHistoryItemWithMessageId,
-  newSession,
-  updateToolCallOutput,
+    cancelToolCall,
+    ChatHistoryItemWithMessageId,
+    newSession,
+    updateHistoryItemAtIndex,
+    updateToolCallOutput,
 } from "../../redux/slices/sessionSlice";
 import { streamEditThunk } from "../../redux/thunks/edit";
-import { loadLastSession } from "../../redux/thunks/session";
+import { loadLastSession, saveCurrentSession } from "../../redux/thunks/session";
 import { streamResponseThunk } from "../../redux/thunks/streamResponse";
 import { isJetBrains, isMetaEquivalentKeyPressed } from "../../util";
 import { ToolCallDiv } from "./ToolCallDiv";
@@ -46,10 +50,9 @@ import { ToolCallDiv } from "./ToolCallDiv";
 import { useStore } from "react-redux";
 import FeedbackDialog from "../../components/dialogs/FeedbackDialog";
 
-import { DeprecationBanner } from "../../components/DeprecationBanner";
 import { FatalErrorIndicator } from "../../components/config/FatalErrorNotice";
+import { DeprecationBanner } from "../../components/DeprecationBanner";
 import InlineErrorMessage from "../../components/mainInput/InlineErrorMessage";
-import { resolveEditorContent } from "../../components/mainInput/TipTapEditor/utils/resolveEditorContent";
 import { setDialogMessage, setShowDialog } from "../../redux/slices/uiSlice";
 import { RootState } from "../../redux/store";
 import { cancelStream } from "../../redux/thunks/cancelStream";
@@ -113,6 +116,7 @@ export function Chat() {
   );
   const isStreaming = useAppSelector((state) => state.session.isStreaming);
   const [stepsOpen] = useState<(boolean | undefined)[]>([]);
+  const [editingThinking, setEditingThinking] = useState<number | null>(null);
   const mainTextInputRef = useRef<HTMLInputElement>(null);
   const stepsDivRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -339,8 +343,41 @@ export function Chat() {
         if (!thinkingContent?.trim()) {
           return null;
         }
+        if (editingThinking === index) {
+          return (
+            <div className={isBeforeLatestSummary ? "opacity-50" : ""}>
+              <InlineEdit
+                initialText={thinkingContent}
+                onCancel={() => setEditingThinking(null)}
+                onSave={(newText) => {
+                  dispatch(
+                    updateHistoryItemAtIndex({
+                      index,
+                      updates: {
+                        message: { ...message, content: newText } as any,
+                      },
+                    }),
+                  );
+                  dispatch(
+                    saveCurrentSession({
+                      openNewSession: false,
+                      generateTitle: false,
+                    }),
+                  );
+                  setEditingThinking(null);
+                }}
+              />
+            </div>
+          );
+        }
         return (
-          <div className={isBeforeLatestSummary ? "opacity-50" : ""}>
+          <div
+            className={
+              "thread-message relative mx-1 mt-2 border-t border-solid pb-1 pt-2 " +
+              (isBeforeLatestSummary ? "opacity-50" : "")
+            }
+            style={{ borderColor: "var(--vscode-panel-border)" }}
+          >
             <ThinkingBlockPeek
               content={thinkingContent}
               redactedThinking={message.redactedThinking}
@@ -349,6 +386,15 @@ export function Chat() {
               inProgress={index === history.length - 1 && isStreaming}
               signature={message.signature}
             />
+            <div className="absolute right-2 top-1 z-10">
+              <HeaderButtonWithToolTip
+                text="Edit thought"
+                tabIndex={-1}
+                onClick={() => setEditingThinking(index)}
+              >
+                <PencilIcon className="text-description-muted h-3.5 w-3.5" />
+              </HeaderButtonWithToolTip>
+            </div>
           </div>
         );
       }
@@ -374,7 +420,7 @@ export function Chat() {
         </div>
       );
     },
-    [sendInput, isLastUserInput, history, stepsOpen, isStreaming],
+    [sendInput, isLastUserInput, history, stepsOpen, isStreaming, editingThinking, dispatch],
   );
 
   const showScrollbar = showChatScrollbar ?? window.innerHeight > 5000;

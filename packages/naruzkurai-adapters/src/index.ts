@@ -18,8 +18,7 @@ import { LlamastackApi } from "./apis/LlamaStack.js";
 import { MiniMaxApi } from "./apis/MiniMax.js";
 import { MockApi } from "./apis/Mock.js";
 import { MoonshotApi } from "./apis/Moonshot.js";
-import { NaruZkuraiApi } from "./apis/naruzkurai.js";
-import { NaruZkurAIApi } from "./apis/naruzkurai.js";
+import { NaruZkuraiApi, NaruZkurAIApi } from "./apis/naruzkurai.js";
 import { OpenRouterApi } from "./apis/OpenRouter.js";
 import { RelaceApi } from "./apis/Relace.js";
 import { VertexAIApi } from "./apis/VertexAI.js";
@@ -241,6 +240,10 @@ export {
     getAnthropicMediaTypeFromDataUrl
 } from "./apis/AnthropicUtils.js";
 
+export {
+    clearNoticeSink,
+    setNoticeSink
+} from "./apis/naruzkurai.js";
 export { isResponsesModel } from "./apis/naruzkuraiResponses.js";
 export { OPENROUTER_HEADERS } from "./apis/OpenRouter.js";
 export { extractBase64FromDataUrl, parseDataUrl } from "./util/url.js";

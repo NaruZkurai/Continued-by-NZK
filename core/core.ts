@@ -1,4 +1,5 @@
 import { fetchwithRequestOptions } from "@continuedev/fetch";
+import type { ToolPolicy } from "@continuedev/terminal-security";
 import * as URI from "uri-js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -14,12 +15,17 @@ import { DataLogger } from "./data/log";
 import { CodebaseIndexer } from "./indexing/CodebaseIndexer";
 import DocsService from "./indexing/docs/DocsService";
 import { countTokens } from "./llm/countTokens";
-import Lemonade from "./llm/llms/Lemonade";
 import { fetchModels } from "./llm/fetchModels";
+import Lemonade from "./llm/llms/Lemonade";
 import Ollama from "./llm/llms/Ollama";
 import { EditAggregator } from "./nextEdit/context/aggregateEdits";
 import { createNewPromptFileV2 } from "./promptFiles/createNewPromptFile";
+import { BuiltInToolNames } from "./tools/builtIn";
 import { callTool } from "./tools/callTool";
+import {
+  evaluateAllowlistPolicy,
+  loadCommandAllowlist,
+} from "./tools/permissions/commandAllowlist";
 import { ChatDescriber } from "./util/chatDescriber";
 import { compactConversation } from "./util/conversationCompaction";
 import { GlobalContext } from "./util/GlobalContext";
@@ -123,14 +129,14 @@ export class Core {
     return this.messenger.send(messageType, data, messageId);
   }
 
-  // TODO: It shouldn't actually need an IDE type, because this can happen
-  // through the messenger (it does in the case of any non-VS Code IDEs already)
+  /* TODO: It shouldn't actually need an IDE type, because this can happen
+  through the messenger (it does in the case of any non-VS Code IDEs already) */
   constructor(
     private readonly messenger: IMessenger<ToCoreProtocol, FromCoreProtocol>,
     private readonly ide: IDE,
   ) {
     try {
-      // Ensure .continue directory is created
+      /* Ensure .continue directory is created */
       migrateV1DevDataFiles();
 
       const ideInfoPromise = messenger.request("getIdeInfo", undefined);
@@ -146,7 +152,7 @@ export class Core {
       MCPManagerSingleton.getInstance().onConnectionsRefreshed = () => {
         void this.configHandler.reloadConfig("MCP Connections refreshed");
 
-        // Refresh @mention dropdown submenu items for MCP providers
+        /* Refresh @mention dropdown submenu items for MCP providers */
         const mcpManager = MCPManagerSingleton.getInstance();
         const mcpProviderNames = Array.from(mcpManager.connections.keys()).map(
           (mcpId) => `mcp-${mcpId}`,
@@ -183,7 +189,7 @@ export class Core {
             );
           }
 
-          // update additional submenu context providers registered via VSCode API
+          /* update additional submenu context providers registered via VSCode API */
           const additionalProviders =
             this.configHandler.getAdditionalSubmenuContextProviders();
           if (additionalProviders.length > 0) {
@@ -194,14 +200,14 @@ export class Core {
         })();
       });
 
-      // Dev Data Logger
+      /* Dev Data Logger */
       const dataLogger = DataLogger.getInstance();
       dataLogger.core = this;
       dataLogger.ideInfoPromise = ideInfoPromise;
       dataLogger.ideSettingsPromise = ideSettingsPromise;
 
       void ideSettingsPromise.then((ideSettings) => {
-        // Index on initialization
+        /* Index on initialization */
         void this.ide.getWorkspaceDirs().then(async (dirs) => {
           // Respect pauseCodebaseIndexOnStart user settings
           if (ideSettings.pauseCodebaseIndexOnStart) {
@@ -214,7 +220,7 @@ export class Core {
             return;
           }
 
-          // Check for disableIndexing to prevent race condition
+          /* Check for disableIndexing to prevent race condition */
           const { config } = await this.configHandler.loadConfig();
           if (!config || config.disableIndexing) {
             void this.messenger.request("indexProgress", {
@@ -278,7 +284,7 @@ export class Core {
     // Note, VsCode's in-process messenger doesn't do anything with this
     // It will only show for jetbrains
     this.messenger.onError((message, err) => {
-      // just to prevent duplicate error messages in jetbrains (same logic in webview protocol)
+      /* just to prevent duplicate error messages in jetbrains (same logic in webview protocol) */
       if (
         ["llm/streamChat", "chatDescriber/describe"].includes(
           message.messageType,
@@ -600,7 +606,7 @@ export class Core {
       return model.compileChatMessages(messages, options);
     });
 
-    // Provide messenger to utils so they can interact with GUI + state
+    /* Provide messenger to utils so they can interact with GUI + state */
     TTS.messenger = this.messenger;
     ChatDescriber.messenger = this.messenger;
 
@@ -641,7 +647,7 @@ export class Core {
       }
     });
 
-    // Autocomplete
+    /* Autocomplete */
     on("autocomplete/complete", async (msg) => {
       const outcome =
         await this.completionProvider.provideInlineCompletionItems(
@@ -708,7 +714,7 @@ export class Core {
       return queue.dequeueProcessed() || null;
     });
 
-    // NOTE: This is not used unless prefetch is used.
+    /* NOTE: This is not used unless prefetch is used. */
     // At this point this is not used because I opted to rely on the model to return multiple diffs than to use prefetching.
     on("nextEdit/queue/processOne", async (msg) => {
       console.log("nextEdit/queue/processOne");
@@ -745,8 +751,8 @@ export class Core {
 
       const { data } = msg;
 
-      // Title can be an edit, chat, or apply model
-      // Fall back to chat
+      /* Title can be an edit, chat, or apply model */
+      /* Fall back to chat */
       const llm =
         config.modelsByRole.edit.find((m) => m.title === data.modelTitle) ??
         config.modelsByRole.apply.find((m) => m.title === data.modelTitle) ??
@@ -760,7 +766,7 @@ export class Core {
       const abortManager = ApplyAbortManager.getInstance();
       const abortController = abortManager.get(
         data.fileUri ?? "current-file-stream",
-      ); // not super important since currently cancelling apply will cancel all streams it's one file at a time
+      ); /* not super important since currently cancelling apply will cancel all streams it's one file at a time */
 
       return streamDiffLines(
         data,
@@ -771,380 +777,403 @@ export class Core {
       );
     });
 
-    on("getDiffLines", (msg) => {
-      return myersDiff(msg.data.oldContent, msg.data.newContent);
-    });
+      on("getDiffLines", (msg) => {
+        return myersDiff(msg.data.oldContent, msg.data.newContent);
+      });
 
-    on("cancelApply", async (msg) => {
-      const abortManager = ApplyAbortManager.getInstance();
-      abortManager.clear(); // for now abort all streams
-    });
+      on("cancelApply", async (msg) => {
+        const abortManager = ApplyAbortManager.getInstance();
+        abortManager.clear(); /* for now abort all streams */
+      });
 
     on("onboarding/complete", this.handleCompleteOnboarding.bind(this));
 
     on("addAutocompleteModel", this.handleAddAutocompleteModel.bind(this));
 
-    on("stats/getTokensPerDay", async (msg) => {
-      const rows = await DevDataSqliteDb.getTokensPerDay();
-      return rows;
-    });
-    on("stats/getTokensPerModel", async (msg) => {
-      const rows = await DevDataSqliteDb.getTokensPerModel();
-      return rows;
-    });
+      on("stats/getTokensPerDay", async (msg) => {
+        const rows = await DevDataSqliteDb.getTokensPerDay();
+        return rows;
+      });
+      on("stats/getTokensPerModel", async (msg) => {
+        const rows = await DevDataSqliteDb.getTokensPerModel();
+        return rows;
+      });
 
-    on("index/forceReIndex", async ({ data }) => {
-      const { config } = await this.configHandler.loadConfig();
-      if (!config || config.disableIndexing) {
-        return; // TODO silent in case of commands?
-      }
-      walkDirCache.invalidate();
-      if (data?.shouldClearIndexes) {
-        await this.codeBaseIndexer.clearIndexes();
-      }
-      const dirs = data?.dirs ?? (await this.ide.getWorkspaceDirs());
-      await this.codeBaseIndexer.refreshCodebaseIndex(dirs);
-    });
-    on("index/setPaused", (msg) => {
-      this.globalContext.update("indexingPaused", msg.data);
-      // Update using the new setter instead of token
-      this.codeBaseIndexer.paused = msg.data;
-    });
-    on("index/indexingProgressBarInitialized", async (msg) => {
-      // Triggered when progress bar is initialized.
-      // If a non-default state has been stored, update the indexing display to that state
-      const currentState = this.codeBaseIndexer.currentIndexingState;
-
-      if (currentState.status !== "loading") {
-        void this.messenger.request("indexProgress", currentState);
-      }
-    });
-
-    // File changes - TODO - remove remaining logic for these from IDEs where possible
-    on("files/changed", this.handleFilesChanged.bind(this));
-    const refreshIfNotIgnored = async (uris: string[]) => {
-      const toRefresh: string[] = [];
-      for (const uri of uris) {
-        const ignore = await shouldIgnore(uri, this.ide);
-        if (!ignore) {
-          toRefresh.push(uri);
-        }
-      }
-      if (toRefresh.length > 0) {
-        this.messenger.send("refreshSubmenuItems", {
-          providers: ["file"],
-        });
+      on("index/forceReIndex", async ({ data }) => {
         const { config } = await this.configHandler.loadConfig();
-        if (config && !config.disableIndexing) {
-          await this.codeBaseIndexer.refreshCodebaseIndexFiles(toRefresh);
+        if (!config || config.disableIndexing) {
+          return; /* TODO silent in case of commands? */
         }
-      }
+        walkDirCache.invalidate();
+        if (data?.shouldClearIndexes) {
+          await this.codeBaseIndexer.clearIndexes();
+        }
+        const dirs = data?.dirs ?? (await this.ide.getWorkspaceDirs());
+        await this.codeBaseIndexer.refreshCodebaseIndex(dirs);
+      });
+      on("index/setPaused", (msg) => {
+        this.globalContext.update("indexingPaused", msg.data);
+        /* Update using the new setter instead of token */
+        this.codeBaseIndexer.paused = msg.data;
+      });
+      on("index/indexingProgressBarInitialized", async (msg) => {
+        /* Triggered when progress bar is initialized. */
+        /* If a non-default state has been stored, update the indexing display to that state */
+        const currentState = this.codeBaseIndexer.currentIndexingState;
+
+        if (currentState.status !== "loading") {
+          void this.messenger.request("indexProgress", currentState);
+        }
+      });
+
+      /* File changes - TODO - remove remaining logic for these from IDEs where possible */
+      on("files/changed", this.handleFilesChanged.bind(this));
+      const refreshIfNotIgnored = async (uris: string[]) => {
+        const toRefresh: string[] = [];
+        for (const uri of uris) {
+          const ignore = await shouldIgnore(uri, this.ide);
+          if (!ignore) {
+            toRefresh.push(uri);
+          }
+        }
+        if (toRefresh.length > 0) {
+          this.messenger.send("refreshSubmenuItems", {
+            providers: ["file"],
+          });
+          const { config } = await this.configHandler.loadConfig();
+          if (config && !config.disableIndexing) {
+            await this.codeBaseIndexer.refreshCodebaseIndexFiles(toRefresh);
+          }
+        }
     };
 
-    on("files/created", async ({ data }) => {
-      if (!data?.uris?.length) {
-        return;
-      }
+      on("files/created", async ({ data }) => {
+        if (!data?.uris?.length) {
+          return;
+        }
 
-      walkDirCache.invalidate();
-      void refreshIfNotIgnored(data.uris);
+        walkDirCache.invalidate();
+        void refreshIfNotIgnored(data.uris);
 
-      const colocatedRulesUris = data.uris.filter(isColocatedRulesFile);
-      const nonColocatedRuleUris = data.uris.filter(
-        (uri) => !isColocatedRulesFile(uri),
-      );
-      if (colocatedRulesUris) {
-        const rulesCache = CodebaseRulesCache.getInstance();
-        void Promise.all(
-          colocatedRulesUris.map((uri) => rulesCache.update(this.ide, uri)),
-        ).then(() => {
-          void this.configHandler.reloadConfig("Codebase rule file created");
-        });
-      }
-
-      // If it's a local config being created, we want to reload all configs so it shows up in the list
-      if (nonColocatedRuleUris.some(isContinueAgentConfigFile)) {
-        await this.configHandler.refreshAll("Local config file created");
-      } else if (nonColocatedRuleUris.some(isContinueConfigRelatedUri)) {
-        await this.configHandler.reloadConfig(
-          ".continue config-related file created",
+        const colocatedRulesUris = data.uris.filter(isColocatedRulesFile);
+        const nonColocatedRuleUris = data.uris.filter(
+          (uri) => !isColocatedRulesFile(uri),
         );
-      }
-    });
+        if (colocatedRulesUris) {
+          const rulesCache = CodebaseRulesCache.getInstance();
+          void Promise.all(
+            colocatedRulesUris.map((uri) => rulesCache.update(this.ide, uri)),
+          ).then(() => {
+            void this.configHandler.reloadConfig("Codebase rule file created");
+          });
+        }
 
-    on("files/deleted", async ({ data }) => {
-      if (!data?.uris?.length) {
-        return;
-      }
+        /* If it's a local config being created, we want to reload all configs so it shows up in the list */
+        if (nonColocatedRuleUris.some(isContinueAgentConfigFile)) {
+          await this.configHandler.refreshAll("Local config file created");
+        } else if (nonColocatedRuleUris.some(isContinueConfigRelatedUri)) {
+          await this.configHandler.reloadConfig(
+            ".continue config-related file created",
+          );
+        }
+      });
 
-      walkDirCache.invalidate();
-      void refreshIfNotIgnored(data.uris);
+      on("files/deleted", async ({ data }) => {
+        if (!data?.uris?.length) {
+          return;
+        }
 
-      const colocatedRulesUris = data.uris.filter(isColocatedRulesFile);
-      const nonColocatedRuleUris = data.uris.filter(
-        (uri) => !isColocatedRulesFile(uri),
-      );
+        walkDirCache.invalidate();
+        void refreshIfNotIgnored(data.uris);
 
-      if (colocatedRulesUris) {
-        const rulesCache = CodebaseRulesCache.getInstance();
-        void Promise.all(
-          colocatedRulesUris.map((uri) => rulesCache.remove(uri)),
-        ).then(() => {
-          void this.configHandler.reloadConfig("Codebase rule file deleted");
-        });
-      }
-
-      // If it's a local config being deleted, we want to reload all configs so it disappears from the list
-      if (nonColocatedRuleUris.some(isContinueAgentConfigFile)) {
-        await this.configHandler.refreshAll("Local config file deleted");
-      } else if (nonColocatedRuleUris.some(isContinueConfigRelatedUri)) {
-        await this.configHandler.reloadConfig(
-          ".continue config-related file deleted",
+        const colocatedRulesUris = data.uris.filter(isColocatedRulesFile);
+        const nonColocatedRuleUris = data.uris.filter(
+          (uri) => !isColocatedRulesFile(uri),
         );
-      }
-    });
 
-    on("files/closed", async ({ data }) => {
-      console.debug("deleteChain called from files/closed");
-      await NextEditProvider.getInstance().deleteChain();
+        if (colocatedRulesUris) {
+          const rulesCache = CodebaseRulesCache.getInstance();
+          void Promise.all(
+            colocatedRulesUris.map((uri) => rulesCache.remove(uri)),
+          ).then(() => {
+            void this.configHandler.reloadConfig("Codebase rule file deleted");
+          });
+        }
 
-      try {
-        const fileUris = await this.ide.getOpenFiles();
-        if (fileUris) {
-          const filepaths = fileUris.map((uri) => uri.toString());
+        /* If it's a local config being deleted, we want to reload all configs so it disappears from the list */
+        if (nonColocatedRuleUris.some(isContinueAgentConfigFile)) {
+          await this.configHandler.refreshAll("Local config file deleted");
+        } else if (nonColocatedRuleUris.some(isContinueConfigRelatedUri)) {
+          await this.configHandler.reloadConfig(
+            ".continue config-related file deleted",
+          );
+        }
+      });
 
-          if (!prevFilepaths.filepaths.length) {
+      on("files/closed", async ({ data }) => {
+        console.debug("deleteChain called from files/closed");
+        await NextEditProvider.getInstance().deleteChain();
+
+        try {
+          const fileUris = await this.ide.getOpenFiles();
+          if (fileUris) {
+            const filepaths = fileUris.map((uri) => uri.toString());
+
+            if (!prevFilepaths.filepaths.length) {
+              prevFilepaths.filepaths = filepaths;
+            }
+
+            /* If there is a removal, including if the number of tabs is the same (which can happen with temp tabs) */
+            if (filepaths.length <= prevFilepaths.filepaths.length) {
+              /* Remove files from cache that are no longer open (i.e. in the cache but not in the list of opened tabs) */
+              for (const [key, _] of openedFilesLruCache.entriesDescending()) {
+                if (!filepaths.includes(key)) {
+                  openedFilesLruCache.delete(key);
+                }
+              }
+            }
             prevFilepaths.filepaths = filepaths;
           }
+        } catch (e) {
+          Logger.error(
+            `didChangeVisibleTextEditors: failed to update openedFilesLruCache`,
+          );
+        }
 
-          // If there is a removal, including if the number of tabs is the same (which can happen with temp tabs)
-          if (filepaths.length <= prevFilepaths.filepaths.length) {
-            // Remove files from cache that are no longer open (i.e. in the cache but not in the list of opened tabs)
-            for (const [key, _] of openedFilesLruCache.entriesDescending()) {
-              if (!filepaths.includes(key)) {
-                openedFilesLruCache.delete(key);
+        if (data.uris) {
+          this.messenger.send("didCloseFiles", {
+            uris: data.uris,
+          });
+        }
+      });
+
+      on("files/opened", async ({ data: { uris } }) => {
+        if (uris) {
+          for (const filepath of uris) {
+            try {
+              const ignore = await shouldIgnore(filepath, this.ide);
+              if (!ignore) {
+                /* Set the active file as most recently used (need to force recency update by deleting and re-adding) */
+                if (openedFilesLruCache.has(filepath)) {
+                  openedFilesLruCache.delete(filepath);
+                }
+                openedFilesLruCache.set(filepath, filepath);
               }
+            } catch (e) {
+              Logger.error(
+                `files/opened: failed to update openedFiles cache for ${filepath}`,
+              );
             }
           }
-          prevFilepaths.filepaths = filepaths;
         }
-      } catch (e) {
-        Logger.error(
-          `didChangeVisibleTextEditors: failed to update openedFilesLruCache`,
-        );
-      }
-
-      if (data.uris) {
-        this.messenger.send("didCloseFiles", {
-          uris: data.uris,
-        });
-      }
     });
 
-    on("files/opened", async ({ data: { uris } }) => {
-      if (uris) {
-        for (const filepath of uris) {
-          try {
-            const ignore = await shouldIgnore(filepath, this.ide);
-            if (!ignore) {
-              // Set the active file as most recently used (need to force recency update by deleting and re-adding)
-              if (openedFilesLruCache.has(filepath)) {
-                openedFilesLruCache.delete(filepath);
-              }
-              openedFilesLruCache.set(filepath, filepath);
-            }
-          } catch (e) {
-            Logger.error(
-              `files/opened: failed to update openedFiles cache for ${filepath}`,
+      on("files/smallEdit", async ({ data }) => {
+        const EDIT_AGGREGATION_OPTIONS = {
+          deltaT: 1.0,
+          deltaL: 5,
+          maxEdits: 500,
+          maxDuration: 120.0,
+          contextSize: 5,
+        };
+
+        EditAggregator.getInstance(
+          EDIT_AGGREGATION_OPTIONS,
+          (
+            beforeAfterdiff: BeforeAfterDiff,
+            cursorPosBeforeEdit: Position,
+            cursorPosAfterPrevEdit: Position,
+          ) => {
+            void processSmallEdit(
+              beforeAfterdiff,
+              cursorPosBeforeEdit,
+              cursorPosAfterPrevEdit,
+              data.configHandler,
+              data.getDefsFromLspFunction,
+              this.ide,
+            );
+          },
+        );
+
+        const workspaceDir =
+          data.actions.length > 0 ? data.actions[0].workspaceDir : undefined;
+
+        /* Store the latest context data */
+        const instance = EditAggregator.getInstance();
+        (instance as any).latestContextData = {
+          configHandler: data.configHandler,
+          getDefsFromLspFunction: data.getDefsFromLspFunction,
+          recentlyEditedRanges: data.recentlyEditedRanges,
+          recentlyVisitedRanges: data.recentlyVisitedRanges,
+          workspaceDir: workspaceDir,
+        };
+
+        /* queueMicrotask prevents blocking the UI thread during typing */
+        queueMicrotask(() => {
+          void EditAggregator.getInstance().processEdits(data.actions);
+        });
+      });
+
+      /* Docs, etc. indexing */
+      on("indexing/reindex", async (msg) => {
+        if (msg.data.type === "docs") {
+          void this.docsService.reindexDoc(msg.data.id);
+        }
+      });
+      on("indexing/abort", async (msg) => {
+        if (msg.data.type === "docs") {
+          this.docsService.abort(msg.data.id);
+        }
+      });
+      on("indexing/setPaused", async (msg) => {
+        if (msg.data.type === "docs") {
+        }
+      });
+      on("docs/initStatuses", async (msg) => {
+        void this.docsService.initStatuses();
+      });
+      on("docs/getDetails", async (msg) => {
+        return await this.docsService.getDetails(msg.data.startUrl);
+      });
+      on("docs/getIndexedPages", async (msg) => {
+        const pages = await this.docsService.getIndexedPages(msg.data.startUrl);
+        return Array.from(pages);
+      });
+
+      on("didChangeSelectedProfile", async (msg) => {
+        if (msg.data.id) {
+          await this.configHandler.setSelectedProfileId(msg.data.id);
+        }
+      });
+
+      on("auth/getAuthUrl", async (_msg) => {
+        return { url: "" };
+      });
+
+      on("tools/call", async ({ data: { toolCall } }) =>
+        this.handleToolCall(toolCall),
+      );
+
+      on(
+        "tools/evaluatePolicy",
+        async ({ data: { toolName, basePolicy, parsedArgs, processedArgs } }) => {
+          const { config } = await this.configHandler.loadConfig();
+          if (!config) {
+            throw new Error("Config not loaded");
+          }
+
+          const tool = config.tools.find((t) => t.function.name === toolName);
+          if (!tool) {
+            return { policy: basePolicy };
+          }
+
+          /* Extract display value for specific tools */
+          let displayValue: string | undefined;
+          if (toolName === "runTerminalCommand" && parsedArgs.command) {
+            displayValue = parsedArgs.command as string;
+          }
+
+          let evaluatedPolicy: ToolPolicy = basePolicy;
+          if (tool.evaluateToolCallPolicy) {
+            evaluatedPolicy = tool.evaluateToolCallPolicy(
+              basePolicy,
+              parsedArgs,
+              processedArgs,
             );
           }
-        }
-      }
-    });
 
-    on("files/smallEdit", async ({ data }) => {
-      const EDIT_AGGREGATION_OPTIONS = {
-        deltaT: 1.0,
-        deltaL: 5,
-        maxEdits: 500,
-        maxDuration: 120.0,
-        contextSize: 5,
-      };
+          /* yolo-restricted mode: gate terminal commands by the allowlist ("*" */
+          /* allows everything without asking). Loaded with config overrides -> */
+          /* VS Code settings (`chat.commands.allowList`, Copilot) -> fallback */
+          /* files (`<continueHome>/yolo-allowlist.txt`). Only consulted when */
+          /* yolo-restricted is explicitly enabled. */
+          const experimental = config.experimental as
+            | { yoloRestricted?: boolean; yoloAllowList?: string[]; yoloDenyList?: string[] }
+            | undefined;
+          if (experimental?.yoloRestricted && toolName === BuiltInToolNames.RunTerminalCommand) {
+            const allowlist = loadCommandAllowlist(
+              {
+                allow: experimental.yoloAllowList ?? [],
+                deny: experimental.yoloDenyList ?? [],
+              },
+            );
+            evaluatedPolicy = evaluateAllowlistPolicy(
+              evaluatedPolicy,
+              parsedArgs.command as string | undefined,
+              allowlist,
+            );
+          }
 
-      EditAggregator.getInstance(
-        EDIT_AGGREGATION_OPTIONS,
-        (
-          beforeAfterdiff: BeforeAfterDiff,
-          cursorPosBeforeEdit: Position,
-          cursorPosAfterPrevEdit: Position,
-        ) => {
-          void processSmallEdit(
-            beforeAfterdiff,
-            cursorPosBeforeEdit,
-            cursorPosAfterPrevEdit,
-            data.configHandler,
-            data.getDefsFromLspFunction,
-            this.ide,
-          );
+          return { policy: evaluatedPolicy, displayValue };
         },
       );
 
-      const workspaceDir =
-        data.actions.length > 0 ? data.actions[0].workspaceDir : undefined;
-
-      // Store the latest context data
-      const instance = EditAggregator.getInstance();
-      (instance as any).latestContextData = {
-        configHandler: data.configHandler,
-        getDefsFromLspFunction: data.getDefsFromLspFunction,
-        recentlyEditedRanges: data.recentlyEditedRanges,
-        recentlyVisitedRanges: data.recentlyVisitedRanges,
-        workspaceDir: workspaceDir,
-      };
-
-      // queueMicrotask prevents blocking the UI thread during typing
-      queueMicrotask(() => {
-        void EditAggregator.getInstance().processEdits(data.actions);
-      });
-    });
-
-    // Docs, etc. indexing
-    on("indexing/reindex", async (msg) => {
-      if (msg.data.type === "docs") {
-        void this.docsService.reindexDoc(msg.data.id);
-      }
-    });
-    on("indexing/abort", async (msg) => {
-      if (msg.data.type === "docs") {
-        this.docsService.abort(msg.data.id);
-      }
-    });
-    on("indexing/setPaused", async (msg) => {
-      if (msg.data.type === "docs") {
-      }
-    });
-    on("docs/initStatuses", async (msg) => {
-      void this.docsService.initStatuses();
-    });
-    on("docs/getDetails", async (msg) => {
-      return await this.docsService.getDetails(msg.data.startUrl);
-    });
-    on("docs/getIndexedPages", async (msg) => {
-      const pages = await this.docsService.getIndexedPages(msg.data.startUrl);
-      return Array.from(pages);
-    });
-
-    on("didChangeSelectedProfile", async (msg) => {
-      if (msg.data.id) {
-        await this.configHandler.setSelectedProfileId(msg.data.id);
-      }
-    });
-
-    on("auth/getAuthUrl", async (_msg) => {
-      return { url: "" };
-    });
-
-    on("tools/call", async ({ data: { toolCall } }) =>
-      this.handleToolCall(toolCall),
-    );
-
-    on(
-      "tools/evaluatePolicy",
-      async ({ data: { toolName, basePolicy, parsedArgs, processedArgs } }) => {
+      on("tools/preprocessArgs", async ({ data: { toolName, args } }) => {
         const { config } = await this.configHandler.loadConfig();
         if (!config) {
           throw new Error("Config not loaded");
         }
 
-        const tool = config.tools.find((t) => t.function.name === toolName);
+        const tool = config?.tools.find((t) => t.function.name === toolName);
         if (!tool) {
-          return { policy: basePolicy };
+          throw new Error(`Tool ${toolName} not found`);
         }
 
-        // Extract display value for specific tools
-        let displayValue: string | undefined;
-        if (toolName === "runTerminalCommand" && parsedArgs.command) {
-          displayValue = parsedArgs.command as string;
+        try {
+          const preprocessedArgs = await tool.preprocessArgs?.(args, {
+            ide: this.ide,
+          });
+          return {
+            preprocessedArgs,
+          };
+        } catch (e) {
+          let errorReason =
+            e instanceof ContinueError ? e.reason : ContinueErrorReason.Unknown;
+          let errorMessage =
+            e instanceof Error
+              ? e.message
+              : `Error preprocessing tool call args for ${toolName}\n${JSON.stringify(args)}`;
+          return {
+            preprocessedArgs: undefined,
+            errorReason,
+            errorMessage,
+          };
         }
+      });
 
-        if (tool.evaluateToolCallPolicy) {
-          const evaluatedPolicy = tool.evaluateToolCallPolicy(
-            basePolicy,
-            parsedArgs,
-            processedArgs,
+      on("isItemTooBig", async ({ data: { item } }) => {
+        return this.isItemTooBig(item);
+      });
+
+      /* Process state handlers */
+      on("process/markAsBackgrounded", async ({ data: { toolCallId } }) => {
+        markProcessAsBackgrounded(toolCallId);
+      });
+
+      on(
+        "process/isBackgrounded",
+        async ({ data: { toolCallId }, messageId }) => {
+          const isBackgrounded = isProcessBackgrounded(toolCallId);
+          return isBackgrounded; /* Return true to indicate the message was handled successfully */
+        },
+      );
+
+      on("process/killTerminalProcess", async ({ data: { toolCallId } }) => {
+        await killTerminalProcess(toolCallId);
+      });
+
+      on("models/fetch", async (msg) => {
+        try {
+          return await fetchModels(
+            msg.data.provider,
+            msg.data.apiKey,
+            msg.data.apiBase,
           );
-          return { policy: evaluatedPolicy, displayValue };
+        } catch (error: any) {
+          void this.ide.showToast("error", error.message);
+          return [];
         }
-        return { policy: basePolicy, displayValue };
-      },
-    );
-
-    on("tools/preprocessArgs", async ({ data: { toolName, args } }) => {
-      const { config } = await this.configHandler.loadConfig();
-      if (!config) {
-        throw new Error("Config not loaded");
-      }
-
-      const tool = config?.tools.find((t) => t.function.name === toolName);
-      if (!tool) {
-        throw new Error(`Tool ${toolName} not found`);
-      }
-
-      try {
-        const preprocessedArgs = await tool.preprocessArgs?.(args, {
-          ide: this.ide,
-        });
-        return {
-          preprocessedArgs,
-        };
-      } catch (e) {
-        let errorReason =
-          e instanceof ContinueError ? e.reason : ContinueErrorReason.Unknown;
-        let errorMessage =
-          e instanceof Error
-            ? e.message
-            : `Error preprocessing tool call args for ${toolName}\n${JSON.stringify(args)}`;
-        return {
-          preprocessedArgs: undefined,
-          errorReason,
-          errorMessage,
-        };
-      }
-    });
-
-    on("isItemTooBig", async ({ data: { item } }) => {
-      return this.isItemTooBig(item);
-    });
-
-    // Process state handlers
-    on("process/markAsBackgrounded", async ({ data: { toolCallId } }) => {
-      markProcessAsBackgrounded(toolCallId);
-    });
-
-    on(
-      "process/isBackgrounded",
-      async ({ data: { toolCallId }, messageId }) => {
-        const isBackgrounded = isProcessBackgrounded(toolCallId);
-        return isBackgrounded; // Return true to indicate the message was handled successfully
-      },
-    );
-
-    on("process/killTerminalProcess", async ({ data: { toolCallId } }) => {
-      await killTerminalProcess(toolCallId);
-    });
-
-    on("models/fetch", async (msg) => {
-      try {
-        return await fetchModels(
-          msg.data.provider,
-          msg.data.apiKey,
-          msg.data.apiBase,
-        );
-      } catch (error: any) {
-        void this.ide.showToast("error", error.message);
-        return [];
-      }
-    });
+      });
   }
 
   private async handleToolCall(toolCall: ToolCall) {
@@ -1165,7 +1194,7 @@ export class Core {
       throw new Error("No chat model selected");
     }
 
-    // Define a callback for streaming output updates
+    /* Define a callback for streaming output updates */
     const onPartialOutput = (params: {
       toolCallId: string;
       contextItems: ContextItem[];
@@ -1247,12 +1276,12 @@ export class Core {
     if (data?.uris?.length) {
       const diffCache = GitDiffCache.getInstance(getDiffFn(this.ide));
       diffCache.invalidate();
-      walkDirCache.invalidate(); // safe approach for now - TODO - only invalidate on relevant changes
+      walkDirCache.invalidate(); /* safe approach for now - TODO - only invalidate on relevant changes */
       const currentProfileUri =
         this.configHandler.currentProfile?.profileDescription.uri ?? "";
       for (const uri of data.uris) {
         if (URI.equal(uri, currentProfileUri)) {
-          // Trigger a toast notification to provide UI feedback that config has been updated
+          /* Trigger a toast notification to provide UI feedback that config has been updated */
           const showToast =
             this.globalContext.get("showConfigUpdateToast") ?? true;
           if (showToast) {
@@ -1287,14 +1316,14 @@ export class Core {
           uri.endsWith(".continueignore") ||
           uri.endsWith(".gitignore")
         ) {
-          // Reindex the workspaces
+          /* Reindex the workspaces */
           this.invoke("index/forceReIndex", {
             shouldClearIndexes: true,
           });
         } else {
           const { config } = await this.configHandler.loadConfig();
           if (config && !config.disableIndexing) {
-            // Reindex the file
+            /* Reindex the file */
             const ignore = await shouldIgnore(uri, this.ide);
             if (!ignore) {
               await this.codeBaseIndexer.refreshCodebaseIndexFiles([uri]);
@@ -1410,50 +1439,39 @@ export class Core {
         selectedCode,
         reranker: config.selectedModelByRole.rerank,
         fetch: (url, init) =>
-          // Important note: context providers fetch uses global request options not LLM request options
-          // Because LLM calls are handled separately
+          /* Important note: context providers fetch uses global request options not LLM request options */
+          /* Because LLM calls are handled separately */
           fetchwithRequestOptions(url, init, config.requestOptions),
         isInAgentMode: msg.data.isInAgentMode,
       });
 
-      return items.map((item) => {
-        const id: ContextItemId = {
+      return items.map((item) => {  const id: ContextItemId = {
           providerTitle: provider.description.title,
-          itemId: uuidv4(),
-        };
+          itemId: uuidv4(), }; return { ...item, id }; });
+    } catch (e)
+    { let knownError = false;
+        /* After removing transformers JS embeddings provider from jetbrains */
+        /* Should no longer see this error */
+        /* if (e.message.toLowerCase().includes("embeddings provider")) { */
+        /*   knownError = true; */
+        /*   const toastOption = "See Docs"; */
+        /*   void this.ide */
+        /*     .showToast( */
+        /*       "error", */
+        /*       `Set up an embeddings model to use @${name}`, */
+        /*       toastOption, */
+        /*     ) */
+        /*     .then((userSelection) => { */
+        /*       if (userSelection === toastOption) { */
+        /*         void this.ide.openUrl( */
+        /*           "https://docs.continue.dev/customize/model-roles/embeddings", */
+        /*         ); */
+        /*       } */
+        /*     }); */
+        /* } */
 
-        return { ...item, id };
-      });
-    } catch (e) {
-      let knownError = false;
-
-      if (e instanceof Error) {
-        // After removing transformers JS embeddings provider from jetbrains
-        // Should no longer see this error
-        // if (e.message.toLowerCase().includes("embeddings provider")) {
-        //   knownError = true;
-        //   const toastOption = "See Docs";
-        //   void this.ide
-        //     .showToast(
-        //       "error",
-        //       `Set up an embeddings model to use @${name}`,
-        //       toastOption,
-        //     )
-        //     .then((userSelection) => {
-        //       if (userSelection === toastOption) {
-        //         void this.ide.openUrl(
-        //           "https://docs.continue.dev/customize/model-roles/embeddings",
-        //         );
-        //       }
-        //     });
-        // }
-      }
-      if (!knownError) {
-        void this.ide.showToast(
-          "error",
-          `Error getting context items from ${name}: ${e}`,
-        );
-      }
+      if (e instanceof Error) {}
+      if (!knownError) { void this.ide.showToast( "error", `Error getting context items from ${name}: ${e}`,);}
       return [];
     }
   };

@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ContextItem } from "core";
 import {
-  abortStream,
-  acceptToolCall,
-  updateToolCallOutput,
+    abortStream,
+    acceptToolCall,
+    updateToolCallOutput,
 } from "../slices/sessionSlice";
 import { ThunkApiType } from "../store";
 import { findToolCallById } from "../util";
@@ -40,7 +40,7 @@ export const moveTerminalProcessToBackground = createAsyncThunk<
     const existingContent = existingOutput?.content || "";
 
     const status =
-      "Command moved to background. Further output will be ignored.";
+      "Command moved to background. Output continues streaming here.";
 
     const contextItems: ContextItem[] = [
       {
@@ -62,7 +62,8 @@ export const moveTerminalProcessToBackground = createAsyncThunk<
       }),
     );
 
-    // Mark the process as backgrounded so we ignore future events
+    // Mark the process as backgrounded (live output still streams via
+    // toolCallPartialOutput while it keeps running)
     await extra.ideMessenger.request("process/markAsBackgrounded", {
       toolCallId,
     });

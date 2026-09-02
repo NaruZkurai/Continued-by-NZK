@@ -139,6 +139,69 @@ const AUTO = "auto";
 /** A server-reported model entry, possibly with a separate quant + loaded flag. */
 type ServerModel = { id: string; quant?: string; loaded?: boolean };
 
+/**
+ * Max times to re-issue a chat request when the server rejects the model's
+ * tool-call arguments as malformed JSON (see isToolCallParseError). The model
+ * (often a low-quant / speculative draft) occasionally emits a tool call whose
+ * arguments string is truncated or malformed; llama-server validates it
+ * server-side and answers HTTP 500 instead of streaming it. Nothing has been
+ * yielded before that failure, so re-running the request is safe and a fresh
+ * generation usually produces a well-formed tool call.
+ */
+const TOOL_CALL_PARSE_MAX_RETRIES = 3;
+
+/**
+ * True when `err` is the server rejecting a malformed/truncated tool call:
+ *   - Unsloth Studio wraps llama-server JSON parse failures as
+ *     `Failed to parse tool call arguments as JSON: ...parse_error...`
+ *   - The underlying message often carries a `json.exception.parse_error.101`
+ *     (unexpected end of input / expected "[", "{", or a literal).
+ * We match broadly (error text + status 5xx) so any server flavor that rejects
+ * a bad tool call is caught without false-matching an unrelated failure.
+ */
+function isToolCallParseError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (!/parse tool call arguments|parse_error|unexpected end of input/i.test(msg)) {
+    return false;
+  }
+  const status =
+    (err as { status?: unknown })?.status ??
+    (err as { statusCode?: unknown })?.statusCode;
+  return status === undefined ||
+    (typeof status === "number" && status >= 500 && status < 600);
+}
+
+/**
+ * Agent-invisible "request notification" sink.
+ *
+ * The automode / load notices (e.g. "resolved auto -> model") must reach the
+ * UI without ever entering the model's own context. The CLI registers a sink
+ * before a turn, the adapter emits human text into it, and the CLI renders it
+ * as a footer bubble that is never stored in chat history (so the agent never
+ * sees it). Kept module-level so `BaseLlmApi`'s fixed
+ * `chatCompletionStream(body, signal)` signature stays unchanged.
+ */
+let noticeSink: ((text: string) => void) | undefined;
+
+/** Register (or clear, with `undefined`) the agent-invisible notice sink. */
+export function setNoticeSink(sink: ((text: string) => void) | undefined): void {
+  noticeSink = sink;
+}
+
+/** Clear the agent-invisible notice sink. */
+export function clearNoticeSink(): void {
+  noticeSink = undefined;
+}
+
+/** Push human text to the registered notice sink (no-op when unset). */
+function emitNotice(text: string): void {
+  try {
+    noticeSink?.(text);
+  } catch {
+    /* A broken UI sink must never break the request.*/
+  }
+}
+
 /** File used to remember the last auto-selected model per server for the session. */
 export const AUTO_MODEL_FILE = join(homedir(), ".continue", "naruzkurai-auto-model.json");
 
@@ -202,13 +265,41 @@ export class NaruZkuraiApi implements BaseLlmApi {
 
  /** Append the configured quant to a bare model id, producing `model:quant`. */
  private withQuant(model: string): string {
-  if (!this.quant) {
+  if (!this.quant || NaruZkuraiApi.isAuto(this.quant)) {
+   /* `auto` quant is never forwarded literally — it is detected from
+      /v1/models instead (see resolveLoadedQuant). Send the bare model so the
+      server lazy-loads rather than treating `model:auto` as a reload. */
    return model;
   }
   if (!model || NaruZkuraiApi.isAuto(model) || model.includes(this.quant)) {
    return model;
   }
   return `${model}${NaruZkuraiApi.QUANT_SEP}${this.quant}`;
+ }
+
+ /**
+  * Merge provider-defined extra body fields (e.g. raw `chat_template_kwargs`
+  * such as `{ reasoning_effort: "high" }`) into the outbound chat body.
+  * These come from the model's `requestOptions.extraBodyProperties` in
+  * config.yaml, so provider-specific model knobs reach the server.
+  */
+ private injectExtraBodyProperties<T extends Record<string, any>>(
+  body: T,
+ ): T {
+  const extra = this.config.requestOptions?.extraBodyProperties;
+  if (extra && typeof extra === "object") {
+   for (const [key, value] of Object.entries(extra)) {
+    if ((body as any)[key] === undefined) {
+     (body as any)[key] = value;
+    }
+   }
+  }
+  return body;
+ }
+
+ /** True when the configured quant is `auto` (or unset) -> probe loaded quant. */
+ private quantIsAuto(): boolean {
+  return !this.quant || NaruZkuraiApi.isAuto(this.quant);
  }
 
  constructor(protected config: z.infer<typeof NaruZkurAIConfigSchema>) {
@@ -287,9 +378,6 @@ export class NaruZkuraiApi implements BaseLlmApi {
   return model.trim().toLowerCase() === AUTO;
  }
 
- /** How long a persisted auto-model stays valid before re-pinging /models. */
- private static readonly SESSION_TTL_MS = 60 * 60 * 1000; /* 1 hour*/
-
  /** Read the last auto-selected model for this server from the session file. */
  private readStoredModel(): string | undefined {
   try {
@@ -311,24 +399,6 @@ export class NaruZkuraiApi implements BaseLlmApi {
   }
  }
 
- /** Timestamp at which the persisted auto-model was last written. */
- private readStoredTimestamp(): number {
-  try {
-   const data = JSON.parse(readFileSync(AUTO_MODEL_FILE, "utf8"));
-   const value = data?.[this.sessionKey];
-   if (
-    typeof value === "object" &&
-    value !== null &&
-    typeof (value as any).ts === "number"
-   ) {
-    return (value as any).ts;
-   }
-  } catch {
-   /* ignore */
-  }
-  return 0;
- }
-
  /** Persist the auto-selected model for this server to the session file. */
  private writeStoredModel(model: string): void {
   try {
@@ -346,21 +416,57 @@ export class NaruZkuraiApi implements BaseLlmApi {
   }
  }
 
+ /**
+  * Strip a stale `:quant` suffix (e.g. a leftover `:auto`) from a model id,
+  * returning the server's bare id. A literal `auto` in a quant slot makes the
+  * server treat the whole model as `auto` and force a reload, so we must never
+  * let it through or persist it. No-op when the id has no suffix.
+  */
+ private static stripQuantSuffix(modelId: string): string {
+  const sep = NaruZkuraiApi.QUANT_SEP;
+  if (!modelId || !modelId.includes(sep)) {
+   return modelId;
+  }
+  /* Only strip a single trailing `id:quant` stub. Bare, quant-less ids and
+     ids that already use the `id:quant` form keep their full value. */
+  const at = modelId.lastIndexOf(sep);
+  if (at <= 0 || at === modelId.length - 1) {
+   return modelId;
+  }
+  return modelId.slice(0, at);
+ }
+
  /** Pick a model id, preferring the last-used one if it's still up. */
 private pickModel( models: ServerModel[],): string
 { const label = (m: ServerModel) =>
-    m.loaded && m.quant && !m.id.includes(m.quant)
+    m.loaded && m.quant && !NaruZkuraiApi.isAuto(m.quant) && !m.id.includes(m.quant)
     ? `${m.id}${NaruZkuraiApi.QUANT_SEP}${m.quant}` : m.id;
   const labels = models.map(label);
 
-  const stored = this.readStoredModel();
-  if (stored && labels.includes(stored)) { return stored; }
-
   const isGen = (m: ServerModel) => !NON_GENERATION.test(m.id);
   const gen = models.filter(isGen);
+
+  /* The currently-LOADED generation model is the source of truth for a
+     fresh session. The server may be running a model different from the one
+     a previous process persisted, so the loaded model always wins over any
+     stored model.*/
   const loaded = gen.find((m) => m.loaded);
   if (loaded) return label(loaded);
   const unloadedGen = gen.find((m) => !m.loaded);
+
+  const stored = this.readStoredModel();
+  if (stored) {
+   /* Never reuse a stored stub that ends in `:auto` — resolve it fresh.*/
+   const storedBare = NaruZkuraiApi.stripQuantSuffix(stored);
+   if (labels.includes(stored)) { return stored; }
+   if (
+    stored.toLowerCase().endsWith(`${NaruZkuraiApi.QUANT_SEP}${AUTO}`) &&
+    labels.includes(storedBare)
+   ) {
+    return storedBare;
+   }
+  }
+
   if (unloadedGen) return label(unloadedGen);
   if (gen.length) return label(gen[0]);
   return models[0] ? label(models[0]) : "";
@@ -376,36 +482,40 @@ private pickModel( models: ServerModel[],): string
   * unchanged when there is no loaded quant match or `/models` is unreachable.
   */
  private async resolveLoadedQuant(modelId: string): Promise<string> {
+  const sep = NaruZkuraiApi.QUANT_SEP;
   if (!modelId || NaruZkuraiApi.isAuto(modelId)) {
    return modelId;
   }
+  /* Strip any stale `:quant` suffix (e.g. a leftover `:auto`) so we look the
+     server model up by its bare id. Auto quant must be *detected* from
+     /v1/models, never forwarded as a literal `auto` stub — the server treats
+     `model:auto` as "auto" and forces a reload. */
+  const bareId = NaruZkuraiApi.stripQuantSuffix(modelId);
   try {
    const models = await this.fetchModelsCached();
-   const match = models.find((m) => {
-    const hasQuant = typeof m.quant === "string" && m.quant.length > 0;
-    /* The requested id is the bare model -> pin its server-reported quant.*/
-    if (hasQuant && m.id === modelId) {
-     return true;
-    }
-    /* Already the `id:quant` form -> keep it as-is.*/
-    if (hasQuant && `${m.id}${NaruZkuraiApi.QUANT_SEP}${m.quant}` === modelId) {
-     return true;
-    }
-    return false;
-   });
+   const match = models.find(
+    (m) =>
+     typeof m.quant === "string" &&
+     m.quant.length > 0 &&
+     m.id === bareId,
+   );
    if (match && typeof match.quant === "string" && match.quant.length > 0) {
-    const resolved = `${match.id}${NaruZkuraiApi.QUANT_SEP}${match.quant}`;
+    const resolved = `${match.id}${sep}${match.quant}`;
     if (resolved !== modelId) {
      console.log(
       `[NaruZkurai] desired model \`${modelId}\` is pre-loaded -> using loaded quant \`${resolved}\``,
      );
-     return resolved;
     }
+    return resolved;
    }
   } catch {
-   /* /models unreachable: leave the model id as configured.*/
+   /* /models unreachable: fall through to the safe default below.*/
   }
-  return modelId;
+  /* No real loaded quant matched. Never send a literal `auto` suffix. If the
+     input already carried any `:suffix` (including a stale `:auto`), return
+     the bare id so the server lazy-loads instead of treating it as auto;
+     otherwise keep the input unchanged. */
+  return modelId.includes(sep) ? bareId : modelId;
  }
 
  /** Fetch `/v1/models` with a short-TTL cache, so chat requests don't re-ping. */
@@ -699,28 +809,30 @@ private async pollLoadProgress(
  private async resolveAutoModel(): Promise<string> {
   const now = Date.now();
 
+  /* Never hand back a stale `id:auto` stub — the server would treat `auto` as
+     a quant and force a reload. The actual quant is detected later (auto
+     quant path) or appended from config (explicit quant path), so the auto
+     model must always be bare (`id` or a real `id:quant`), never `id:auto`. */
+  const sanitize = (value: string): string =>
+   value.toLowerCase().endsWith(`${NaruZkuraiApi.QUANT_SEP}${AUTO}`)
+    ? NaruZkuraiApi.stripQuantSuffix(value)
+    : value;
+
   /* 1. In-memory cache.*/
   const cached = NaruZkuraiApi.autoModelCache.get(this.sessionKey);
   const expiry = NaruZkuraiApi.autoModelExpiry.get(this.sessionKey) ?? 0;
   if (cached && now < expiry) {
-   return cached;
+   emitNotice(`[automode] auto -> \`${sanitize(cached)}\` (cached)`);
+   return sanitize(cached);
   }
 
-  /* 2. Persisted session model within the 1-hour TTL -> reuse it.*/
-  const stored = this.readStoredModel();
-  if (stored) {
-   const ts = this.readStoredTimestamp();
-   if (now - ts < NaruZkuraiApi.SESSION_TTL_MS) {
-    NaruZkuraiApi.autoModelCache.set(this.sessionKey, stored);
-    NaruZkuraiApi.autoModelExpiry.set(
-     this.sessionKey,
-     now + NaruZkuraiApi.AUTO_TTL_MS,
-    );
-    return stored;
-   }
-  }
+  /* 2. (Removed) The persisted model from a previous process is NOT trusted
+        as "currently loaded" on a fresh session — the server may be running a
+        different model now. A fresh session must re-ping /v1/models. The
+        persisted file only remains as a fallback when /models fails.*/
 
-  /* 3. TTL expired or no stored model -> ping /models and refresh.*/
+  /* 3. No in-process cache (fresh session or TTL expired) -> ping /models and
+        pick the currently-loaded model.*/
   try {
 const models = await this.fetchModels();
 const chosen = this.pickModel(models);
@@ -734,6 +846,7 @@ const chosen = this.pickModel(models);
     console.log(
      `[NaruZkurai] automode resolved \`auto\` -> \`${chosen}\` (hourly refresh; request will use it)`,
     );
+    emitNotice(`[automode] auto -> \`${chosen}\` (fresh /v1/models ping)`);
     return chosen;
    }
   } catch (e) {
@@ -745,7 +858,7 @@ const chosen = this.pickModel(models);
 
 
   /* Fall back to whatever we last used for this session.*/
-  return this.readStoredModel() ?? "";
+  return sanitize(this.readStoredModel() ?? "");
  }
 
  /** Swap `model: auto` (or missing) for the resolved model, before sending. */
@@ -780,20 +893,12 @@ const chosen = this.pickModel(models);
   try {
    /* Equivalent of upstream `NaruZkurAIApi.chatCompletionNonStream`: */
    /* NaruZkurAI-compatible SDK client does the POST to `this.apiBase`.*/
-   /* Append the configured quant so a pre-loaded quant is matched.*/
-   prepared.model = this.withQuant(prepared.model ?? "");
-   /* If the desired model is already loaded on the server with a quant,*/
-   /* reuse those in-memory weights instead of loading a fresh quant.*/
-   prepared.model = await this.resolveLoadedQuant(prepared.model ?? "");
-   /* Wait out any lazy model load so a slow first request doesn't surface as*/
-   /* a generic connection/timeout error. Best-effort (throws only on abort).*/
-   const targetModel = prepared.model ?? "";
-   if (targetModel && !NaruZkuraiApi.isAuto(targetModel) &&
-    !(await this.tryFetchModelLoaded(targetModel))) {
-    await this.waitForModelLoaded(targetModel, signal, (text) => {
-     console.log(`[NaruZkurai] ${text}`);
-    });
-   }
+   /* Quant: only probe the server's loaded quant when quant is `auto`.*/
+   prepared.model = this.quantIsAuto()
+    ? await this.resolveLoadedQuant(prepared.model ?? "")
+    : this.withQuant(prepared.model ?? "");
+   /* Merge provider-defined extra body fields (e.g. `chat_template_kwargs`).*/
+   this.injectExtraBodyProperties(prepared);
    return await this.naruzkurai.chat.completions.create(prepared, { signal });
   } catch (err) {
    const detail = [
@@ -807,95 +912,38 @@ const chosen = this.pickModel(models);
   }
  }
 
- /** Build a synthetic (non-persistent) thinking chunk shown in the UI. */
- private makeThinkingChunk(model: string, text: string): ChatCompletionChunk {
-  return {
-   id: "naru-note",
-   object: "chat.completion.chunk",
-   created: Math.floor(Date.now() / 1000),
-   model,
-   choices: [
-    {
-     index: 0,
-     delta: { role: "assistant", reasoning_content: text },
-     finish_reason: null,
-    },
-   ],
-  } as unknown as ChatCompletionChunk;
- }
-
  /**
-  * Surface the automode resolution as a visible (but non-persistent)
-  * thinking block in the chat UI.
+  * Single attempt of the core chat stream (see {@link chatCompletionStream}).
   *
-  * We yield a synthetic raw `ChatCompletionChunk` whose
-  * `delta.reasoning_content` carries the notice. Core's
-  * `fromChatCompletionChunk` maps `reasoning_content` -> `role: "thinking"`,
-  * which the GUI renders in the thinking area. On the next turn,
-  * `toChatMessage` drops `thinking` messages from the outbound body, so this
-  * never re-reaches the provider and does not affect conversation history.
+  * Runs automode + quant resolution ONCE on a copy of `body`, then yields the
+  * streamed chunks. Because a tool-call parse failure only ever surfaces
+  * before the first chunk is emitted, extracting it into its own generator
+  * lets {@link chatCompletionStream} re-run it safely on that specific error.
   */
- async *chatCompletionStream(
+ private async *_chatCompletionStreamOnce(
   body: ChatCompletionCreateParamsStreaming,
   signal: AbortSignal,
  ): AsyncGenerator<ChatCompletionChunk, any, unknown> {
-  if (NaruZkuraiApi.isAuto(body.model ?? "")) {
-   const resolved = await this.resolveAutoModel();
-   const chosen = resolved || "";
-   const notice = [
-    `[automode] resolved \`auto\` -> \`${chosen || "(none)"}\` ` +
-     `(session model; no /models ping if fresh)`,
-    `selected: ${chosen || "(none)"}`,
-   ].join("\n");
-   yield this.makeThinkingChunk(body.model ?? "", notice);
-   if (chosen) {
-    body.model = chosen;
-    NaruZkuraiApi.autoModelCache.set(this.sessionKey, chosen);
-    NaruZkuraiApi.autoModelExpiry.set(
-     this.sessionKey,
-     Date.now() + NaruZkuraiApi.AUTO_TTL_MS,
-    );
-    this.writeStoredModel(chosen);
-   }
-  }
   try {
    /* Equivalent of upstream `NaruZkurAIApi.chatCompletionStream`: request usage*/
    /* in the final chunk and reorder so a trailing usage chunk is emitted last.*/
    (body as any).stream_options = { include_usage: true };
-   /* Append the configured quant (`model:quant`) so a pre-loaded quant on the*/
-   /* server is matched instead of forcing a fresh load of the bare model.*/
-   body.model = this.withQuant(body.model ?? "");
-   /* If the desired model is already loaded on the server with a quant,*/
-   /* reuse those in-memory weights instead of loading a fresh quant.*/
-   body.model = await this.resolveLoadedQuant(body.model ?? "");
-   const targetModel = body.model ?? "";
-   /* Lazy-loading providers (e.g. Unsloth Studio) report `loaded:false` until*/
-   /* the weights are in memory. Explicitly trigger /v1/load and stream a*/
-   /* progress note so the UI is responsive instead of hanging silently while*/
-   /* a 27B model loads for minutes.*/
-   if (targetModel && !NaruZkuraiApi.isAuto(targetModel) &&
-    !(await this.tryFetchModelLoaded(targetModel))) {
-    /* Show the full endpoint + request (minus message bodies) so the user
-     * sees exactly where the load POST is going (and that the scheme is
-     * right, e.g. http:// not https://). `apiBase` already ends in "/". */
-    const { messages: _messages, ...requestSansMessages } = body as any;
-    const requestMeta = JSON.stringify({
-     ...requestSansMessages,
-    });
-    const url = `${this.apiBase}chat/completions`;
-    const notes: string[] = [
-     `[loading model \`${targetModel}\` on server ...]`,
-     `  POST ${url}`,
-     `  request: ${requestMeta}`,
-    ];
-    yield this.makeThinkingChunk(targetModel, notes.join("\n"));
-    await this.waitForModelLoaded(targetModel, signal, (text) => {
-     notes.push(text);
-    });
-    for (const note of notes.slice(1)) {
-     yield this.makeThinkingChunk(targetModel, note);
-    }
+   /*
+    * Model / quant handling — conservative by design:
+    *   - only resolve the model (ping /v1/models) when model is `auto`;
+    *   - only probe the server's loaded quant when quant is `auto`;
+    *   - for an explicit model no /models or /load-progress calls are made.
+    * We never try to "set" a model (trigger a load, poll progress) unless the
+    * request itself fails — a plain request lazy-loads on the server anyway,
+    * and pre-emptively watching `loaded`/quant caused silent stalls.
+    */
+   if (this.quantIsAuto()) {
+    body.model = await this.resolveLoadedQuant(body.model ?? "");
+   } else {
+    body.model = this.withQuant(body.model ?? "");
    }
+   /* Merge provider-defined extra body fields (e.g. `chat_template_kwargs`).*/
+   this.injectExtraBodyProperties(body);
    const response = await this.naruzkurai.chat.completions.create(body, {
     signal,
    });
@@ -923,6 +971,79 @@ const chosen = this.pickModel(models);
    ].join("\n");
    throw new Error(detail);
   }
+ }
+
+ /** The core chat stream with automode resolution (see body). */
+ async *chatCompletionStream(
+  body: ChatCompletionCreateParamsStreaming,
+  signal: AbortSignal,
+ ): AsyncGenerator<ChatCompletionChunk, any, unknown> {
+  if (NaruZkuraiApi.isAuto(body.model ?? "")) {
+   /* Resolve `auto` to the concrete model, but DO NOT inject a visible
+      `[automode] resolved ...` thinking chunk into the stream — doing so put
+      a noisy notice at the front of every turn that lingered in the chat
+      history. Resolution still runs (caching + persistence + body.model),
+      and the resolved-model notice is pushed to the agent-invisible notice
+      sink (setNoticeSink), which the CLI renders as a footer bubble that the
+      agent can never see. */
+   const resolved = await this.resolveAutoModel();
+   const chosen = resolved || "";
+   if (chosen) {
+    body.model = chosen;
+    NaruZkuraiApi.autoModelCache.set(this.sessionKey, chosen);
+    NaruZkuraiApi.autoModelExpiry.set(
+     this.sessionKey,
+     Date.now() + NaruZkuraiApi.AUTO_TTL_MS,
+    );
+    this.writeStoredModel(chosen);
+   }
+  }
+
+  /*
+   * Retry loop for the server rejecting a malformed/truncated tool call.
+   *
+   * llama-server (behind Unsloth Studio) validates each tool call server-side
+   * and answers HTTP 500 "Failed to parse tool call arguments as JSON" when a
+   * low-quant/speculative model emits a truncated arguments string. That error
+   * only ever surfaces before the first chunk is yielded, so re-issuing the
+   * request is safe and a fresh generation usually produces a valid tool call.
+   * Any other error (or one that surfaces mid-stream) propagates immediately.
+   */
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= TOOL_CALL_PARSE_MAX_RETRIES; attempt++) {
+   if (attempt > 0) {
+    console.warn(
+      `[NaruZkurai] tool-call args unparseable; retrying chat stream ` +
+        `(attempt ${attempt}/${TOOL_CALL_PARSE_MAX_RETRIES})`,
+    );
+   }
+   try {
+    for await (const chunk of this._chatCompletionStreamOnce(
+      { ...body },
+      signal,
+    )) {
+     yield chunk;
+    }
+    return;
+   } catch (err) {
+    if (!isToolCallParseError(err)) {
+     throw err;
+    }
+    lastErr = err;
+    /* Failed before any chunk reached the caller — safe to retry, but only
+       if the caller hasn't aborted while we were awaiting.*/
+    if (signal?.aborted) {
+     throw err;
+    }
+   }
+  }
+  throw lastErr instanceof Error
+   ? new Error(
+      `[NaruZkurai] model returned an unparseable tool call after ` +
+        `${TOOL_CALL_PARSE_MAX_RETRIES + 1} attempts: ` +
+        `${lastErr instanceof Error ? lastErr.message : String(lastErr)}`,
+     )
+   : lastErr;
  }
 
  async completionNonStream(
@@ -982,24 +1103,22 @@ const chosen = this.pickModel(models);
    }
   }
  }
+  /* Equivalent of upstream `OpenAi.embed`.*/
 
- async embed(body: NaruZkurAI.Embeddings.EmbeddingCreateParams): Promise<NaruZkurAI.Embeddings.CreateEmbeddingResponse> {
-  /* Equivalent of upstream `NaruZkurAIApi.embed`.*/
-  return this.naruzkurai.embeddings.create(await this.applyAutoModel(body));
- }
+ async embed(body: NaruZkurAI.Embeddings.EmbeddingCreateParams): Promise<NaruZkurAI.Embeddings.CreateEmbeddingResponse>
+ { return this.naruzkurai.embeddings.create(await this.applyAutoModel(body)); }
+
 /*|S|----------------------NZK----------------------|S|*/
-
- /* Equivalent of upstream `NaruZkurAIApi.rerank`: POST to the `rerank` endpoint*/
+ /* rerank ~= `Openai.rerank`: POST to the `rerank` endpoint*/
  /* with `naruFetch` (passthrough) so custom headers reach the server.*/
+ /* responce = post, json, headers */
+/* naruzkurai.models.list ~= `Openai.list`.*/
+
  async rerank(body: RerankCreateParams): Promise<CreateRerankResponse>
  { const prepared = await this.applyAutoModel(body);
   const endpoint = new URL("rerank", this.apiBase);
-   /* responce = post, json, headers */
   const response = await naruFetch(this.config.requestOptions)(endpoint, {method: "POST", body: JSON.stringify(prepared), headers: this.getHeaders(),});
-  const data = await response.json();
-  return data as CreateRerankResponse;
- }
-/* Equivalent of upstream `NaruZkurAIApi.list`.*/
+  const data = await response.json(); return data as CreateRerankResponse; }
  async list(): Promise<Model[]> { return (await this.naruzkurai.models.list()).data; }
 }
 

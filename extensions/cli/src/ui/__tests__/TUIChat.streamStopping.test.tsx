@@ -37,12 +37,13 @@ describe("TUIChat - Stream Stopping on Tool Rejection", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Verify that the tool was rejected with stop stream
+    // Verify that the tool was rejected with stop stream + add to denylist
     expect(handleResponse).toHaveBeenCalledWith(
       "test-request-123",
       false, // approved = false
       false, // createPolicy = false
       true, // stopStream = true
+      "deny", // addToList = deny
     );
   });
 
@@ -63,17 +64,18 @@ describe("TUIChat - Stream Stopping on Tool Rejection", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Press 'n' to reject
+    // Press 'n' to deny once (no persist, no stop)
     stdin.write("n");
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Verify rejection with stop stream
+    // Verify deny-once without stop stream
     expect(handleResponse).toHaveBeenCalledWith(
       "dangerous-request",
       false, // rejected
       false, // createPolicy = false
-      true, // stopStream = true
+      false, // stopStream = false
+      undefined, // addToList = undefined
     );
   });
 

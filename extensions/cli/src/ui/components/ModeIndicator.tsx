@@ -29,6 +29,8 @@ const ModeIndicator: React.FC<ModeIndicatorProps> = ({ mode }) => {
         return { text: "⏸ plan", color: "blue" };
       case "auto":
         return { text: "⏵⏵ auto", color: "green" };
+      case "yolo-restricted":
+        return { text: "⏵ yolo-restricted", color: "yellow" };
       default:
         return { text: mode, color: "dim" };
     }

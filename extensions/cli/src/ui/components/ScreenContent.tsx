@@ -51,6 +51,7 @@ interface ScreenContentProps {
   diffContent?: string;
   chatHistory?: ChatHistoryItem[];
   handleEditMessage?: (messageIndex: number, newContent: string) => void;
+  handleRewindToMessage?: (messageIndex: number) => void;
   onShowEditSelector?: () => void;
 }
 
@@ -88,6 +89,7 @@ export const ScreenContent: React.FC<ScreenContentProps> = ({
   diffContent,
   chatHistory = [],
   handleEditMessage,
+  handleRewindToMessage,
   onShowEditSelector,
 }) => {
   if (hideScreenContent(services.update)) {
@@ -165,6 +167,12 @@ export const ScreenContent: React.FC<ScreenContentProps> = ({
         onEdit={(messageIndex, newContent) => {
           if (handleEditMessage) {
             handleEditMessage(messageIndex, newContent);
+          }
+          closeCurrentScreen();
+        }}
+        onRewind={(messageIndex) => {
+          if (handleRewindToMessage) {
+            handleRewindToMessage(messageIndex);
           }
           closeCurrentScreen();
         }}

@@ -1,6 +1,7 @@
 import {
   AUTO_MODE_POLICIES,
   PLAN_MODE_POLICIES,
+  YOLO_RESTRICTED_MODE_POLICIES,
 } from "src/permissions/defaultPolicies.js";
 
 import { ensurePermissionsYamlExists } from "../permissions/permissionsYamlLoader.js";
@@ -175,6 +176,8 @@ export class ToolPermissionService
         return [...PLAN_MODE_POLICIES];
       case "auto":
         return [...AUTO_MODE_POLICIES];
+      case "yolo-restricted":
+        return [...YOLO_RESTRICTED_MODE_POLICIES];
       case "normal":
       default:
         // Normal mode uses the more nuanced policy loading
@@ -214,7 +217,8 @@ export class ToolPermissionService
       );
     } else if (
       this.currentState.currentMode === "plan" ||
-      this.currentState.currentMode === "auto"
+      this.currentState.currentMode === "auto" ||
+      this.currentState.currentMode === "yolo-restricted"
     ) {
       // For plan and auto modes, use ONLY mode policies (absolute override)
       allPolicies = [...modePolicies];
@@ -310,10 +314,14 @@ export class ToolPermissionService
 
     const modePolicies = this.generateModePolicies();
 
-    // For plan and auto modes, use ONLY mode policies (absolute override)
+    // For plan, auto and yolo-restricted modes, use ONLY mode policies (absolute override)
     // For normal mode, restore original policies if available
     let allPolicies: ToolPermissionPolicy[];
-    if (newMode === "plan" || newMode === "auto") {
+    if (
+      newMode === "plan" ||
+      newMode === "auto" ||
+      newMode === "yolo-restricted"
+    ) {
       // Absolute override: ignore all user configuration
       allPolicies = [...modePolicies];
     } else {

@@ -18,6 +18,7 @@ interface PermissionOption {
   approved: boolean;
   createPolicy?: boolean;
   stopStream?: boolean;
+  addToList?: "allow" | "deny";
 }
 
 interface ToolPermissionSelectorProps {
@@ -31,25 +32,34 @@ interface ToolPermissionSelectorProps {
     approved: boolean,
     createPolicy?: boolean,
     stopStream?: boolean,
+    addToList?: "allow" | "deny",
   ) => void;
 }
 
 const getPermissionOptions = (): PermissionOption[] => {
   return [
-    { id: "approve", name: "Continue", color: "green", approved: true },
+    { id: "approve", name: "✓ Continue once", color: "green", approved: true },
     {
-      id: "approve_policy",
-      name: "Continue + don't ask again",
+      id: "approve_allowlist",
+      name: "✓✓ Continue + add to allowlist",
       color: "cyan",
       approved: true,
       createPolicy: true,
+      addToList: "allow",
     },
     {
-      id: "deny_stop",
-      name: "No, and tell Continue what to do differently",
+      id: "deny",
+      name: "✗ Deny once",
       color: "yellow",
       approved: false,
+    },
+    {
+      id: "deny_denylist",
+      name: "✗✗ Deny + add to denylist",
+      color: "red",
+      approved: false,
       stopStream: true,
+      addToList: "deny",
     },
   ];
 };
@@ -79,25 +89,26 @@ export const ToolPermissionSelector: React.FC<ToolPermissionSelectorProps> = ({
         selectedOption.approved,
         selectedOption.createPolicy,
         selectedOption.stopStream,
+        selectedOption.addToList,
       );
       return;
     }
 
-    // Tab to continue (approve)
+    // Tab to continue (approve once)
     if (key.tab && !key.shift) {
-      onResponse(requestId, true, false, false);
+      onResponse(requestId, true, false, false, undefined);
       return;
     }
 
-    // Shift+Tab to continue with policy creation
+    // Shift+Tab to continue + add to allowlist
     if (key.tab && key.shift) {
-      onResponse(requestId, true, true, false);
+      onResponse(requestId, true, true, false, "allow");
       return;
     }
 
-    // Escape or Ctrl+C to reject with stop stream
+    // Escape or Ctrl+C to reject + add to denylist (stop stream)
     if (key.escape || (key.ctrl && input === "c")) {
-      onResponse(requestId, false, false, true);
+      onResponse(requestId, false, false, true, "deny");
       return;
     }
 
@@ -109,11 +120,13 @@ export const ToolPermissionSelector: React.FC<ToolPermissionSelectorProps> = ({
       );
     }
 
-    // Also support y/n for quick responses
+    // y/n for quick allow/deny-once; uppercase Y/N add to list
     if (input === "y" || input === "Y") {
-      onResponse(requestId, true, false, false);
-    } else if (input === "n" || input === "N") {
-      onResponse(requestId, false, false, true);
+      onResponse(requestId, true, false, false, undefined);
+    } else if (input === "n") {
+      onResponse(requestId, false, false, false, undefined);
+    } else if (input === "N") {
+      onResponse(requestId, false, false, true, "deny");
     }
   });
 
@@ -145,9 +158,10 @@ export const ToolPermissionSelector: React.FC<ToolPermissionSelectorProps> = ({
         {permissionOptions.map((option, index) => {
           const isSelected = index === selectedIndex;
           let shortcut = "";
-          if (option.id === "approve") shortcut = "(tab)";
-          else if (option.id === "approve_policy") shortcut = "(shift+tab)";
-          else if (option.id === "deny_stop") shortcut = "(esc)";
+          if (option.id === "approve") shortcut = "(y/tab)";
+          else if (option.id === "approve_allowlist") shortcut = "(Y/shift+tab)";
+          else if (option.id === "deny") shortcut = "(n)";
+          else if (option.id === "deny_denylist") shortcut = "(N/esc)";
 
           return (
             <Box key={option.id} marginTop={index === 0 ? 1 : 0}>

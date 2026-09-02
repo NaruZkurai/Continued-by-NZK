@@ -1,4 +1,10 @@
-import { DataDestination, ModelRole, PromptTemplates, ToolOverrideConfig,} from "@continuedev/config-yaml"; import { ToolPolicy } from "@continuedev/terminal-security"; import { McpUiResourceMeta } from "@modelcontextprotocol/ext-apps"; import { TextResourceContents } from "@modelcontextprotocol/sdk/types.js"; import Parser from "web-tree-sitter"; import { CodebaseIndexer } from "./indexing/CodebaseIndexer"; import { LLMConfigurationStatuses } from "./llm/constants";
+import { DataDestination, ModelRole, PromptTemplates, ToolOverrideConfig, } from "@continuedev/config-yaml";
+import { ToolPolicy } from "@continuedev/terminal-security";
+import { McpUiResourceMeta } from "@modelcontextprotocol/ext-apps";
+import { TextResourceContents } from "@modelcontextprotocol/sdk/types.js";
+import Parser from "web-tree-sitter";
+import { CodebaseIndexer } from "./indexing/CodebaseIndexer";
+import { LLMConfigurationStatuses } from "./llm/constants";
 declare global { interface Window { ide?: "vscode"; windowId: string; serverUrl: string; vscMachineId: string; vscMediaUrl: string; fullColorTheme?: { rules?: { token?: string; foreground?: string; }[]; }; colorThemeName?: string; workspacePaths?: string[]; postIntellijMessage?: ( messageType: string, data: any, messageIde: string, ) => void; }
 }
 
@@ -559,7 +565,11 @@ export interface ExperimentalConfig
  /* If enabled, @codebase will only use tool calling instead of embeddings, FTS, recently edited files, etc.*/
  codebaseToolCallingOnly?: boolean;
  /* If enabled, static contextualization will be used to gather context for the model where necessary.*/
- enableStaticContextualization?: boolean; }
+ enableStaticContextualization?: boolean;
+ /* yolo-restricted: enable CLI command allowlist mode. */
+ yoloRestricted?: boolean;
+ yoloAllowList?: string[];
+ yoloDenyList?: string[]; }
 
 export interface AnalyticsConfig { provider: string; url?: string; clientKey?: string; }
 

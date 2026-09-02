@@ -1,22 +1,22 @@
 import { Box, Text } from "ink";
 import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
 } from "react";
 
 import { ToolPermissionServiceState } from "src/services/ToolPermissionService.js";
 
 import { useServices } from "../hooks/useService.js";
 import {
-  ApiClientServiceState,
-  AuthServiceState,
-  ConfigServiceState,
-  MCPServiceState,
-  ModelServiceState,
-  UpdateServiceState,
+    ApiClientServiceState,
+    AuthServiceState,
+    ConfigServiceState,
+    MCPServiceState,
+    ModelServiceState,
+    UpdateServiceState,
 } from "../services/types.js";
 import { getTotalSessionCost } from "../session.js";
 import { bashToolEvents } from "../util/cli.js";
@@ -219,6 +219,7 @@ const TUIChat: React.FC<TUIChatProps> = ({
     compactionStartTime,
     inputMode,
     activePermissionRequest,
+    notice,
     activeQuizQuestion,
     wasInterrupted,
     queuedMessages,
@@ -227,6 +228,7 @@ const TUIChat: React.FC<TUIChatProps> = ({
     handleFileAttached,
     resetChatHistory,
     handleEditMessage,
+    handleRewindToMessage,
     handleToolPermissionResponse,
     handleQuizAnswer,
   } = useChat({
@@ -446,6 +448,15 @@ const TUIChat: React.FC<TUIChatProps> = ({
           </Box>
         )}
 
+        {/* Agent-invisible request notification bubble (e.g. auto-model
+            resolution). Never stored in chat history, so the agent can never
+            see it in its own context. */}
+        {notice && (
+          <Box paddingX={1} paddingY={0}>
+            <Text color="cyan">● {notice}</Text>
+          </Box>
+        )}
+
         {/* All screen-specific content */}
         <ScreenContent
           isScreenActive={isScreenActive}
@@ -473,6 +484,7 @@ const TUIChat: React.FC<TUIChatProps> = ({
           diffContent={diffContent}
           chatHistory={chatHistory}
           handleEditMessage={handleEditMessage}
+          handleRewindToMessage={handleRewindToMessage}
           onShowEditSelector={() => navigateTo("edit")}
         />
 

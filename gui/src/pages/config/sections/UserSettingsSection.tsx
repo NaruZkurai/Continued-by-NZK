@@ -1,6 +1,6 @@
 import {
-  SharedConfigSchema,
-  modifyAnyConfigWithSharedConfig,
+    SharedConfigSchema,
+    modifyAnyConfigWithSharedConfig,
 } from "core/config/sharedConfig";
 import { useContext, useEffect, useState } from "react";
 import { Card, Toggle, useFontSize } from "../../../components/ui";
@@ -63,6 +63,9 @@ export function UserSettingsSection() {
     config.experimental?.onlyUseSystemMessageTools ?? false;
   const codebaseToolCallingOnly =
     config.experimental?.codebaseToolCallingOnly ?? false;
+  const yoloRestricted = config.experimental?.yoloRestricted ?? false;
+  const yoloAllowList = (config.experimental?.yoloAllowList ?? []).join(", ");
+  const yoloDenyList = (config.experimental?.yoloDenyList ?? []).join(", ");
   const allowAnonymousTelemetry = config.allowAnonymousTelemetry ?? true;
 
   const useAutocompleteMultilineCompletions =
@@ -281,6 +284,41 @@ export function UserSettingsSection() {
                     value={continueAfterToolRejection}
                     onChange={(value) =>
                       handleUpdate({ continueAfterToolRejection: value })
+                    }
+                  />
+                  <UserSetting
+                    type="toggle"
+                    title="yolo-restricted mode"
+                    description=" enable the terminal command allowlist/denylist (GitHub Copilot style glob patterns)."
+                    value={yoloRestricted}
+                    onChange={(value) => handleUpdate({ yoloRestricted: value })}
+                  />
+                  <UserSetting
+                    type="input"
+                    title="yolo allow list"
+                    description=" Comma-separated glob patterns allowed to run without asking (e.g. git *, npm test). Merged with Copilot's VS Code chat.commands.allowList and ~/.continue/yolo-allowlist.txt."
+                    value={yoloAllowList}
+                    onChange={(value) =>
+                      handleUpdate({
+                        yoloAllowList: value
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      })
+                    }
+                  />
+                  <UserSetting
+                    type="input"
+                    title="yolo deny list"
+                    description=" Comma-separated glob patterns refused and reported as unauthorised. Merged with chat.commands.denyList and ~/.continue/yolo-denylist.txt."
+                    value={yoloDenyList}
+                    onChange={(value) =>
+                      handleUpdate({
+                        yoloDenyList: value
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      })
                     }
                   />
                 </div>

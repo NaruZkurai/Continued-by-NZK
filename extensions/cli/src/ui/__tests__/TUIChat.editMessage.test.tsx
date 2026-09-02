@@ -18,7 +18,7 @@ describe("TUIChat - Message Edit Feature", () => {
     // Verify selector is not open initially
     let frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).not.toContain("No user messages to edit");
+    expect(frame).not.toContain("No editable messages");
 
     // Press Esc twice quickly (within 500ms)
     stdin.write("\u001b"); // First Esc
@@ -30,7 +30,7 @@ describe("TUIChat - Message Edit Feature", () => {
     // Verify selector is now open
     frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).toContain("No user messages to edit");
+    expect(frame).toContain("No editable messages");
   });
 
   testBothModes("edit selector should handle navigation", async (mode) => {
@@ -44,7 +44,7 @@ describe("TUIChat - Message Edit Feature", () => {
     // Verify selector is open
     let frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).toContain("No user messages to edit");
+    expect(frame).toContain("No editable messages");
 
     // Try navigation keys
     stdin.write("j"); // Down
@@ -56,7 +56,7 @@ describe("TUIChat - Message Edit Feature", () => {
     // Verify selector is still open after navigation
     frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).toContain("No user messages to edit");
+    expect(frame).toContain("No editable messages");
   });
 
   testBothModes("edit selector should exit with Esc", async (mode) => {
@@ -70,7 +70,7 @@ describe("TUIChat - Message Edit Feature", () => {
     // Verify edit selector is open
     let frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).toContain("No user messages to edit");
+    expect(frame).toContain("No editable messages");
 
     // Press Esc to exit
     stdin.write("\u001b");
@@ -79,7 +79,7 @@ describe("TUIChat - Message Edit Feature", () => {
     // Verify edit selector is closed
     frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).not.toContain("No user messages to edit");
+    expect(frame).not.toContain("No editable messages");
   });
 
   testBothModes("should handle edit flow without crashing", async (mode) => {
@@ -122,13 +122,13 @@ describe("TUIChat - Message Edit Feature", () => {
 
       // Wait for selector to open (poll instead of fixed timeout)
       await waitForCondition(
-        () => lastFrame()?.includes("No user messages to edit") ?? false,
+        () => lastFrame()?.includes("No editable messages") ?? false,
       );
 
       // Verify selector opened
       let frame = lastFrame();
       expect(frame).toBeDefined();
-      expect(frame).toContain("No user messages to edit");
+      expect(frame).toContain("No editable messages");
 
       stdin.write("k"); // Navigate (no-op with 0 messages)
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -137,7 +137,7 @@ describe("TUIChat - Message Edit Feature", () => {
 
       // Wait for selector to close (poll instead of fixed timeout)
       await waitForCondition(
-        () => !(lastFrame()?.includes("No user messages to edit") ?? true),
+        () => !(lastFrame()?.includes("No editable messages") ?? true),
       );
 
       frame = lastFrame();
@@ -145,7 +145,7 @@ describe("TUIChat - Message Edit Feature", () => {
       // UI should remain stable and edit selector should be closed
       expect(frame).toBeDefined();
       expect(frame!.length).toBeGreaterThan(0);
-      expect(frame).not.toContain("No user messages to edit");
+      expect(frame).not.toContain("No editable messages");
     },
   );
 });
@@ -217,7 +217,7 @@ describe("TUIChat - Edit Feature Edge Cases", () => {
     // Verify selector did not open
     let frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).not.toContain("No user messages to edit");
+    expect(frame).not.toContain("No editable messages");
 
     stdin.write("\u001b"); // Another single Esc after timeout
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -225,7 +225,7 @@ describe("TUIChat - Edit Feature Edge Cases", () => {
     // Verify selector still did not open
     frame = lastFrame();
     expect(frame).toBeDefined();
-    expect(frame).not.toContain("No user messages to edit");
+    expect(frame).not.toContain("No editable messages");
   });
 
   testBothModes(

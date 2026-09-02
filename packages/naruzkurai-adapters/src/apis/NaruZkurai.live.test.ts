@@ -5,9 +5,12 @@
  * `model: "auto"` — and drives a correct streaming chat request end to end:
  *
  *  1. `apiBase` is passed exactly as the user wrote it (here `http://...`).
- *   The adapter forces the outbound requests to HTTPS internally, because
- *   the Cloudflare-protected origin `llm.echoshouse.ca` only answers over
- *   TLS (plain HTTP returns Cloudflare 522, verified by curl).
+ *   Scheme honour rule — two distinct echoshouse origins, do NOT conflate:
+ *    - `llms.echoshouse.ca`  = HTTPS-only (TLS required; plain HTTP refused).
+ *    - `llm.echoshouse.ca`   = HTTP-only  (no S in host). Serve/curl over
+ *      plain `http://`, NOT https. The adapter does NOT force TLS onto it.
+ *   The adapter applies `ApiHttpOrHttps` verbatim and only falls back to the
+ *   other scheme on error; it never overrides a working http origin to https.
  *  2. `model: "auto"` triggers the automode `/v1/models` ping, picks a
  *   generation model, and yields a `reasoning_content` thinking notice
  *   chunk BEFORE the real assistant stream.
@@ -16,7 +19,8 @@
  *
  * Guarded by env vars and skipped when not set:
  *  - NARUZKURAI_API_KEY (required)
- *  - NARUZKURAI_API_BASE (optional; defaults to http://llm.echoshouse.ca/v1)
+ *  - NARUZKURAI_API_BASE (optional; defaults to http://llm.echoshouse.ca/v1,
+ *    the HTTP-only origin — keep it http, never https)
  *
  * Run:
  *  NARUZKURAI_API_KEY=sk-... npx vitest packages/naruzkurai-adapters/src/apis/NaruZkurai.live.test.ts
@@ -91,7 +95,7 @@ describe.skipIf(SKIP)("NaruZkuraiApi automode live", () => {
   expect(api["apiBase"]).toBe("http://192.168.2.64:6465/v1");
  });
 
- test("auto resolves a model, shows a thinking notice, and streams real content", async () => {
+ test("auto resolves a model and streams real content (no automode noise)", async () => {
   const api = new NaruZkuraiApi(buildConfig());
   const body: ChatCompletionCreateParamsStreaming = {model: "auto",messages: [{ role: "user", content: PROMPT }],stream: true,};
 
@@ -103,15 +107,14 @@ describe.skipIf(SKIP)("NaruZkuraiApi automode live", () => {
   for await (const chunk of stream)
   { chunks.push(chunk);
    const delta = (chunk as any)?.choices?.[0]?.delta ?? {};
-   if (typeof delta.reasoning_content === "string")
-   {// The synthetic automode notice chunk.
-    if (delta.reasoning_content.startsWith("[automode]")) {sawAutomodeNotice = true;}
-   }
+   if (typeof delta.reasoning_content === "string" && delta.reasoning_content.startsWith("[automode]"))
+   { sawAutomodeNotice = true; }
    if (typeof delta.content === "string") {sawAssistantContent += delta.content;}
   }
 
-  // The automode notice must appear as a reasoning/thinking chunk.
-  expect(sawAutomodeNotice).toBe(true);
+  // Resolving `auto` must NOT inject a `[automode] ...` thinking chunk into
+  // the stream — that left visible noise at the front of every turn.
+  expect(sawAutomodeNotice).toBe(false);
   // Real assistant content must stream back from the resolved model.
   expect(sawAssistantContent.trim().length).toBeGreaterThan(0);
 

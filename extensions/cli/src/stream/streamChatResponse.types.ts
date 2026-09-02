@@ -17,6 +17,12 @@ export interface StreamCallbacks {
     preview?: ToolCallPreview[],
   ) => void;
   onSystemMessage?: (message: string) => void;
+  /**
+   * Agent-invisible request notification (e.g. `[automode] auto -> model`).
+   * Rendered as a footer/status bubble; NEVER stored in chat history so the
+   * agent can never see it in its own context.
+   */
+  onNotice?: (text: string) => void;
 }
 
 export function getDefaultCompletionOptions(

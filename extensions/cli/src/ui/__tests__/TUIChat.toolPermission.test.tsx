@@ -3,8 +3,8 @@ import React from "react";
 import { vi } from "vitest";
 
 import type {
-  ToolCallState,
-  ChatHistoryItem,
+    ChatHistoryItem,
+    ToolCallState,
 } from "../../../../../core/index.js";
 import { ToolPermissionSelector } from "../components/ToolPermissionSelector.js";
 
@@ -40,12 +40,14 @@ describe("TUIChat - Tool Permission Tests", () => {
     // Verify ToolPermissionSelector is shown
     expect(frame).toContain("Edit");
     expect(frame).toContain("Would you like to continue?");
-    expect(frame).toContain("Continue");
-    expect(frame).toContain("Continue + don't ask again");
-    expect(frame).toContain("No, and tell Continue what to do differently");
-    expect(frame).toContain("(tab)");
-    expect(frame).toContain("(shift+tab)");
-    expect(frame).toContain("(esc)");
+    expect(frame).toContain("Continue once");
+    expect(frame).toContain("Continue + add to allowlist");
+    expect(frame).toContain("Deny once");
+    expect(frame).toContain("Deny + add to denylist");
+    expect(frame).toContain("(y/tab)");
+    expect(frame).toContain("(Y/shift+tab)");
+    expect(frame).toContain("(n)");
+    expect(frame).toContain("(N/esc)");
     // Verify old Cancel option is not shown
     expect(frame).not.toContain("Cancel");
   });
@@ -77,6 +79,7 @@ describe("TUIChat - Tool Permission Tests", () => {
       true,
       false,
       false,
+      undefined,
     );
   });
 
@@ -96,7 +99,7 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Test escape key for rejection
+    // Test escape key for reject + add to denylist
     stdin.write("\x1b"); // ESC key
 
     await vi.advanceTimersByTimeAsync(50);
@@ -106,6 +109,7 @@ describe("TUIChat - Tool Permission Tests", () => {
       false,
       false,
       true,
+      "deny",
     );
   });
 
@@ -125,7 +129,7 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Test 'n' key for rejection
+    // Test 'n' key for reject-once (no persist, no stop)
     stdin.write("n");
 
     await vi.advanceTimersByTimeAsync(50);
@@ -134,7 +138,8 @@ describe("TUIChat - Tool Permission Tests", () => {
       "test-request-789",
       false,
       false,
-      true,
+      false,
+      undefined,
     );
   });
 
@@ -154,9 +159,9 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Initial state should show "> Continue" selected
+    // Initial state should show "> ✓ Continue once" selected
     const frame = lastFrame();
-    expect(frame).toMatch(/>\s+Continue/);
+    expect(frame).toMatch(/>\s+✓ Continue once/);
 
     // Test that pressing Enter on default selection triggers approval
     stdin.write("\r");
@@ -165,6 +170,7 @@ describe("TUIChat - Tool Permission Tests", () => {
     expect(handleResponse).toHaveBeenCalledWith(
       "test-request-123",
       true,
+      undefined,
       undefined,
       undefined,
     );
@@ -186,7 +192,7 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Test shift+tab key for approval with policy creation
+    // Test shift+tab key for approval + add to allowlist
     // In terminal, shift+tab is typically represented as "\x1b[Z"
     stdin.write("\x1b[Z");
 
@@ -197,6 +203,7 @@ describe("TUIChat - Tool Permission Tests", () => {
       true,
       true,
       false,
+      "allow",
     );
   });
 
@@ -218,14 +225,16 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Verify the new option exists in the rendered output
+    // Verify the new options exist in the rendered output
     const frame = lastFrame();
-    expect(frame).toContain("No, and tell Continue what to do differently");
+    expect(frame).toContain("Deny once");
+    expect(frame).toContain("Deny + add to denylist");
 
-    // Verify all 3 options are present
-    expect(frame).toContain("Continue");
-    expect(frame).toContain("Continue + don't ask again");
-    expect(frame).toContain("No, and tell Continue what to do differently");
+    // Verify all 4 options are present
+    expect(frame).toContain("Continue once");
+    expect(frame).toContain("Continue + add to allowlist");
+    expect(frame).toContain("Deny once");
+    expect(frame).toContain("Deny + add to denylist");
     // Verify old Cancel option is not shown
     expect(frame).not.toContain("Cancel");
   });
@@ -254,12 +263,13 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Verify the escape key triggers the stopStream behavior
+    // Verify the escape key triggers stopStream + add to denylist
     expect(handleResponse).toHaveBeenCalledWith(
       "test-request-escape",
       false, // approved = false (rejection)
       false, // createPolicy = false
-      true, // stopStream = true (this is the new behavior)
+      true, // stopStream = true
+      "deny", // addToList = deny
     );
   });
 
@@ -281,17 +291,18 @@ describe("TUIChat - Tool Permission Tests", () => {
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Press 'n' key to trigger the "No, and tell Continue what to do differently" option
-    stdin.write("n");
+    // Press 'N' key to trigger "Deny + add to denylist" (stop stream)
+    stdin.write("N");
 
     await vi.advanceTimersByTimeAsync(50);
 
-    // Verify the 'n' key triggers the stopStream behavior
+    // Verify the 'N' key triggers stopStream + add to denylist
     expect(handleResponse).toHaveBeenCalledWith(
       "test-request-n-key",
       false, // approved = false (rejection)
       false, // createPolicy = false
-      true, // stopStream = true (this is the new behavior)
+      true, // stopStream = true
+      "deny", // addToList = deny
     );
   });
 

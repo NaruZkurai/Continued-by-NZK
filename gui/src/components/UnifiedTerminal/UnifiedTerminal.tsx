@@ -89,8 +89,9 @@ const TerminalContent = styled.div`
   pre {
     white-space: pre-wrap;
     max-width: calc(100vw - 24px);
+    max-height: 400px;
     overflow-x: scroll;
-    overflow-y: hidden;
+    overflow-y: auto;
     padding: 8px;
     margin: 0;
   }
@@ -346,11 +347,14 @@ export function UnifiedTerminalCommand({
 }: UnifiedTerminalCommandProps) {
   const dispatch = useAppDispatch();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [outputExpanded, setOutputExpanded] = useState(false);
+  const [outputExpanded, setOutputExpanded] = useState(true);
 
   // Determine running state
   const isRunning = toolCallState?.status === "calling" || status === "running";
   const hasOutput = output.length > 0;
+  // Live/running commands always show the full output (never collapsed) so the
+  // user can always see command output while it runs, including background jobs.
+  const effectiveOutputExpanded = isRunning ? true : outputExpanded;
 
   // Process terminal content for line limiting
   const processedTerminalContent = useMemo(() => {
@@ -476,7 +480,7 @@ export function UnifiedTerminalCommand({
                         hiddenLinesCount={
                           processedTerminalContent.hiddenLinesCount
                         }
-                        isExpanded={outputExpanded}
+                        isExpanded={effectiveOutputExpanded}
                         onToggle={() => setOutputExpanded(!outputExpanded)}
                       />
                     )}
@@ -488,7 +492,7 @@ export function UnifiedTerminalCommand({
                             processedTerminalContent.limitedContent
                           }
                           fullContent={processedTerminalContent.fullContent}
-                          isExpanded={outputExpanded}
+                          isExpanded={effectiveOutputExpanded}
                           onToggle={() => setOutputExpanded(!outputExpanded)}
                         />
                       ) : (

@@ -145,23 +145,22 @@ describe("UnifiedTerminalCommand", () => {
       />,
     );
 
-    // Should show the "+X more lines" indicator
+    // Output is always visible by default (all lines rendered, scrollable)
+    expect(container.textContent).toMatch(/Line 1/);
+    expect(container.textContent).toMatch(/Line 25/);
+    expect(screen.queryByText(/\+\d+ more lines/)).not.toBeInTheDocument();
+
+    // Collapse shows the "+X more lines" indicator
+    const collapseButton = screen.getByText(/Collapse/);
+    await user.click(collapseButton);
     expect(screen.getByText(/\+\d+ more lines/)).toBeInTheDocument();
 
-    // Should initially show only some of the last lines
-    expect(container.textContent).toMatch(/Line 25/);
-
-    // Click to expand using the "+X more lines" button
+    // Click to expand using the "+X more lines" button brings everything back
     const expandButton = screen.getByText(/\+\d+ more lines/);
     await user.click(expandButton);
-
-    // Should now show all lines
     await waitFor(() => {
       expect(container.textContent).toMatch(/Line 1/);
     });
-
-    // Should show collapse option
-    expect(screen.getByText(/Collapse/)).toBeInTheDocument();
   });
 
   test("renders ANSI colors and formatting", async () => {
@@ -327,14 +326,12 @@ describe("UnifiedTerminalCommand", () => {
       />,
     );
 
-    // Should show correct number of hidden lines
-    expect(screen.getByText(/\+15 more lines/)).toBeInTheDocument();
+    // Output is always visible by default (no hidden lines awaiting expand)
+    expect(screen.queryByText(/\+15 more lines/)).not.toBeInTheDocument();
 
-    // Should show the last lines
+    // All lines are rendered (full output, scrolled internally)
+    expect(container.textContent).toMatch(/Line 1/);
     expect(container.textContent).toMatch(/Line 25/);
-
-    // Should not initially show the first lines (Line 1-15 should be hidden)
-    // The component shows last 10 lines (16-25) with a +15 more lines indicator
     expect(container.textContent).toMatch(/Line 16/);
   });
 
@@ -348,16 +345,22 @@ describe("UnifiedTerminalCommand", () => {
       />,
     );
 
-    // Click on the "+15 more lines" button to expand
+    // Output is expanded/visible by default
+    expect(container.textContent).toMatch(/Line 1/);
+
+    // Collapse hides the leading lines but shows the indicator
+    const collapseButton = screen.getByText(/Collapse/);
+    await user.click(collapseButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/\+15 more lines/)).toBeInTheDocument();
+    });
+
+    // Re-expand brings everything back
     const expandButton = screen.getByText(/\+15 more lines/);
     await user.click(expandButton);
-
-    // Should expand and show all content
     await waitFor(() => {
       expect(container.textContent).toMatch(/Line 1/);
     });
-
-    // Should show collapse option after expansion
-    expect(screen.getByText(/Collapse/)).toBeInTheDocument();
   });
 });

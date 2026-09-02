@@ -5,16 +5,16 @@ import { Box, Text, useApp, useInput } from "ink";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
-  getAllSlashCommands,
-  type SlashCommand,
+    getAllSlashCommands,
+    type SlashCommand,
 } from "../commands/commands.js";
 import { useServices } from "../hooks/useService.js";
 import type { PermissionMode } from "../permissions/types.js";
 import type { FileIndexServiceState } from "../services/FileIndexService.js";
 import {
-  SERVICE_NAMES,
-  serviceContainer,
-  services,
+    SERVICE_NAMES,
+    serviceContainer,
+    services,
 } from "../services/index.js";
 import { messageQueue } from "../stream/messageQueue.js";
 import { escapeEvents } from "../util/cli.js";
@@ -23,8 +23,8 @@ import { InputHistory } from "../util/inputHistory.js";
 import { FileSearchUI } from "./FileSearchUI.js";
 import { useClipboardMonitor } from "./hooks/useClipboardMonitor.js";
 import {
-  handleControlKeys,
-  updateTextBufferState,
+    handleControlKeys,
+    updateTextBufferState,
 } from "./hooks/useUserInput.js";
 import { SlashCommandUI } from "./SlashCommandUI.js";
 import { TextBuffer } from "./TextBuffer.js";
@@ -204,7 +204,12 @@ const UserInput: React.FC<UserInputProps> = ({
 
   // Cycle through permission modes
   const cycleModes = async () => {
-    const modes: PermissionMode[] = ["normal", "plan", "auto"];
+    const modes: PermissionMode[] = [
+      "normal",
+      "plan",
+      "auto",
+      "yolo-restricted",
+    ];
     const currentMode = services.toolPermissions.getCurrentMode();
     const currentIndex = modes.indexOf(currentMode);
     const nextIndex = (currentIndex + 1) % modes.length;
@@ -885,6 +890,13 @@ const UserInput: React.FC<UserInputProps> = ({
         </Text>
         {renderInputText()}
       </Box>
+
+      {/* Persistent hint for the edit/rewind history feature (double Esc). */}
+      {inputMode && !hideNormalUI && onShowEditSelector && (
+        <Text dimColor color="gray">
+          Press Esc Esc to edit / rewind chat history (user, agent, thinking)
+        </Text>
+      )}
 
       <SlashCommandsMaybe
         show={showSlashCommands}

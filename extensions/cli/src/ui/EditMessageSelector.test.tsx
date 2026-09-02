@@ -2,9 +2,9 @@
  * @vitest-environment jsdom
  */
 import { render } from "@testing-library/react";
-import type { ChatHistoryItem } from "core/index.js";
+import type { ChatHistoryItem, ChatMessage } from "core/index.js";
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EditMessageSelector } from "./EditMessageSelector.js";
 
@@ -38,19 +38,16 @@ describe("EditMessageSelector", () => {
   });
 
   describe("Initialization", () => {
-    it("should render 'no user messages' when chat history is empty", () => {
+    it("should render 'no editable messages' when chat history is empty", () => {
       const { container } = render(
-        <EditMessageSelector
-          chatHistory={[]}
-          onEdit={mockOnEdit}
-          onExit={mockOnExit}
-        />,
+        <EditMessageSelector chatHistory={[]}
+          onEdit={mockOnEdit} onExit={mockOnExit} />,
       );
 
-      expect(container.textContent).toContain("No user messages to edit");
+      expect(container.textContent).toContain("No editable messages");
     });
 
-    it("should render 'no user messages' when chat history has only assistant messages", () => {
+    it("should list assistant (agent) messages as editable", () => {
       const chatHistory: ChatHistoryItem[] = [
         {
           message: { role: "assistant", content: "Hello" },
@@ -66,7 +63,8 @@ describe("EditMessageSelector", () => {
         />,
       );
 
-      expect(container.textContent).toContain("No user messages to edit");
+      expect(container.textContent).toContain("Hello");
+      expect(container.textContent).toContain("[Agent]");
     });
 
     it("should render user messages list", () => {
@@ -83,10 +81,10 @@ describe("EditMessageSelector", () => {
       expect(container.textContent).toContain("Message 1:");
       expect(container.textContent).toContain("Message 2:");
       expect(container.textContent).toContain("User message 1");
-      expect(container.textContent).toContain("User message 3");
+      expect(container.textContent).toContain("Assistant message 2");
     });
 
-    it("should filter out non-user messages", () => {
+    it("should filter out system/tool messages but keep thinking", () => {
       const chatHistory: ChatHistoryItem[] = [
         { message: { role: "user", content: "User 1" }, contextItems: [] },
         {
@@ -94,6 +92,15 @@ describe("EditMessageSelector", () => {
           contextItems: [],
         },
         { message: { role: "system", content: "System 1" }, contextItems: [] },
+        { message: { role: "thinking", content: "Thought 1" }, contextItems: [] },
+        {
+          message: {
+            role: "tool",
+            content: "Tool 1",
+            toolCallId: "t1",
+          } as ChatMessage,
+          contextItems: [],
+        },
         { message: { role: "user", content: "User 2" }, contextItems: [] },
       ];
 
@@ -105,11 +112,79 @@ describe("EditMessageSelector", () => {
         />,
       );
 
-      // Should only show 2 user messages
+      // User + agent + thinking turns are editable; system/tool are not.
       expect(container.textContent).toContain("User 1");
       expect(container.textContent).toContain("User 2");
-      expect(container.textContent).not.toContain("Assistant 1");
+      expect(container.textContent).toContain("Assistant 1");
+      expect(container.textContent).toContain("Thought 1");
+      expect(container.textContent).toContain("[Thinking]");
       expect(container.textContent).not.toContain("System 1");
+      expect(container.textContent).not.toContain("Tool 1");
+    });
+
+    it("should show role tags for user and agent messages", () => {
+      const chatHistory: ChatHistoryItem[] = [
+        { message: { role: "user", content: "User 1" }, contextItems: [] },
+        {
+          message: { role: "assistant", content: "Assistant 1" },
+          contextItems: [],
+        },
+      ];
+
+      const { container } = render(
+        <EditMessageSelector
+          chatHistory={chatHistory}
+          onEdit={mockOnEdit}
+          onExit={mockOnExit}
+        />,
+      );
+
+      expect(container.textContent).toContain("[User]");
+      expect(container.textContent).toContain("[Agent]");
+    });
+
+    it("should call onEdit with original index when editing a user message", () => {
+      const chatHistory: ChatHistoryItem[] = [
+        { message: { role: "user", content: "User 1" }, contextItems: [] },
+        {
+          message: { role: "assistant", content: "Assistant 1" },
+          contextItems: [],
+        },
+      ];
+
+      const { container } = render(
+        <EditMessageSelector
+          chatHistory={chatHistory}
+          onEdit={mockOnEdit}
+          onExit={mockOnExit}
+        />,
+      );
+
+      // Navigation selects the last editable message (index 1 = assistant,
+      // originalIndex 1).
+      expect(container.textContent).toContain("Assistant 1");
+    });
+
+    it("should trigger onRewind when pressing c on the selected message", () => {
+      const chatHistory: ChatHistoryItem[] = [
+        { message: { role: "user", content: "User 1" }, contextItems: [] },
+        {
+          message: { role: "assistant", content: "Assistant 1" },
+          contextItems: [],
+        },
+      ];
+
+      const mockOnRewind = vi.fn();
+      const { container } = render(
+        <EditMessageSelector
+          chatHistory={chatHistory}
+          onEdit={mockOnEdit}
+          onRewind={mockOnRewind}
+          onExit={mockOnExit}
+        />,
+      );
+
+      expect(container.textContent).toContain("c to rewind+continue");
     });
 
     it("should show instruction text in selection mode", () => {

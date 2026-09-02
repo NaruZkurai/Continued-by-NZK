@@ -10,37 +10,58 @@ import { TextBuffer } from "./TextBuffer.js";
 type UseInputHandler = Parameters<typeof useInput>[0];
 type Key = Parameters<UseInputHandler>[1];
 
-interface EditMessageSelectorProps {
-  chatHistory: ChatHistoryItem[];
+/** Re-create a rewind point at the given message (rewind + continue). */
+interface EditMessageSelectorProps
+{ chatHistory: ChatHistoryItem[];
   onEdit: (messageIndex: number, newContent: string) => void;
-  onExit: () => void;
+  onRewind?: (messageIndex: number) => void;
+  onExit: () => void; }
+
+/** Roles the selector lets you act on (edit / rewind). */
+const EDITABLE_ROLES = new Set(["user", "assistant", "thinking"]);
+
+function roleLabel(role: string): string {
+  if (role === "assistant") return "Agent";
+  if (role === "thinking") return "Thinking";
+  return "User";
 }
 
-export function EditMessageSelector({
-  chatHistory,
-  onEdit,
-  onExit,
-}: EditMessageSelectorProps) {
-  // Filter to only show user messages
-  const userMessages = useMemo(() => {
-    return chatHistory
-      .map((item, originalIndex) => ({ item, originalIndex }))
-      .filter(({ item }) => item.message.role === "user");
-  }, [chatHistory]);
+/** Flatten string or MessagePart[] content into a plain string for preview/edit. */
+function contentToString(content: any): string {
+  if (typeof content === "string") { return content; }
+  if (Array.isArray(content)) {
+    return content
+      .map((part: any) => {
+        if (typeof part === "string") return part;
+        if (part?.type === "text") return part.text ?? "";
+        // Thinking parts carry the reasoning text (e.g. automode notices).
+        if (part?.type === "thinking") return part.thinking ?? part.text ?? "";
+        if (part?.type === "imageUrl") return "[Image]";
+        return "";
+      })
+      .join("");
+  }
+  // Some thinking messages put prose under `.thinking` even when scalar.
+  if (content && typeof content === "object" && typeof content.thinking === "string")
+    { return content.thinking; }
+  return "";
+}
 
-  const [selectedIndex, setSelectedIndex] = useState(
-    Math.max(0, userMessages.length - 1),
-  );
+  /* Editable messages: user (prompt) and assistant (agent) turns. Thinking */
+  /* system / tool blocks carry no editable prose, so they are skipped. */
+export function EditMessageSelector({ chatHistory, onEdit, onRewind, onExit,
+  }: EditMessageSelectorProps) { const messages = useMemo(() => {
+    return chatHistory.map((item, originalIndex) => ({ item, originalIndex }))
+      .filter(({ item }) => EDITABLE_ROLES.has(item.message.role)); }, [chatHistory]);
+
+  const [selectedIndex, setSelectedIndex] = useState( Math.max(0, messages.length - 1), );
   const [isEditing, setIsEditing] = useState(false);
   const [textBuffer] = useState(() => new TextBuffer());
   const [editText, setEditText] = useState("");
   const [cursorPosition, setCursorPosition] = useState(0);
 
   // Stable callback for TextBuffer state changes (e.g., paste finalization)
-  const onStateChange = React.useCallback(() => {
-    setEditText(textBuffer.text);
-    setCursorPosition(textBuffer.cursor);
-  }, [textBuffer]);
+  const onStateChange = React.useCallback(() => { setEditText(textBuffer.text); setCursorPosition(textBuffer.cursor); }, [textBuffer]);
 
   // Set up callback for when TextBuffer state changes asynchronously
   React.useEffect(() => {
@@ -54,25 +75,22 @@ export function EditMessageSelector({
 
   // Initialize edit text when selection changes
   React.useEffect(() => {
-    if (!isEditing && userMessages[selectedIndex]) {
-      const content =
-        typeof userMessages[selectedIndex].item.message.content === "string"
-          ? userMessages[selectedIndex].item.message.content
-          : "";
+    if (!isEditing && messages[selectedIndex]) {
+      const content = contentToString(
+        messages[selectedIndex].item.message.content,
+      );
       textBuffer.setText(content);
       setEditText(content);
       setCursorPosition(content.length);
     }
-  }, [selectedIndex, isEditing, userMessages, textBuffer]);
+  }, [selectedIndex, isEditing, messages, textBuffer]);
 
   // Helper to get message content safely
   const getMessageContent = React.useCallback(
     (index: number): string => {
-      return typeof userMessages[index]?.item.message.content === "string"
-        ? userMessages[index].item.message.content
-        : "";
+      return contentToString(messages[index]?.item.message.content);
     },
-    [userMessages],
+    [messages],
   );
 
   // Handle input when in editing mode
@@ -90,8 +108,8 @@ export function EditMessageSelector({
         // Expand all paste blocks before submission to restore original content
         textBuffer.expandAllPasteBlocks();
         const trimmedText = textBuffer.text.trim();
-        if (trimmedText && userMessages[selectedIndex]) {
-          onEdit(userMessages[selectedIndex].originalIndex, trimmedText);
+        if (trimmedText && messages[selectedIndex]) {
+          onEdit(messages[selectedIndex].originalIndex, trimmedText);
         }
       } else if (key.return && key.shift) {
         // Handle newline
@@ -109,7 +127,7 @@ export function EditMessageSelector({
       getMessageContent,
       selectedIndex,
       textBuffer,
-      userMessages,
+      messages,
       onEdit,
       setIsEditing,
       setEditText,
@@ -122,22 +140,26 @@ export function EditMessageSelector({
     (input: string, key: Key) => {
       if (key.upArrow || input === "k") {
         // Only navigate if there are messages
-        if (userMessages.length > 0) {
+        if (messages.length > 0) {
           setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : userMessages.length - 1,
+            prev > 0 ? prev - 1 : messages.length - 1,
           );
         }
       } else if (key.downArrow || input === "j") {
         // Only navigate if there are messages
-        if (userMessages.length > 0) {
+        if (messages.length > 0) {
           setSelectedIndex((prev) =>
-            prev < userMessages.length - 1 ? prev + 1 : 0,
+            prev < messages.length - 1 ? prev + 1 : 0,
           );
         }
+      } else if (input === "c" && onRewind && messages[selectedIndex]) {
+        /* Create a rewind point at the selected message: rewind the history */
+        /* there and continue, as if the user just asked to keep going. */
+        onRewind(messages[selectedIndex].originalIndex);
       } else if (key.return) {
-        // Start editing the selected message - set cursor to end
-        // Only allow editing if there are messages
-        if (userMessages.length > 0) {
+        /*  Start editing the selected message - set cursor to end */
+        /*  Only allow editing if there are messages  */
+        if (messages.length > 0) {
           const content = getMessageContent(selectedIndex);
           textBuffer.setCursor(content.length);
           setCursorPosition(content.length);
@@ -148,11 +170,12 @@ export function EditMessageSelector({
       }
     },
     [
-      userMessages.length,
+      messages,
       getMessageContent,
       selectedIndex,
       textBuffer,
       onExit,
+      onRewind,
       setSelectedIndex,
       setCursorPosition,
       setIsEditing,
@@ -167,10 +190,10 @@ export function EditMessageSelector({
     }
   });
 
-  if (userMessages.length === 0) {
+  if (messages.length === 0) {
     return (
       <Box {...defaultBoxStyles("yellow")}>
-        <Text color="yellow">No user messages to edit.</Text>
+        <Text color="yellow">No editable messages.</Text>
         <Text color="gray">Press Esc to exit</Text>
       </Box>
     );
@@ -235,34 +258,32 @@ export function EditMessageSelector({
   return (
     <Box {...defaultBoxStyles("yellow")}>
       <Text color="yellow" bold>
-        Edit Message (Rewind Conversation)
+        Edit / Rewind (User + Agent messages)
       </Text>
       <Text color="gray">
         {isEditing
           ? "Enter to submit, Esc to cancel, Shift+Enter for newline"
-          : "↑/↓ to navigate, Enter to edit, Esc to exit"}
+          : "↑/↓ to navigate, Enter to edit, c to rewind+continue, Esc to exit"}
       </Text>
       <Text> </Text>
 
       {!isEditing && (
         <>
-          <Text color="blue">Select a message to edit:</Text>
+          <Text color="blue">Select a message (Enter edit, c rewind):</Text>
           <Text> </Text>
-          {userMessages.map((msg, index) => {
+          {messages.map((msg, index) => {
             const isSelected = index === selectedIndex;
             const indicator = isSelected ? "➤ " : "  ";
             const color = isSelected ? "yellow" : "white";
-            const content =
-              typeof msg.item.message.content === "string"
-                ? msg.item.message.content
-                : "";
+            const content = contentToString(msg.item.message.content);
             const preview = content.split("\n")[0].slice(0, 60);
             const truncated = content.length > 60 ? "..." : "";
+            const tag = roleLabel(msg.item.message.role);
 
             return (
               <Box key={msg.originalIndex} flexDirection="column">
                 <Text bold={isSelected} color={color}>
-                  {indicator}Message {index + 1}: {preview}
+                  {indicator}[{tag}] Message {index + 1}: {preview}
                   {truncated}
                 </Text>
               </Box>

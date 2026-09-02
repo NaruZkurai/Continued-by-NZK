@@ -41,9 +41,7 @@ export class ContinueCompletionProvider
   implements vscode.InlineCompletionItemProvider
 {
   private async onError(e: unknown) {
-    if (await handleLLMError(e)) {
-      return;
-    }
+    if (await handleLLMError(e)) {return; }
     let message = "Continue Autocomplete Error";
     if (e instanceof Error) {
       message += `: ${e.message}`;
@@ -51,9 +49,7 @@ export class ContinueCompletionProvider
     vscode.window.showErrorMessage(message, "Documentation").then((val) => {
       if (val === "Documentation") {
         vscode.env.openExternal(
-          vscode.Uri.parse(
-            "https://docs.continue.dev/features/tab-autocomplete",
-          ),
+          vscode.Uri.parse(  "https://docs.continue.dev",/*/features/tab-autocomplete is a dead url*/),
         );
       }
     });
@@ -733,3 +729,4 @@ export class ContinueCompletionProvider
     return true;
   }
 }
+

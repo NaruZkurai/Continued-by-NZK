@@ -1,0 +1,31 @@
+<html lang="en"><head><meta charset="utf-8"><title>file-mover</title></head>
+<body>
+<header>
+  <h1>⇄ file-mover</h1>
+  <label id="noconfirm-wrap"><input type="checkbox" id="noConfirm"> no confirm</label>
+  <button id="updateBtn" class="danger">⬆ Update server</button>
+  <span id="ver"></span>
+  <div id="searchwrap"><select id="searchPc"><option value="active">Active panel</option><option value="target">Target PC</option><option value="this">This PC</option></select><input id="search" placeholder="🔍 search: name, *.png…"></div>
+  <div id="status"></div>
+</header>
+<main>
+  <div class="panel" id="panelA"><div class="bar"><select id="labelA" class="pcsel"></select><button data-up="A">↑</button><button data-refresh="A">⟳</button><button data-files="A">⤒</button><button data-folder="A">⤓</button><input id="pathA"><input type="file" id="fileA" multiple style="display:none"><input type="file" id="folderA" webkitdirectory style="display:none"></div><div class="files" id="filesA"></div></div>
+  <div class="midbar">
+    <button id="swapMid">⇄</button>
+    <button id="copyMid">⧉ Copy →</button>
+    <button id="moveMid" class="primary">Move →</button>
+    <button id="delMid" class="danger">🗑 Delete</button>
+  </div>
+  <div class="panel" id="panelB"><div class="bar"><select id="labelB" class="pcsel"></select><button data-up="B">↑</button><button data-refresh="B">⟳</button><button data-files="B">⤒</button><button data-folder="B">⤓</button><input id="pathB"><input type="file" id="fileB" multiple style="display:none"><input type="file" id="folderB" webkitdirectory style="display:none"></div><div class="files" id="filesB"></div></div>
+</main>
+<div id="jobs"></div>
+<div id="log"></div>
+<div id="modal"><div class="modal-box"><p>Move or Copy <b id="modalName"></b>?</p><p class="modal-dst" id="modalDst"></p><div class="modal-actions"><button id="modalMove" class="primary">Move</button><button id="modalCopy">Copy</button><button id="modalCancel">Cancel</button></div></div></div>
+<div id="pmodal"><div class="modal-box"><p id="pmodalMsg"></p><input type="password" id="pmodalPass" placeholder="sudo password"><div><button id="pmodalOk" class="primary">OK</button><button id="pmodalCancel">Cancel</button></div></div></div>
+<div id="cmodal"><div class="modal-box"><p>Destination already exists:<br><b id="cmodalDst"></b><br>What do you want to do?</p><div><button id="cmodalMerge" class="primary">Merge / Overwrite</button><button id="cmodalRename">Rename</button><button id="cmodalCancel">Cancel</button></div></div></div>
+<div id="ctx"><div class="ctx-item" data-act="copyname">Copy name</div><div class="ctx-item" data-act="copypath">Copy path</div><div class="ctx-item" data-act="rename">Rename…</div><div class="ctx-item" data-act="delete">Delete…</div></div>
+<div id="rmodal"><div class="modal-box"><p>Rename <b id="rmodalName"></b></p><input type="text" id="rmodalInput" autocomplete="off"><div><button id="rmodalOk" class="primary">OK</button><button id="rmodalCancel">Cancel</button></div></div></div>
+<div id="updating"><div class="modal-box"><span class="spin">⟳</span><p>Updating server…<br><small id="updatingMsg"></small></p></div></div>
+<script src="main.js"></script>
+</body>
+</html>

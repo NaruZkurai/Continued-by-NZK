@@ -6,17 +6,17 @@ import { BUILT_IN_GROUP_NAME } from "core/tools/builtIn";
 import { selectActiveTools } from "../selectors/selectActiveTools";
 import { selectSelectedChatModel } from "../slices/configSlice";
 import {
-  abortStream,
-  addPromptCompletionPair,
-  errorToolCall,
-  setActive,
-  setAppliedRulesAtIndex,
-  setContextPercentage,
-  setInactive,
-  setInlineErrorMessage,
-  setIsPruned,
-  setToolGenerated,
-  streamUpdate,
+    abortStream,
+    addPromptCompletionPair,
+    errorToolCall,
+    setActive,
+    setAppliedRulesAtIndex,
+    setContextPercentage,
+    setInactive,
+    setInlineErrorMessage,
+    setIsPruned,
+    setToolGenerated,
+    streamUpdate,
 } from "../slices/sessionSlice";
 import { ThunkApiType } from "../store";
 import { constructMessages } from "../util/constructMessages";
@@ -28,8 +28,8 @@ import { interceptSystemToolCalls } from "core/tools/systemMessageTools/intercep
 import { SystemMessageToolCodeblocksFramework } from "core/tools/systemMessageTools/toolCodeblocks";
 
 import {
-  selectCurrentToolCalls,
-  selectPendingToolCalls,
+    selectCurrentToolCalls,
+    selectPendingToolCalls,
 } from "../selectors/selectToolCalls";
 import { getBaseSystemMessage } from "../util/getBaseSystemMessage";
 import { callToolById } from "./callToolById";
@@ -315,12 +315,24 @@ export const streamNormalInput = createAsyncThunk<
     }
     const generatedCalls3 = selectPendingToolCalls(state3);
     const toolPolicies = state3.ui.toolSettings;
+    const experimental = state3.config.config.experimental as
+      | {
+          yoloRestricted?: boolean;
+          yoloAllowList?: string[];
+          yoloDenyList?: string[];
+        }
+      | undefined;
     const policies = await evaluateToolPolicies(
       dispatch,
       extra.ideMessenger,
       activeTools,
       generatedCalls3,
       toolPolicies,
+      {
+        yoloRestricted: experimental?.yoloRestricted,
+        yoloAllowList: experimental?.yoloAllowList,
+        yoloDenyList: experimental?.yoloDenyList,
+      },
     );
     const autoApprovedPolicies = policies.filter(
       ({ policy }) => policy === "allowedWithoutPermission",

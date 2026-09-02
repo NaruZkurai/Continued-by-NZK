@@ -2,22 +2,26 @@ import { ChildProcess, spawn } from "child_process";
 import fs from "fs";
 
 import {
-  evaluateTerminalCommandSecurity,
-  type ToolPolicy,
+    evaluateTerminalCommandSecurity,
+    type ToolPolicy,
 } from "@continuedev/terminal-security";
 
+import {
+    evaluateAllowlistPolicy,
+    loadCommandAllowlist,
+} from "../permissions/commandAllowlist.js";
 import { backgroundJobService } from "../services/BackgroundJobService.js";
 import { services } from "../services/index.js";
 import { telemetryService } from "../telemetry/telemetryService.js";
 import {
-  isGitCommitCommand,
-  isPullRequestCommand,
+    isGitCommitCommand,
+    isPullRequestCommand,
 } from "../telemetry/utils.js";
 import { backgroundSignalManager } from "../util/backgroundSignalManager.js";
 import { emitBashToolEnded, emitBashToolStarted } from "../util/cli.js";
 import {
-  parseEnvNumber,
-  truncateOutputFromStart,
+    parseEnvNumber,
+    truncateOutputFromStart,
 } from "../util/truncateOutput.js";
 
 import { Tool, ToolRunContext } from "./types.js";
@@ -145,10 +149,27 @@ IMPORTANT: To edit files, use Edit/MultiEdit tools instead of bash commands (sed
     basePolicy: ToolPolicy,
     parsedArgs: Record<string, unknown>,
   ): ToolPolicy => {
-    return evaluateTerminalCommandSecurity(
-      basePolicy,
-      parsedArgs.command as string,
-    );
+    const command = parsedArgs.command as string;
+    // First apply terminal security (critical commands always disabled, etc.)
+    let policy = evaluateTerminalCommandSecurity(basePolicy, command);
+    // In yolo-restricted mode, gate the command by the allowlist three tiers:
+    // allow match -> run, deny match -> disabled, otherwise keep the policy
+    // (basePolicy is "ask" in restricted mode, so it surfaces as allowedWithPermission).
+    const mode = services.toolPermissions?.getCurrentMode?.();
+    if (mode === "yolo-restricted") {
+      const experimental = services.config?.config?.experimental as
+        | { yoloAllowList?: string[]; yoloDenyList?: string[] }
+        | undefined;
+      policy = evaluateAllowlistPolicy(
+        policy,
+        command,
+        loadCommandAllowlist(undefined, undefined, {
+          allow: experimental?.yoloAllowList,
+          deny: experimental?.yoloDenyList,
+        }),
+      );
+    }
+    return policy;
   },
   preprocess: async (args) => {
     const command = args.command;

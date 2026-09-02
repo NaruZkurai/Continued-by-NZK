@@ -9,6 +9,7 @@ import { ChatCompletionToolMessageParam } from "naruzkurai/resources/chat/comple
 import { ToolPermissionServiceState } from "src/services/ToolPermissionService.js";
 
 import { checkToolPermission } from "../permissions/permissionChecker.js";
+import { commandMatchesGlob, loadCommandAllowlist } from "../permissions/commandAllowlist.js";
 import { toolPermissionManager } from "../permissions/permissionManager.js";
 import { ToolCallRequest, ToolPermissions } from "../permissions/types.js";
 import {
@@ -40,10 +41,27 @@ export function handlePermissionDenied(
   callbacks?: StreamCallbacks,
   reason: "user" | "policy" = "user",
 ): void {
-  const deniedMessage =
+  let deniedMessage =
     reason === "policy"
       ? `Command blocked by security policy`
       : `Permission denied by user`;
+
+  // In yolo-restricted mode a Bash policy denial carries the command and the
+  // deny list so the agent knows exactly what it is not authorised to run.
+  if (reason === "policy" && toolCall.name === "Bash") {
+    const command = (toolCall.arguments as any)?.command as string | undefined;
+    const denyList = loadCommandAllowlist().deny.filter((p) =>
+      command ? commandMatchesGlob(command, p) : false,
+    );
+    if (command) {
+      deniedMessage = `You are not authorised to use command \`${command}\`.`;
+      if (denyList.length) {
+        deniedMessage += ` It is not authorised by any of: ${denyList
+          .map((p) => `\`${p}\``)
+          .join(", ")}.`;
+      }
+    }
+  }
 
   logger.info("Tool call denied", {
     name: toolCall.name,
@@ -60,6 +78,7 @@ export function handlePermissionDenied(
   callbacks?.onToolResult?.(deniedMessage, toolCall.name, "canceled");
   logger.debug(`Tool call rejected (${reason}) - stopping stream`);
 }
+
 
 // Helper function to request user permission
 export async function requestUserPermission(

@@ -11,6 +11,7 @@ import { generateSessionTitle } from "./useChat.helpers.js";
 interface CreateStreamCallbacksOptions {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatHistoryItem[]>>;
   setActivePermissionRequest: React.Dispatch<React.SetStateAction<any>>;
+  setNotice?: React.Dispatch<React.SetStateAction<string | null>>;
   llmApi?: any;
   model?: any;
 }
@@ -21,7 +22,13 @@ interface CreateStreamCallbacksOptions {
 export function createStreamCallbacks(
   options: CreateStreamCallbacksOptions,
 ): any {
-  const { setChatHistory, setActivePermissionRequest, llmApi, model } = options;
+  const {
+    setChatHistory,
+    setActivePermissionRequest,
+    setNotice = () => {},
+    llmApi,
+    model,
+  } = options;
 
   return {
     onContent: (_: string) => {},
@@ -236,6 +243,16 @@ export function createStreamCallbacks(
           contextItems: [],
         },
       ]);
+    },
+
+    // Agent-invisible request notification: rendered as a footer bubble,
+    // NEVER stored in chat history so the agent can never see it.
+    onNotice: (text: string) => {
+      try {
+        setNotice(text);
+      } catch {
+        /* ignore */
+      }
     },
   };
 }

@@ -69,3 +69,30 @@ export const PLAN_MODE_POLICIES: ToolPermissionPolicy[] = [
 export const AUTO_MODE_POLICIES: ToolPermissionPolicy[] = [
   { tool: "*", permission: "allow" },
 ];
+
+// yolo-restricted: only terminal (Bash) commands are gated by the command
+// allowlist (three tiers: allow -> run, deny -> refuse, else ask). All other
+// tools keep the normal defaults (write tools ask, reads allow). Bash runs
+// through its dynamic evaluateToolCallPolicy which applies the allowlist.
+export const YOLO_RESTRICTED_MODE_POLICIES: ToolPermissionPolicy[] = [
+  // Write tools ask (same as normal mode)
+  { tool: "Edit", permission: "ask" },
+  { tool: "MultiEdit", permission: "ask" },
+  { tool: "Write", permission: "ask" },
+  // Bash gated by allowlist via dynamic policy; baseline ask.
+  { tool: "Bash", permission: "ask" },
+  // Safe / read-only tools always allowed
+  { tool: "CheckBackgroundJob", permission: "allow" },
+  { tool: "AskQuestion", permission: "allow" },
+  { tool: "Checklist", permission: "allow" },
+  { tool: "Diff", permission: "allow" },
+  { tool: "Skills", permission: "allow" },
+  { tool: "Exit", permission: "allow" },
+  { tool: "Fetch", permission: "allow" },
+  { tool: "List", permission: "allow" },
+  { tool: "Read", permission: "allow" },
+  { tool: "Search", permission: "allow" },
+  { tool: "Status", permission: "allow" },
+  { tool: "ReportFailure", permission: "allow" },
+  { tool: "UploadArtifact", permission: "allow" },
+];

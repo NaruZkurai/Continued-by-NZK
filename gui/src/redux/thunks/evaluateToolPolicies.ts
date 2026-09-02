@@ -1,5 +1,6 @@
 import { ToolPolicy } from "@continuedev/terminal-security";
 import { Tool, ToolCallState } from "core";
+import { BuiltInToolNames } from "core/tools/builtIn";
 import { IIdeMessenger } from "../../context/IdeMessenger";
 import { isEditTool } from "../../util/toolCallState";
 import { errorToolCall, updateToolCallOutput } from "../slices/sessionSlice";
@@ -13,6 +14,15 @@ interface EvaluatedPolicy {
 }
 
 /**
+ * Experimental yolo-restricted config passed down from the stream thunk.
+ */
+export interface YoloRestrictedConfig {
+  yoloRestricted?: boolean;
+  yoloAllowList?: string[];
+  yoloDenyList?: string[];
+}
+
+/**
  * Evaluates the tool policy for a tool call, including dynamic policy evaluation
  * Note that tool group policies are not considered here because activeTools already excludes disabled groups
  */
@@ -21,6 +31,7 @@ async function evaluateToolPolicy(
   activeTools: Tool[],
   toolCallState: ToolCallState,
   toolPolicies: ToolPolicies,
+  yoloRestricted?: YoloRestrictedConfig,
 ): Promise<EvaluatedPolicy> {
   // allow edit tool calls without permission
   if (isEditTool(toolCallState.toolCall.function.name)) {
@@ -51,6 +62,19 @@ async function evaluateToolPolicy(
   const dynamicPolicy = result.content.policy;
   const displayValue = result.content.displayValue;
 
+  // yolo-restricted mode: trust core's allowlist evaluation for terminal
+  // commands. Core already merges config overrides + VS Code settings
+  // (`chat.commands.allowList`) + `<continueHome>/yolo-allowlist.txt`, so an
+  // allow glob (e.g. "*") returns allowedWithoutPermission here and we must
+  // NOT downgrade it back to allowedWithPermission. Deny matches are already
+  // surfaced as disabled by core.
+  const isYoloTerminalCommand =
+    yoloRestricted?.yoloRestricted &&
+    toolName === BuiltInToolNames.RunTerminalCommand;
+  if (isYoloTerminalCommand) {
+    return { policy: dynamicPolicy, displayValue, toolCallState };
+  }
+
   // Ensure dynamic policy cannot be more lenient than base policy
   // Policy hierarchy (most restrictive to least): disabled > allowedWithPermission > allowedWithoutPermission
   if (basePolicy === "disabled") {
@@ -77,6 +101,7 @@ export async function evaluateToolPolicies(
   activeTools: Tool[],
   generatedToolCalls: ToolCallState[],
   toolPolicies: ToolPolicies,
+  yoloRestricted?: YoloRestrictedConfig,
 ): Promise<EvaluatedPolicy[]> {
   // Check if ALL tool calls are auto-approved using dynamic evaluation
   const policyResults = await Promise.all(
@@ -86,6 +111,7 @@ export async function evaluateToolPolicies(
         activeTools,
         toolCallState,
         toolPolicies,
+        yoloRestricted,
       ),
     ),
   );

@@ -272,6 +272,48 @@ describe("NaruZkurAI", () => {
     });
   });
 
+  test("streamChat should send chat_template_kwargs from requestOptions.extraBodyProperties", async () => {
+    const naruzkurai = new NaruZkurAI({
+      apiKey: "test-api-key",
+      model: "gpt-4",
+      apiBase: "https://api.naruzkurai.com/v1/",
+      requestOptions: {
+        extraBodyProperties: {
+          chat_template_kwargs: { reasoning_effort: "high" },
+        },
+      },
+    });
+
+    await runLlmTest({
+      llm: naruzkurai,
+      methodToTest: "streamChat",
+      params: [
+        [{ role: "user", content: "hello" }],
+        new AbortController().signal,
+      ],
+      expectedRequest: {
+        url: "https://api.naruzkurai.com/v1/chat/completions",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-api-key",
+          "api-key": "test-api-key",
+        },
+        body: {
+          model: "gpt-4",
+          messages: [{ role: "user", content: "hello" }],
+          stream: true,
+          max_tokens: 2048,
+          chat_template_kwargs: { reasoning_effort: "high" },
+        },
+      },
+      mockStream: [
+        { choices: [{ delta: { content: "Hello" } }] },
+        { choices: [{ delta: { content: " world" } }] },
+      ],
+    });
+  });
+
   test("should handle O1 models correctly", async () => {
     const naruzkurai = new NaruZkurAI({
       apiKey: "test-api-key",

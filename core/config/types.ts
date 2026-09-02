@@ -1142,6 +1142,16 @@ declare global {
      */
     useChromiumForDocsCrawling?: boolean;
     modelContextProtocolServers?: MCPOptions[];
+
+    /**
+     * yolo-restricted: enable the CLI command allowlist mode. When true the
+     * CLI's terminal command allowlist/denylist are sourced from these
+     * patterns (glob base-command semantics, GitHub Copilot style) before the
+     * on-disk fallback files.
+     */
+    yoloRestricted?: boolean;
+    yoloAllowList?: string[];
+    yoloDenyList?: string[];
   }
 
   interface AnalyticsConfig {

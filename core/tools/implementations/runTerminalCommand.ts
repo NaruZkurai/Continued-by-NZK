@@ -39,11 +39,11 @@ function getShellCommand(command: string): { shell: string; args: string[] } {
 import { fileURLToPath } from "node:url";
 import { ToolImpl } from ".";
 import {
-  isProcessBackgrounded,
-  markProcessAsRunning,
-  removeBackgroundedProcess,
-  removeRunningProcess,
-  updateProcessOutput,
+    isProcessBackgrounded,
+    markProcessAsRunning,
+    removeBackgroundedProcess,
+    removeRunningProcess,
+    updateProcessOutput,
 } from "../../util/processTerminalStates";
 import { getBooleanArg, getStringArg } from "../parseArgs";
 
@@ -203,9 +203,8 @@ export const runTerminalCommandImpl: ToolImpl = async (args, extras) => {
           }
 
           childProc.stdout?.on("data", (data) => {
-            // Skip if this process has been backgrounded
-            if (isProcessBackgrounded(toolCallId)) return;
-
+            // Keep streaming output even once the process is backgrounded so
+            // users always see live command output in the chat window.
             const newOutput = getDecodedOutput(data);
             terminalOutput += newOutput;
 
@@ -234,9 +233,7 @@ export const runTerminalCommandImpl: ToolImpl = async (args, extras) => {
           });
 
           childProc.stderr?.on("data", (data) => {
-            // Skip if this process has been backgrounded
-            if (isProcessBackgrounded(toolCallId)) return;
-
+            // Keep streaming output even once the process is backgrounded.
             const newOutput = getDecodedOutput(data);
             terminalOutput += newOutput;
 

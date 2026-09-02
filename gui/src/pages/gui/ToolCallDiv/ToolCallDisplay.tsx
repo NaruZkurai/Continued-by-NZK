@@ -1,10 +1,16 @@
 import { Tool, ToolCallState } from "core";
-import { useContext, useMemo } from "react";
+import { renderChatMessage } from "core/util/messageContent";
+import { useContext, useMemo, useState } from "react";
+import InlineEdit from "../../../components/StepContainer/InlineEdit";
 import { openContextItem } from "../../../components/mainInput/belowMainInput/ContextItemsPeek";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { updateHistoryItemAtIndex } from "../../../redux/slices/sessionSlice";
+import { saveCurrentSession } from "../../../redux/thunks/session";
 import { ToolCallStatusMessage } from "./ToolCallStatusMessage";
-import { toolCallStateToContextItems } from "./utils";
+import { ToolEditMessageIcon } from "./ToolEditMessageIcon";
 import { ToolTruncateHistoryIcon } from "./ToolTruncateHistoryIcon";
+import { toolCallStateToContextItems } from "./utils";
 
 interface ToolCallDisplayProps {
   children: React.ReactNode;
@@ -22,6 +28,11 @@ export function ToolCallDisplay({
   historyIndex,
 }: ToolCallDisplayProps) {
   const ideMessenger = useContext(IdeMessengerContext);
+  const dispatch = useAppDispatch();
+  const historyItem = useAppSelector(
+    (state) => state.session.history[historyIndex],
+  );
+  const [editing, setEditing] = useState(false);
   const shownContextItems = useMemo(() => {
     const contextItems = toolCallStateToContextItems(toolCallState);
     return contextItems.filter((item) => !item.hidden);
@@ -55,8 +66,38 @@ export function ToolCallDisplay({
           {!!toolCallState.output?.length && (
             <ToolTruncateHistoryIcon historyIndex={historyIndex} />
           )}
+          {historyItem?.message.role === "assistant" && (
+            <ToolEditMessageIcon onClick={() => setEditing(true)} />
+          )}
         </div>
       </div>
+
+      {editing && historyItem?.message.role === "assistant" && (
+        <InlineEdit
+          initialText={renderChatMessage(historyItem.message)}
+          onCancel={() => setEditing(false)}
+          onSave={(newText) => {
+            dispatch(
+              updateHistoryItemAtIndex({
+                index: historyIndex,
+                updates: {
+                  message: {
+                    ...historyItem.message,
+                    content: newText,
+                  } as any,
+                },
+              }),
+            );
+            dispatch(
+              saveCurrentSession({
+                openNewSession: false,
+                generateTitle: false,
+              }),
+            );
+            setEditing(false);
+          }}
+        />
+      )}
       <div>{children}</div>
     </div>
   );

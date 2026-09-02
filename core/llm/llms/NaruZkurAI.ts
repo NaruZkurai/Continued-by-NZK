@@ -197,6 +197,36 @@ class NaruZkurAI extends BaseLLM {
     super(options);
     this.useLegacyCompletionsEndpoint = options.useLegacyCompletionsEndpoint;
     this.apiVersion = options.apiVersion ?? "2023-07-01-preview";
+    // `apiURL` (fork convention) must also drive the raw fetch path's
+    // `this.apiBase`. `super()` only reads `options.apiBase`, so when a model
+    // config supplies `apiURL` (not `apiBase`) the raw /completions, fim and
+    // legacy endpoints would otherwise fall back to the default api host.
+    // Prefer apiURL, then apiBase; prepend the ApiHttpOrHttps scheme when the
+    // resolved base is schemeless. Skip when nothing is configured so the
+    // class default (a real api.naruzkurai.com endpoint, if intentional) holds.
+    const schemeOpt = options.ApiHttpOrHttps;
+    const pref = typeof schemeOpt === "string" ? schemeOpt.trim() : "";
+    const lower = pref.toLowerCase();
+    const hasScheme = (u: string) => /^[a-z][a-z0-9+.-]*:\/\//i.test(u);
+    const schemeify = (u: string) => {
+      if (!u) {
+        return u;
+      }
+      if (hasScheme(u)) {
+        return u;
+      }
+      if (lower === "https") {
+        return `https://${u}`;
+      }
+      return `http://${u}`;
+    };
+    const raw = (options.apiURL ?? options.apiBase ?? "").toString();
+    if (raw) {
+      const normalized = schemeify(raw);
+      this.apiBase = normalized.endsWith("/")
+        ? normalized
+        : `${normalized}/`;
+    }
   }
 
   static providerName = "naruzkurai";
@@ -207,10 +237,12 @@ class NaruZkurAI extends BaseLLM {
 
   protected useNaruZkurAIAdapterFor: (LlmApiRequestType | "*")[] = [
     "chat",
+    "complete",
     "embed",
     "list",
     "rerank",
     "streamChat",
+    "streamComplete",
     "streamFim",
   ];
 
@@ -249,7 +281,9 @@ class NaruZkurAI extends BaseLLM {
   }
 
   protected extraBodyProperties(): Record<string, any> {
-    return {};
+    // Inject provider-defined extra body fields (e.g. `chat_template_kwargs`)
+    // from the model's requestOptions so they land in the request body.
+    return this.requestOptions?.extraBodyProperties ?? {};
   }
 
   protected getMaxStopWords(): number {

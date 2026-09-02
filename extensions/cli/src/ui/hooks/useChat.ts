@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements   */
+import { clearNoticeSink, setNoticeSink } from "@continuedev/naruzkurai-adapters";
 import type { ChatHistoryItem, Session } from "core/index.js";
 import { useApp } from "ink";
 import { useEffect, useRef, useState } from "react";
@@ -8,9 +9,9 @@ import { findCompactionIndex } from "../../compaction.js";
 import { toolPermissionManager } from "../../permissions/permissionManager.js";
 import { services } from "../../services/index.js";
 import {
-  createSession,
-  loadSession,
-  updateSessionHistory,
+    createSession,
+    loadSession,
+    updateSessionHistory,
 } from "../../session.js";
 import { handleSlashCommands } from "../../slashCommands.js";
 import { messageQueue, QueuedMessage } from "../../stream/messageQueue.js";
@@ -19,30 +20,30 @@ import { formatError } from "../../util/formatError.js";
 import { logger } from "../../util/logger.js";
 
 import {
-  handleAutoCompaction,
-  handleCompactCommand,
+    handleAutoCompaction,
+    handleCompactCommand,
 } from "./useChat.compaction.js";
 import {
-  formatMessageWithFiles,
-  handleSpecialCommands,
-  initChatHistory,
-  processSlashCommandResult,
-  trackUserMessage,
+    formatMessageWithFiles,
+    handleSpecialCommands,
+    initChatHistory,
+    processSlashCommandResult,
+    trackUserMessage,
 } from "./useChat.helpers.js";
 import {
-  handleRemoteMessage,
-  setupRemotePolling,
+    handleRemoteMessage,
+    setupRemotePolling,
 } from "./useChat.remote.helpers.js";
 import { handleBashModeProcessing } from "./useChat.shellMode.js";
 import {
-  createStreamCallbacks,
-  executeStreaming,
+    createStreamCallbacks,
+    executeStreaming,
 } from "./useChat.stream.helpers.js";
 import {
-  ActivePermissionRequest,
-  ActiveQuizQuestion,
-  AttachedFile,
-  UseChatProps,
+    ActivePermissionRequest,
+    ActiveQuizQuestion,
+    AttachedFile,
+    UseChatProps,
 } from "./useChat.types.js";
 
 export function useChat({
@@ -170,6 +171,9 @@ export function useChat({
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [activePermissionRequest, setActivePermissionRequest] =
     useState<ActivePermissionRequest | null>(null);
+  // Agent-invisible request notification (auto-model resolution, etc.). Shown
+  // as a footer bubble; never stored in chat history so the agent can't see it.
+  const [notice, setNotice] = useState<string | null>(null);
   const [activeQuizQuestion, setActiveQuizQuestion] =
     useState<ActiveQuizQuestion | null>(null);
   const [compactionIndex, setCompactionIndex] = useState<number | null>(() => {
@@ -311,9 +315,14 @@ export function useChat({
     });
 
     try {
+      // Route adapter request-notifications (auto-model resolution, etc.) to
+      // the agent-invisible footer bubble. Cleared in `finally` below.
+      setNoticeSink((text) => setNotice(text));
+
       const streamCallbacks = createStreamCallbacks({
         setChatHistory: setChatHistory,
         setActivePermissionRequest,
+        setNotice,
         llmApi,
         model,
       });
@@ -355,6 +364,9 @@ export function useChat({
     } finally {
       // Stop active time tracking
       telemetryService.stopActiveTime();
+
+      // Stop routing adapter request-notifications to the footer bubble.
+      clearNoticeSink();
 
       setAbortController(null);
       setIsWaitingForResponse(false);
@@ -786,11 +798,51 @@ export function useChat({
     await processMessage(newContent, undefined, false, rewindedHistory);
   };
 
+  /**
+   * Insert a rewind point at a specific chat message.
+   *
+   * Rewinds history to keep the selected message (and everything before it),
+   * dropping every later turn. Then it continues from that point as though
+   * the user just gave a "continue" instruction — so an agent run can be
+   * restarted mid-stream from any thinking / assistant block, instead of
+   * having to edit prose.
+   */
+  const handleRewindToMessage = async (messageIndex: number) => {
+    logger.debug("handleRewindToMessage called", {
+      messageIndex,
+      currentHistoryLength: chatHistory.length,
+    });
+
+    // Keep the selected message and everything before it.
+    const rewoundHistory = chatHistory.slice(0, messageIndex + 1);
+
+    logger.debug("Rewinding history for continue", {
+      from: chatHistory.length,
+      to: rewoundHistory.length,
+    });
+
+    // Clear any queued messages and attached files
+    setQueuedMessages([]);
+    setAttachedFiles([]);
+
+    // Update the session with the rewound history
+    updateSessionHistory(rewoundHistory);
+
+    // Force refresh of StaticChatContent to show truncated history
+    if (onRefreshStatic) {
+      onRefreshStatic();
+    }
+
+    // Continue from the rewind point as if the user just asked to keep going.
+    await processMessage("continue", undefined, false, rewoundHistory);
+  };
+
   const handleToolPermissionResponse = async (
     requestId: string,
     approved: boolean,
     createPolicy?: boolean,
     stopStream?: boolean,
+    addToList?: "allow" | "deny",
   ) => {
     // Capture the current permission request before clearing it
     const currentRequest = activePermissionRequest;
@@ -798,8 +850,33 @@ export function useChat({
     // Clear the active permission request
     setActivePermissionRequest(null);
 
-    // Handle policy creation if requested
-    if (approved && createPolicy && currentRequest) {
+    // Persist a Bash command to the yolo allowlist / denylist on demand
+    // (the ✓✓ / ✗✗ "add to list" actions). Only meaningful for terminal
+    // commands; non-Bash tools fall through to the tool-policy path.
+    const command = (currentRequest?.toolArgs as any)?.command as
+      | string
+      | undefined;
+    const handledAsAllowlist =
+      addToList &&
+      currentRequest &&
+      currentRequest.toolName === "Bash" &&
+      !!command;
+    if (handledAsAllowlist) {
+      try {
+        const { addCommandToAllowlistFile } = await import(
+          "../../permissions/commandAllowlist.js"
+        );
+        const file = addCommandToAllowlistFile(command, addToList);
+        logger.debug(`yolo ${addToList}list += ${command} (${file})`);
+        await services.toolPermissions.reloadPermissions();
+      } catch (error) {
+        logger.error("Failed to add command to allowlist", { error });
+      }
+    }
+
+    // Handle policy creation if requested (non-Bash tool path; Bash uses the
+    // yolo allowlist above so we don't double-write).
+    if (approved && createPolicy && currentRequest && !handledAsAllowlist) {
       try {
         const { generatePolicyRule, addPolicyToYaml } = await import(
           "../../permissions/policyWriter.js"
@@ -867,6 +944,7 @@ export function useChat({
     inputMode,
     attachedFiles,
     activePermissionRequest,
+    notice,
     activeQuizQuestion,
     wasInterrupted,
     queuedMessages,
@@ -875,6 +953,7 @@ export function useChat({
     handleFileAttached,
     resetChatHistory,
     handleEditMessage,
+    handleRewindToMessage,
     handleToolPermissionResponse,
     handleQuizAnswer,
   };

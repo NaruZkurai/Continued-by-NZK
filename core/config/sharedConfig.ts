@@ -1,10 +1,10 @@
 import z from "zod";
 
 import {
-  BrowserSerializedContinueConfig,
-  Config,
-  ContinueConfig,
-  SerializedContinueConfig,
+    BrowserSerializedContinueConfig,
+    Config,
+    ContinueConfig,
+    SerializedContinueConfig,
 } from "..";
 
 export const sharedConfigSchema = z
@@ -23,6 +23,9 @@ export const sharedConfigSchema = z
     onlyUseSystemMessageTools: z.boolean(),
     codebaseToolCallingOnly: z.boolean(),
     enableStaticContextualization: z.boolean(),
+    yoloRestricted: z.boolean(),
+    yoloAllowList: z.array(z.string()),
+    yoloDenyList: z.array(z.string()),
 
     // `ui` in `ContinueConfig`
     showSessionTabs: z.boolean(),
@@ -195,6 +198,15 @@ export function modifyAnyConfigWithSharedConfig<
   if (sharedConfig.enableStaticContextualization !== undefined) {
     configCopy.experimental.enableStaticContextualization =
       sharedConfig.enableStaticContextualization;
+  }
+  if (sharedConfig.yoloRestricted !== undefined) {
+    configCopy.experimental.yoloRestricted = sharedConfig.yoloRestricted;
+  }
+  if (sharedConfig.yoloAllowList !== undefined) {
+    configCopy.experimental.yoloAllowList = sharedConfig.yoloAllowList;
+  }
+  if (sharedConfig.yoloDenyList !== undefined) {
+    configCopy.experimental.yoloDenyList = sharedConfig.yoloDenyList;
   }
 
   return configCopy;
