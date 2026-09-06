@@ -1,18 +1,18 @@
 import {
-    ArrowLeftIcon,
-    ChatBubbleOvalLeftIcon,
-    PencilIcon,
+  ArrowLeftIcon,
+  ChatBubbleOvalLeftIcon,
+  PencilIcon,
 } from "@heroicons/react/24/outline";
 import { Editor, JSONContent } from "@tiptap/react";
 import { ChatHistoryItem, InputModifiers } from "core";
 import { renderChatMessage } from "core/util/messageContent";
 import {
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import styled from "styled-components";
@@ -31,15 +31,15 @@ import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { useWebviewListener } from "../../hooks/useWebviewListener";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-    selectDoneApplyStates,
-    selectPendingToolCalls,
+  selectDoneApplyStates,
+  selectPendingToolCalls,
 } from "../../redux/selectors/selectToolCalls";
 import {
-    cancelToolCall,
-    ChatHistoryItemWithMessageId,
-    newSession,
-    updateHistoryItemAtIndex,
-    updateToolCallOutput,
+  cancelToolCall,
+  ChatHistoryItemWithMessageId,
+  newSession,
+  updateHistoryItemAtIndex,
+  updateToolCallOutput,
 } from "../../redux/slices/sessionSlice";
 import { streamEditThunk } from "../../redux/thunks/edit";
 import { loadLastSession, saveCurrentSession } from "../../redux/thunks/session";
@@ -48,15 +48,12 @@ import { isJetBrains, isMetaEquivalentKeyPressed } from "../../util";
 import { ToolCallDiv } from "./ToolCallDiv";
 
 import { useStore } from "react-redux";
-import FeedbackDialog from "../../components/dialogs/FeedbackDialog";
 
 import { FatalErrorIndicator } from "../../components/config/FatalErrorNotice";
 import { DeprecationBanner } from "../../components/DeprecationBanner";
 import InlineErrorMessage from "../../components/mainInput/InlineErrorMessage";
-import { setDialogMessage, setShowDialog } from "../../redux/slices/uiSlice";
 import { RootState } from "../../redux/store";
 import { cancelStream } from "../../redux/thunks/cancelStream";
-import { getLocalStorage, setLocalStorage } from "../../util/localStorage";
 import { EmptyChatBody } from "./EmptyChatBody";
 import { ExploreDialogWatcher } from "./ExploreDialogWatcher";
 import { useAutoScroll } from "./useAutoScroll";
@@ -219,17 +216,7 @@ export function Chat() {
         }
       }
 
-      // Increment localstorage counter for popup
-      const currentCount = getLocalStorage("mainTextEntryCounter");
-      if (currentCount) {
-        setLocalStorage("mainTextEntryCounter", currentCount + 1);
-        if (currentCount === 300) {
-          dispatch(setDialogMessage(<FeedbackDialog />));
-          dispatch(setShowDialog(true));
-        }
-      } else {
-        setLocalStorage("mainTextEntryCounter", 1);
-      }
+
     },
     [dispatch, ideMessenger, reduxStore],
   );
